@@ -45,6 +45,7 @@ export default function SignUp() {
       email,
       password,
       options: {
+        emailRedirectTo: "https://whatupb.com/auth/callback",
         data: {
           username: trimmedUsername,
         },
