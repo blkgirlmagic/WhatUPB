@@ -131,13 +131,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(GENERIC_ERROR, { status: 400 });
     }
 
-    // 2. Verify Turnstile CAPTCHA (skip if secret key not configured)
-    const hasTurnstileSecret = !!process.env.TURNSTILE_SECRET_KEY;
-    if (hasTurnstileSecret) {
-      if (!turnstileToken || typeof turnstileToken !== "string") {
-        logRejection("missing_params", clientIP);
-        return NextResponse.json(GENERIC_ERROR, { status: 400 });
-      }
+    // 2. Verify Turnstile CAPTCHA (only if client sent a token AND server has secret)
+    if (turnstileToken && typeof turnstileToken === "string" && process.env.TURNSTILE_SECRET_KEY) {
       const turnstileValid = await verifyTurnstile(turnstileToken, clientIP);
       if (!turnstileValid) {
         logRejection("captcha_failed", clientIP);
