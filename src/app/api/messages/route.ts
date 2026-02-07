@@ -158,6 +158,7 @@ export async function POST(request: NextRequest) {
       p_recipient_id: recipientId,
       p_content: content.trim(),
       p_ip_hash: ipHash,
+      p_turnstile_token: turnstileToken,
     });
 
     if (error) {
