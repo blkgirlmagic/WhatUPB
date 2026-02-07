@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase-server";
+import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
+
+// --- Supabase admin-free client for anonymous RPC calls ---
+// No cookies needed — this route has no user session.
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+}
 
 // --- Generic client error (never reveals why it failed) ---
 
@@ -144,7 +153,7 @@ export async function POST(request: NextRequest) {
     const ipHash = clientIP !== "unknown" ? hashIP(clientIP) : null;
 
     // 5. Call the SECURITY DEFINER function
-    const supabase = await createClient();
+    const supabase = getSupabase();
     const { data, error } = await supabase.rpc("send_anonymous_message", {
       p_recipient_id: recipientId,
       p_content: content.trim(),
