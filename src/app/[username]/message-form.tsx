@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { createClient } from "@/lib/supabase-browser";
+import { useState, useRef } from "react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 export default function MessageForm({
   recipientId,
@@ -14,28 +14,52 @@ export default function MessageForm({
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const supabase = createClient();
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     if (!content.trim()) return;
+    if (!turnstileToken) {
+      setError("Please complete the verification.");
+      return;
+    }
     setLoading(true);
     setError("");
 
-    const { error: insertError } = await supabase.from("messages").insert({
-      recipient_id: recipientId,
-      content: content.trim(),
-    });
+    try {
+      const response = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipientId,
+          content: content.trim(),
+          turnstileToken,
+        }),
+      });
 
-    if (insertError) {
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Failed to send message. Try again.");
+        setLoading(false);
+        // Reset Turnstile (token is single-use)
+        turnstileRef.current?.reset();
+        setTurnstileToken(null);
+        return;
+      }
+
+      setSent(true);
+      setContent("");
+      setLoading(false);
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
+    } catch {
       setError("Failed to send message. Try again.");
       setLoading(false);
-      return;
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
     }
-
-    setSent(true);
-    setContent("");
-    setLoading(false);
   }
 
   if (sent) {
@@ -74,9 +98,18 @@ export default function MessageForm({
       <p className="text-xs text-zinc-500 mb-3 text-right">
         {content.length}/1000
       </p>
+      <div className="mb-3 flex justify-center">
+        <Turnstile
+          ref={turnstileRef}
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+          onSuccess={(token) => setTurnstileToken(token)}
+          onExpire={() => setTurnstileToken(null)}
+          onError={() => setTurnstileToken(null)}
+        />
+      </div>
       <button
         type="submit"
-        disabled={loading || !content.trim()}
+        disabled={loading || !content.trim() || !turnstileToken}
         className="w-full bg-white text-black font-medium py-2.5 rounded-lg hover:bg-zinc-200 transition disabled:opacity-50"
       >
         {loading ? "Sending..." : "Send Message"}

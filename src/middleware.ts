@@ -11,6 +11,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308)
   }
 
+  // Block cross-origin requests to the messages API
+  if (request.nextUrl.pathname === '/api/messages') {
+    const origin = request.headers.get('origin')
+    if (origin && origin !== 'https://whatupb.com' && !origin.includes('localhost')) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
