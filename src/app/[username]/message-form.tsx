@@ -3,6 +3,8 @@
 import { useState, useRef } from "react";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
+
 export default function MessageForm({
   recipientId,
   username,
@@ -16,11 +18,12 @@ export default function MessageForm({
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
+  const hasTurnstile = TURNSTILE_SITE_KEY.length > 0;
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     if (!content.trim()) return;
-    if (!turnstileToken) {
+    if (hasTurnstile && !turnstileToken) {
       setError("Please complete the verification.");
       return;
     }
@@ -98,18 +101,20 @@ export default function MessageForm({
       <p className="text-xs text-zinc-500 mb-3 text-right">
         {content.length}/1000
       </p>
-      <div className="mb-3 flex justify-center">
-        <Turnstile
-          ref={turnstileRef}
-          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-          onSuccess={(token) => setTurnstileToken(token)}
-          onExpire={() => setTurnstileToken(null)}
-          onError={() => setTurnstileToken(null)}
-        />
-      </div>
+      {hasTurnstile && (
+        <div className="mb-3 flex justify-center">
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={TURNSTILE_SITE_KEY}
+            onSuccess={(token) => setTurnstileToken(token)}
+            onExpire={() => setTurnstileToken(null)}
+            onError={() => setTurnstileToken(null)}
+          />
+        </div>
+      )}
       <button
         type="submit"
-        disabled={loading || !content.trim() || !turnstileToken}
+        disabled={loading || !content.trim() || (hasTurnstile && !turnstileToken)}
         className="w-full bg-white text-black font-medium py-2.5 rounded-lg hover:bg-zinc-200 transition disabled:opacity-50"
       >
         {loading ? "Sending..." : "Send Message"}

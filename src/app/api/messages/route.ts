@@ -125,19 +125,24 @@ export async function POST(request: NextRequest) {
       !recipientId ||
       typeof recipientId !== "string" ||
       !content ||
-      typeof content !== "string" ||
-      !turnstileToken ||
-      typeof turnstileToken !== "string"
+      typeof content !== "string"
     ) {
       logRejection("missing_params", clientIP);
       return NextResponse.json(GENERIC_ERROR, { status: 400 });
     }
 
-    // 2. Verify Turnstile CAPTCHA
-    const turnstileValid = await verifyTurnstile(turnstileToken, clientIP);
-    if (!turnstileValid) {
-      logRejection("captcha_failed", clientIP);
-      return NextResponse.json(GENERIC_ERROR, { status: 403 });
+    // 2. Verify Turnstile CAPTCHA (skip if secret key not configured)
+    const hasTurnstileSecret = !!process.env.TURNSTILE_SECRET_KEY;
+    if (hasTurnstileSecret) {
+      if (!turnstileToken || typeof turnstileToken !== "string") {
+        logRejection("missing_params", clientIP);
+        return NextResponse.json(GENERIC_ERROR, { status: 400 });
+      }
+      const turnstileValid = await verifyTurnstile(turnstileToken, clientIP);
+      if (!turnstileValid) {
+        logRejection("captcha_failed", clientIP);
+        return NextResponse.json(GENERIC_ERROR, { status: 403 });
+      }
     }
 
     // 3. Server-side content validation
@@ -158,7 +163,7 @@ export async function POST(request: NextRequest) {
       p_recipient_id: recipientId,
       p_content: content.trim(),
       p_ip_hash: ipHash,
-      p_turnstile_token: turnstileToken,
+      p_turnstile_token: turnstileToken || "",
     });
 
     if (error) {
