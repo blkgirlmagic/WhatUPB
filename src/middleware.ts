@@ -2,6 +2,15 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Redirect vercel.app preview URLs to the production domain
+  const host = request.headers.get('host') || ''
+  if (host.includes('vercel.app')) {
+    const url = request.nextUrl.clone()
+    url.protocol = 'https'
+    url.host = 'whatupb.com'
+    return NextResponse.redirect(url, 308)
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
