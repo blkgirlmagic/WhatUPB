@@ -2,24 +2,60 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import crypto from "crypto";
 
+// --- Generic client error (never reveals why it failed) ---
+
+const GENERIC_ERROR = { error: "Message could not be sent. Please try again." };
+
+// --- Structured server-side logging ---
+
+type RejectReason =
+  | "missing_params"
+  | "captcha_failed"
+  | "captcha_misconfigured"
+  | "validation_empty"
+  | "validation_length"
+  | "validation_links"
+  | "rate_limit"
+  | "recipient_not_found"
+  | "rpc_error"
+  | "unknown_error";
+
+function logRejection(
+  reason: RejectReason,
+  ip: string,
+  extra?: Record<string, unknown>
+) {
+  console.warn(
+    JSON.stringify({
+      event: "message_rejected",
+      reason,
+      ip: ip !== "unknown" ? hashIP(ip) : "unknown",
+      timestamp: new Date().toISOString(),
+      ...extra,
+    })
+  );
+}
+
 // --- Spam detection ---
 
 const URL_REGEX = /https?:\/\/[^\s]+/gi;
 const MAX_LINKS = 2;
 
-function validateContent(content: string): { valid: boolean; error?: string } {
+function validateContent(
+  content: string
+): { valid: true } | { valid: false; reason: RejectReason } {
   const trimmed = content?.trim();
 
   if (!trimmed || trimmed.length < 1) {
-    return { valid: false, error: "Message cannot be empty." };
+    return { valid: false, reason: "validation_empty" };
   }
   if (trimmed.length > 1000) {
-    return { valid: false, error: "Message is too long (max 1000 characters)." };
+    return { valid: false, reason: "validation_length" };
   }
 
   const linkMatches = trimmed.match(URL_REGEX);
   if (linkMatches && linkMatches.length > MAX_LINKS) {
-    return { valid: false, error: "Message contains too many links." };
+    return { valid: false, reason: "validation_links" };
   }
 
   return { valid: true };
@@ -30,7 +66,7 @@ function validateContent(content: string): { valid: boolean; error?: string } {
 async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
   if (!secret) {
-    console.error("TURNSTILE_SECRET_KEY is not configured");
+    logRejection("captcha_misconfigured", ip);
     return false;
   }
 
@@ -65,52 +101,43 @@ function hashIP(ip: string): string {
 // --- POST handler ---
 
 export async function POST(request: NextRequest) {
+  const clientIP =
+    request.headers.get("cf-connecting-ip") ||
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+
   try {
     const body = await request.json();
     const { recipientId, content, turnstileToken } = body;
 
     // 1. Parameter validation
-    if (!recipientId || typeof recipientId !== "string") {
-      return NextResponse.json(
-        { error: "Missing or invalid recipient." },
-        { status: 400 }
-      );
-    }
-    if (!content || typeof content !== "string") {
-      return NextResponse.json(
-        { error: "Missing message content." },
-        { status: 400 }
-      );
-    }
-    if (!turnstileToken || typeof turnstileToken !== "string") {
-      return NextResponse.json(
-        { error: "CAPTCHA verification required." },
-        { status: 400 }
-      );
+    if (
+      !recipientId ||
+      typeof recipientId !== "string" ||
+      !content ||
+      typeof content !== "string" ||
+      !turnstileToken ||
+      typeof turnstileToken !== "string"
+    ) {
+      logRejection("missing_params", clientIP);
+      return NextResponse.json(GENERIC_ERROR, { status: 400 });
     }
 
     // 2. Verify Turnstile CAPTCHA
-    const clientIP =
-      request.headers.get("cf-connecting-ip") ||
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      request.headers.get("x-real-ip") ||
-      "unknown";
-
     const turnstileValid = await verifyTurnstile(turnstileToken, clientIP);
     if (!turnstileValid) {
-      return NextResponse.json(
-        { error: "CAPTCHA verification failed. Please try again." },
-        { status: 403 }
-      );
+      logRejection("captcha_failed", clientIP);
+      return NextResponse.json(GENERIC_ERROR, { status: 403 });
     }
 
     // 3. Server-side content validation
     const contentCheck = validateContent(content);
     if (!contentCheck.valid) {
-      return NextResponse.json(
-        { error: contentCheck.error },
-        { status: 400 }
-      );
+      logRejection(contentCheck.reason, clientIP, {
+        contentLength: content.length,
+      });
+      return NextResponse.json(GENERIC_ERROR, { status: 400 });
     }
 
     // 4. Hash IP for rate limiting
@@ -125,30 +152,29 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
-      console.error("Supabase RPC error:", error);
-      return NextResponse.json(
-        { error: "Failed to send message. Please try again." },
-        { status: 500 }
-      );
+      logRejection("rpc_error", clientIP, { supabaseError: error.message });
+      return NextResponse.json(GENERIC_ERROR, { status: 500 });
     }
 
     // The DB function returns { success, error?, message_id? }
     if (!data.success) {
-      return NextResponse.json(
-        { error: data.error },
-        { status: 429 }
-      );
+      // Map DB-level rejection to a log reason
+      const dbError: string = data.error || "";
+      let reason: RejectReason = "unknown_error";
+      if (dbError.includes("rate") || dbError.includes("Too many")) {
+        reason = "rate_limit";
+      } else if (dbError.includes("Recipient")) {
+        reason = "recipient_not_found";
+      }
+      logRejection(reason, clientIP, { dbError });
+      return NextResponse.json(GENERIC_ERROR, { status: 429 });
     }
 
-    return NextResponse.json(
-      { success: true, messageId: data.message_id },
-      { status: 201 }
-    );
+    return NextResponse.json({ success: true }, { status: 201 });
   } catch (err) {
-    console.error("API route error:", err);
-    return NextResponse.json(
-      { error: "An unexpected error occurred." },
-      { status: 500 }
-    );
+    logRejection("unknown_error", clientIP, {
+      error: err instanceof Error ? err.message : "unknown",
+    });
+    return NextResponse.json(GENERIC_ERROR, { status: 500 });
   }
 }
