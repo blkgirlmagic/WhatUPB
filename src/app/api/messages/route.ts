@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
+import { moderateMessage } from "@/lib/moderation";
 
 // --- Supabase admin-free client for anonymous RPC calls ---
 // No cookies needed — this route has no user session.
@@ -24,6 +25,7 @@ type RejectReason =
   | "validation_empty"
   | "validation_length"
   | "validation_links"
+  | "moderation_blocked"
   | "rate_limit"
   | "recipient_not_found"
   | "rpc_error"
@@ -149,10 +151,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(GENERIC_ERROR, { status: 400 });
     }
 
-    // 4. Hash IP for rate limiting
+    // 4. Content moderation — HARD GUARD
+    // Flow: moderate → allowed? → save.  NEVER save → moderate.
+    // If moderation says no, return 403 immediately.  No DB write happens.
+    const moderation = await moderateMessage(content.trim());
+    if (!moderation.allowed) {
+      logRejection("moderation_blocked", clientIP, {
+        blockedBy: moderation.blockedBy,
+        scores: moderation.scores,
+      });
+      return NextResponse.json(GENERIC_ERROR, { status: 403 });
+    }
+
+    // 5. Hash IP for rate limiting
     const ipHash = clientIP !== "unknown" ? hashIP(clientIP) : null;
 
-    // 5. Call the SECURITY DEFINER function
+    // 6. Call the SECURITY DEFINER function
     const supabase = getSupabase();
     const { data, error } = await supabase.rpc("send_anonymous_message", {
       p_recipient_id: recipientId,
