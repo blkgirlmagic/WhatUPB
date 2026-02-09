@@ -5,7 +5,9 @@ import SettingsClient from "./settings-client";
 
 export default async function Settings() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/login");
@@ -24,12 +26,22 @@ export default async function Settings() {
   return (
     <div className="min-h-screen px-4 py-8">
       <div className="max-w-lg mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Settings</h1>
-          <Link
-            href="/inbox"
-            className="text-sm border border-zinc-700 px-4 py-2 rounded-lg hover:bg-zinc-800 transition"
-          >
+        <div className="flex items-center justify-between mb-8 animate-fade-in-up">
+          <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+          <Link href="/inbox" className="btn-ghost text-sm">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              />
+            </svg>
             Inbox
           </Link>
         </div>

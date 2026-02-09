@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 import { moderateMessage } from "@/lib/moderation";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { logModerationBlock } from "@/lib/moderation-log";
 
 // --- Supabase admin-free client for anonymous RPC calls ---
 // No cookies needed — this route has no user session.
@@ -151,7 +153,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(GENERIC_ERROR, { status: 400 });
     }
 
-    // 4. Content moderation — HARD GUARD
+    // 4. Hash IP (needed for rate limiting + logging)
+    const ipHash = clientIP !== "unknown" ? hashIP(clientIP) : null;
+
+    // 5. In-memory rate limiting (per IP hash)
+    const rateCheck = checkRateLimit(ipHash);
+    if (!rateCheck.allowed) {
+      logRejection("rate_limit", clientIP, {
+        resetMs: rateCheck.resetMs,
+      });
+      // Fire-and-forget: log rate-limit block to Supabase
+      logModerationBlock({
+        blockedBy: "rate_limit",
+        reason: "rate_limit",
+        scores: null,
+        ipHash,
+        recipientId,
+      }).catch(() => {});
+      return NextResponse.json(GENERIC_ERROR, { status: 429 });
+    }
+
+    // 6. Content moderation — HARD GUARD
     // Flow: moderate → allowed? → save.  NEVER save → moderate.
     // If moderation says no, return 403 immediately.  No DB write happens.
     const moderation = await moderateMessage(content.trim());
@@ -160,13 +182,18 @@ export async function POST(request: NextRequest) {
         blockedBy: moderation.blockedBy,
         scores: moderation.scores,
       });
+      // Fire-and-forget: log moderation block to Supabase
+      logModerationBlock({
+        blockedBy: moderation.blockedBy || "local",
+        reason: "moderation_blocked",
+        scores: moderation.scores || null,
+        ipHash,
+        recipientId,
+      }).catch(() => {});
       return NextResponse.json(GENERIC_ERROR, { status: 403 });
     }
 
-    // 5. Hash IP for rate limiting
-    const ipHash = clientIP !== "unknown" ? hashIP(clientIP) : null;
-
-    // 6. Call the SECURITY DEFINER function
+    // 7. Call the SECURITY DEFINER function
     const supabase = getSupabase();
     const { data, error } = await supabase.rpc("send_anonymous_message", {
       p_recipient_id: recipientId,

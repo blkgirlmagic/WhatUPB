@@ -1,13 +1,48 @@
 @import "tailwindcss";
 
+/* ============================================================
+   WhatUPB Design System — "Denim" palette
+   Premium, calm, worn-in texture vibe.
+   Dark base with warm indigo/slate accents.
+   ============================================================ */
+
 :root {
-  --background: #0f0f0f;
+  /* Core palette */
+  --background: #0c0c10;
   --foreground: #ededed;
+
+  /* Denim accent spectrum */
+  --denim-50:  #eef2ff;
+  --denim-100: #c7d2fe;
+  --denim-200: #a5b4fc;
+  --denim-300: #818cf8;
+  --denim-400: #6366f1;
+  --denim-500: #4f46e5;
+  --denim-600: #3730a3;
+
+  /* Surface layers */
+  --surface-1: #141418;
+  --surface-2: #1a1a20;
+  --surface-3: #22222a;
+  --border-subtle: #2a2a35;
+  --border-default: #35354a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-denim-50: var(--denim-50);
+  --color-denim-100: var(--denim-100);
+  --color-denim-200: var(--denim-200);
+  --color-denim-300: var(--denim-300);
+  --color-denim-400: var(--denim-400);
+  --color-denim-500: var(--denim-500);
+  --color-denim-600: var(--denim-600);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -15,5 +50,292 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+
+/* Fade-in from below (for page content) */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Subtle scale pulse (for trust signals, badges) */
+@keyframes subtle-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Slide in from right (for toasts) */
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide out to right (for toast dismiss) */
+@keyframes slide-out-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* Gentle glow pulse for CTA */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.15),
+                0 0 40px rgba(99, 102, 241, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.25),
+                0 0 50px rgba(99, 102, 241, 0.1);
+  }
+}
+
+/* Check animation for success */
+@keyframes check-scale {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Utility classes */
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+.animate-fade-in-up-delay-1 {
+  animation: fade-in-up 0.5s ease-out 0.1s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-up-delay-2 {
+  animation: fade-in-up 0.5s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-up-delay-3 {
+  animation: fade-in-up 0.5s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-up-delay-4 {
+  animation: fade-in-up 0.5s ease-out 0.4s forwards;
+  opacity: 0;
+}
+
+.animate-subtle-pulse {
+  animation: subtle-pulse 3s ease-in-out infinite;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out forwards;
+}
+
+.animate-slide-out-right {
+  animation: slide-out-right 0.3s ease-in forwards;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-check-scale {
+  animation: check-scale 0.3s ease-out forwards;
+}
+
+/* ============================================================
+   Premium button base
+   ============================================================ */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--denim-400), var(--denim-500));
+  color: white;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3),
+              0 0 20px rgba(99, 102, 241, 0.1);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4),
+              0 0 30px rgba(99, 102, 241, 0.2);
+  background: linear-gradient(135deg, var(--denim-300), var(--denim-400));
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: var(--surface-2);
+  color: var(--denim-100);
+  border: 1px solid var(--border-default);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-3);
+  border-color: var(--denim-400);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+  background: transparent;
+  color: var(--denim-200);
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover {
+  background: var(--surface-2);
+  border-color: var(--border-subtle);
+}
+
+/* ============================================================
+   Card / Surface
+   ============================================================ */
+
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.875rem;
+  padding: 1.25rem;
+}
+
+.card-elevated {
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.875rem;
+  padding: 1.25rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================
+   Input styling
+   ============================================================ */
+
+.input {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  color: var(--foreground);
+  font-size: 0.9375rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input::placeholder {
+  color: #555;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--denim-400);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* ============================================================
+   Subtle texture overlay for denim feel
+   Uses a noise pattern via SVG — no image file needed
+   ============================================================ */
+
+.texture-overlay::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  z-index: 1;
+}
+
+.texture-overlay > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* ============================================================
+   Scrollbar styling (subtle, matches theme)
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-default);
 }

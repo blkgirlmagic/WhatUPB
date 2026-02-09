@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ToastProvider } from "@/components/toast";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +14,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WhatUPB - Anonymous Messages",
-  description: "Send and receive anonymous messages",
+  title: "WhatUPB — Anonymous Messages",
+  description:
+    "Get honest, anonymous messages from friends and followers. Share your link, get real talk. Abuse automatically blocked.",
+  openGraph: {
+    title: "WhatUPB — Anonymous Messages",
+    description:
+      "Send and receive anonymous messages. Safe, private, and abuse-free.",
+    url: "https://whatupb.com",
+    siteName: "WhatUPB",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WhatUPB — Anonymous Messages",
+    description:
+      "Send and receive anonymous messages. Safe, private, and abuse-free.",
+  },
 };
 
 export default function RootLayout({
@@ -25,9 +41,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased texture-overlay`}
       >
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

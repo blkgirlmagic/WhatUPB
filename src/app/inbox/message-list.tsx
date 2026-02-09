@@ -44,21 +44,18 @@ export default function MessageList({
   return (
     <div className="flex flex-col gap-3">
       {messages.map((msg) => (
-        <div
-          key={msg.id}
-          className="bg-zinc-900 border border-zinc-800 rounded-lg p-4"
-        >
-          <p className="text-white whitespace-pre-wrap break-words mb-3">
+        <div key={msg.id} className="card group">
+          <p className="text-white whitespace-pre-wrap break-words mb-3 leading-relaxed">
             {msg.content}
           </p>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-zinc-600 tabular-nums">
               {formatDate(msg.created_at)}
             </span>
             <button
               onClick={() => handleDelete(msg.id)}
               disabled={deletingId === msg.id}
-              className="text-xs text-zinc-500 hover:text-red-400 transition"
+              className="text-xs text-zinc-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100 focus:opacity-100"
             >
               {deletingId === msg.id ? "Deleting..." : "Delete"}
             </button>

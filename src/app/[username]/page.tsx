@@ -21,12 +21,38 @@ export default async function PublicProfile({
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md text-center">
-        <h1 className="text-3xl font-bold mb-1">@{profile.username}</h1>
-        <p className="text-zinc-400 mb-6">Send an anonymous message</p>
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 relative">
+      {/* Subtle glow */}
+      <div
+        className="pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full opacity-[0.05]"
+        style={{
+          background:
+            "radial-gradient(circle, var(--denim-400) 0%, transparent 70%)",
+        }}
+      />
+
+      <div className="w-full max-w-md text-center relative">
+        <div className="mb-6 animate-fade-in-up">
+          <h1 className="text-3xl font-bold tracking-tight mb-1">
+            <span className="text-denim-200">@</span>
+            {profile.username}
+          </h1>
+          <p className="text-zinc-500 text-sm">
+            Send an anonymous message
+          </p>
+        </div>
         <MessageForm recipientId={profile.id} username={profile.username} />
       </div>
+
+      {/* Branding link */}
+      <footer className="absolute bottom-6 text-center">
+        <a
+          href="/"
+          className="text-xs text-zinc-600 hover:text-denim-300 transition"
+        >
+          whatupb.com
+        </a>
+      </footer>
     </div>
   );
 }
