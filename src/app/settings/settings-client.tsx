@@ -53,7 +53,7 @@ export default function SettingsClient({
 
   // ---- Native share ----
   async function handleNativeShare() {
-    if (navigator.share) {
+    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       try {
         await navigator.share({
           title: "Send me anonymous messages!",
@@ -61,12 +61,12 @@ export default function SettingsClient({
           url: profileUrl,
         });
         toast("Shared!");
+        return;
       } catch {
-        // User cancelled
+        // User cancelled or share failed — fall through to copy
       }
-    } else {
-      handleCopy();
     }
+    handleCopy();
   }
 
   // ---- Platform shares ----
@@ -359,9 +359,12 @@ export default function SettingsClient({
 
       {/* Share — primary action */}
       <div className="card animate-fade-in-up-delay-1">
-        <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-3">
+        <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">
           Share Your Link
         </h2>
+        <p className="text-sm text-zinc-400 mb-3 font-mono">
+          whatupb.com/<span className="text-denim-300">{username}</span>
+        </p>
         <button
           onClick={handleNativeShare}
           className="btn-primary w-full py-3.5 text-base mb-4"
