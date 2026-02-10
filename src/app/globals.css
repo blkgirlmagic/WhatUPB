@@ -323,6 +323,22 @@ body {
    Scrollbar styling (subtle, matches theme)
    ============================================================ */
 
+/* ============================================================
+   Reply threads — mobile visibility
+   On touch devices, hover states don't work, so we always show
+   the Reply button. Delete stays hidden until hover/focus.
+   ============================================================ */
+
+@media (hover: none) {
+  .reply-toggle-btn {
+    opacity: 1 !important;
+  }
+}
+
+/* ============================================================
+   Scrollbar styling (subtle, matches theme)
+   ============================================================ */
+
 ::-webkit-scrollbar {
   width: 6px;
 }

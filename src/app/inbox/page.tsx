@@ -21,7 +21,7 @@ export default async function Inbox() {
 
   const { data: messages } = await supabase
     .from("messages")
-    .select("*")
+    .select("*, replies(id, content, created_at)")
     .eq("recipient_id", user.id)
     .order("created_at", { ascending: false });
 
