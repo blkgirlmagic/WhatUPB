@@ -8,6 +8,7 @@ import { useToast } from "@/components/toast";
 export default function SettingsClient({ username }: { username: string }) {
   const [copied, setCopied] = useState(false);
   const [generatingCard, setGeneratingCard] = useState(false);
+  const [generatingSnapCard, setGeneratingSnapCard] = useState(false);
   const router = useRouter();
   const supabase = createClient();
   const { toast } = useToast();
@@ -58,6 +59,15 @@ export default function SettingsClient({ username }: { username: string }) {
   function handleShareInstagram() {
     navigator.clipboard.writeText(profileUrl);
     toast("Link copied! Paste it in your Instagram bio or story.", "info");
+  }
+
+  function handleShareSnapchat() {
+    const url = encodeURIComponent(profileUrl);
+    const text = encodeURIComponent("Send me anonymous real talk \u{1F4AC}");
+    window.open(
+      `https://www.snapchat.com/share?url=${url}&text=${text}`,
+      "_blank"
+    );
   }
 
   // ---- Story card: server-generated PNG → native file share or download ----
@@ -116,6 +126,56 @@ export default function SettingsClient({ username }: { username: string }) {
       toast("Failed to generate story card. Try again.", "error");
     } finally {
       setGeneratingCard(false);
+    }
+  }, [username, profileUrl, toast]);
+
+  // ---- Snapchat story card ----
+  const handleSnapCard = useCallback(async () => {
+    setGeneratingSnapCard(true);
+    try {
+      const { generateSnapCard } = await import("@/lib/generate-snap-card");
+      const blob = await generateSnapCard(username);
+      const file = new File([blob], `whatupb-snap-${username}.png`, {
+        type: "image/png",
+      });
+
+      // Try native share with file first
+      if (
+        typeof navigator.canShare === "function" &&
+        navigator.canShare({ files: [file] })
+      ) {
+        try {
+          await navigator.share({
+            title: "WhatUPB",
+            text: `Send me anonymous messages! ${profileUrl}`,
+            files: [file],
+          });
+          toast("Shared!");
+          return;
+        } catch {
+          // User cancelled — fall through to download
+        }
+      }
+
+      // Fallback: download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `whatupb-snap-${username}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      await navigator.clipboard.writeText(profileUrl);
+      toast(
+        "Snapchat card downloaded! Link copied — open Snapchat → Add to Story → upload the image.",
+        "info"
+      );
+    } catch {
+      toast("Failed to generate Snapchat card. Try again.", "error");
+    } finally {
+      setGeneratingSnapCard(false);
     }
   }, [username, profileUrl, toast]);
 
@@ -218,7 +278,7 @@ export default function SettingsClient({ username }: { username: string }) {
         </button>
 
         {/* Secondary platform buttons */}
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-5 gap-2">
           <button
             onClick={handleShareTwitter}
             className="btn-secondary flex-col py-3 px-2 text-xs gap-1.5"
@@ -260,6 +320,21 @@ export default function SettingsClient({ username }: { username: string }) {
               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
             </svg>
             Instagram
+          </button>
+          <button
+            onClick={handleShareSnapchat}
+            className="flex-col py-3 px-2 text-xs gap-1.5 flex items-center justify-center rounded-xl font-medium transition-all duration-200 text-white"
+            style={{ backgroundColor: "#00AEF3" }}
+            title="Share on Snapchat"
+          >
+            <svg
+              className="w-4.5 h-4.5"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12.998-.263.103-.043.199-.077.291-.077.15 0 .291.057.402.156.168.148.237.375.18.59-.078.321-.446.551-.72.636-.122.04-.24.074-.36.107-.228.065-.44.132-.596.244-.18.134-.255.3-.264.493-.009.156.061.312.14.468.102.208.211.425.294.66.158.464.138.888-.064 1.26-.316.58-1.01.9-2.07.95-.15.007-.308.014-.497.018l-.076.001c-.163.004-.297.042-.397.128-.138.119-.25.314-.34.583-.013.039-.025.076-.037.112-.116.346-.24.706-.512.939-.31.265-.688.283-1.033.33-.29.04-.578.08-.85.166-.39.124-.727.372-1.1.65-.476.356-.994.738-1.66.914-.077.02-.153.035-.23.035-.093 0-.181-.022-.27-.064-.089.042-.177.064-.27.064-.077 0-.153-.015-.23-.035-.666-.176-1.183-.558-1.66-.914-.372-.278-.71-.526-1.1-.65-.272-.086-.56-.126-.85-.166-.345-.047-.723-.065-1.033-.33-.272-.233-.396-.593-.512-.939-.012-.036-.024-.073-.037-.112-.09-.269-.202-.464-.34-.583-.1-.086-.234-.124-.397-.128l-.076-.001c-.189-.004-.347-.011-.497-.018-1.06-.05-1.754-.37-2.07-.95-.202-.372-.222-.796-.064-1.26.083-.235.192-.452.294-.66.079-.156.149-.312.14-.468-.01-.193-.084-.359-.264-.493-.156-.112-.368-.18-.596-.244-.12-.033-.238-.067-.36-.107-.274-.085-.642-.315-.72-.636-.057-.215.012-.442.18-.59.111-.099.252-.156.402-.156.092 0 .188.034.291.077.339.143.698.247.998.263.198 0 .326-.045.401-.09a8.254 8.254 0 01-.033-.57c-.104-1.628-.23-3.654.3-4.848C5.447 1.069 8.806.793 9.795.793h2.41z" />
+            </svg>
+            Snapchat
           </button>
           <button
             onClick={handleCopy}
@@ -337,6 +412,62 @@ export default function SettingsClient({ username }: { username: string }) {
                 />
               </svg>
               Generate Story Card
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Snapchat Story Card Generator */}
+      <div className="card animate-fade-in-up-delay-2">
+        <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">
+          Snapchat Story
+        </h2>
+        <p className="text-xs text-zinc-600 mb-3">
+          Download a Snapchat-optimized story card with QR code.
+        </p>
+        <button
+          onClick={handleSnapCard}
+          disabled={generatingSnapCard}
+          className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+          style={{
+            background: "linear-gradient(135deg, #FFFC00 0%, #FF6B00 100%)",
+            color: "#000",
+            opacity: generatingSnapCard ? 0.6 : 1,
+          }}
+        >
+          {generatingSnapCard ? (
+            <span className="flex items-center gap-2">
+              <svg
+                className="w-4 h-4 animate-spin"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+              Generating...
+            </span>
+          ) : (
+            <span className="flex items-center gap-2">
+              <svg
+                className="w-4.5 h-4.5"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12.998-.263.103-.043.199-.077.291-.077.15 0 .291.057.402.156.168.148.237.375.18.59-.078.321-.446.551-.72.636-.122.04-.24.074-.36.107-.228.065-.44.132-.596.244-.18.134-.255.3-.264.493-.009.156.061.312.14.468.102.208.211.425.294.66.158.464.138.888-.064 1.26-.316.58-1.01.9-2.07.95-.15.007-.308.014-.497.018l-.076.001c-.163.004-.297.042-.397.128-.138.119-.25.314-.34.583-.013.039-.025.076-.037.112-.116.346-.24.706-.512.939-.31.265-.688.283-1.033.33-.29.04-.578.08-.85.166-.39.124-.727.372-1.1.65-.476.356-.994.738-1.66.914-.077.02-.153.035-.23.035-.093 0-.181-.022-.27-.064-.089.042-.177.064-.27.064-.077 0-.153-.015-.23-.035-.666-.176-1.183-.558-1.66-.914-.372-.278-.71-.526-1.1-.65-.272-.086-.56-.126-.85-.166-.345-.047-.723-.065-1.033-.33-.272-.233-.396-.593-.512-.939-.012-.036-.024-.073-.037-.112-.09-.269-.202-.464-.34-.583-.1-.086-.234-.124-.397-.128l-.076-.001c-.189-.004-.347-.011-.497-.018-1.06-.05-1.754-.37-2.07-.95-.202-.372-.222-.796-.064-1.26.083-.235.192-.452.294-.66.079-.156.149-.312.14-.468-.01-.193-.084-.359-.264-.493-.156-.112-.368-.18-.596-.244-.12-.033-.238-.067-.36-.107-.274-.085-.642-.315-.72-.636-.057-.215.012-.442.18-.59.111-.099.252-.156.402-.156.092 0 .188.034.291.077.339.143.698.247.998.263.198 0 .326-.045.401-.09a8.254 8.254 0 01-.033-.57c-.104-1.628-.23-3.654.3-4.848C5.447 1.069 8.806.793 9.795.793h2.41z" />
+              </svg>
+              Generate Snapchat Card
             </span>
           )}
         </button>
