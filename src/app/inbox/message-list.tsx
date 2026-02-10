@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase-browser";
 import { useToast } from "@/components/toast";
 
@@ -19,8 +20,12 @@ type Message = {
 
 export default function MessageList({
   initialMessages,
+  isPremium,
+  totalCount,
 }: {
   initialMessages: Message[];
+  isPremium: boolean;
+  totalCount: number;
 }) {
   const [messages, setMessages] = useState(initialMessages);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -161,8 +166,32 @@ export default function MessageList({
     });
   }
 
+  const isCapped = !isPremium && totalCount > messages.length;
+
   return (
     <div className="flex flex-col gap-3">
+      {/* Upgrade banner when free tier is capped */}
+      {isCapped && (
+        <div className="card border-denim-500/30 bg-gradient-to-r from-surface-1 to-surface-2">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-white font-medium text-sm">
+                Showing {messages.length} of {totalCount} messages
+              </p>
+              <p className="text-zinc-500 text-xs mt-0.5">
+                Upgrade for full history &amp; premium features
+              </p>
+            </div>
+            <Link
+              href="/settings"
+              className="btn-primary py-2 px-4 text-xs shrink-0"
+            >
+              Upgrade
+            </Link>
+          </div>
+        </div>
+      )}
+
       {messages.map((msg) => {
         const replies = msg.replies || [];
         const isReplying = replyingTo === msg.id;

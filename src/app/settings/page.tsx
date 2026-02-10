@@ -15,12 +15,23 @@ export default async function Settings() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username")
+    .select("username, is_premium, premium_expires_at, link_theme")
     .eq("id", user.id)
     .single();
 
   if (!profile) {
     redirect("/login");
+  }
+
+  // Fetch keyword filters for premium users
+  let filters: { id: string; keyword: string }[] = [];
+  if (profile.is_premium) {
+    const { data } = await supabase
+      .from("keyword_filters")
+      .select("id, keyword")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true });
+    filters = data ?? [];
   }
 
   return (
@@ -46,7 +57,13 @@ export default async function Settings() {
           </Link>
         </div>
 
-        <SettingsClient username={profile.username} />
+        <SettingsClient
+          username={profile.username}
+          isPremium={profile.is_premium ?? false}
+          premiumExpiresAt={profile.premium_expires_at}
+          linkTheme={profile.link_theme ?? "dark"}
+          initialFilters={filters}
+        />
       </div>
     </div>
   );

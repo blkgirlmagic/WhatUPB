@@ -15,15 +15,35 @@ export default async function Inbox() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username")
+    .select("username, is_premium")
     .eq("id", user.id)
     .single();
 
-  const { data: messages } = await supabase
+  const isPremium = profile?.is_premium ?? false;
+  const MESSAGE_CAP = 50;
+
+  // Get total count for free users
+  let totalCount = 0;
+  if (!isPremium) {
+    const { count } = await supabase
+      .from("messages")
+      .select("id", { count: "exact", head: true })
+      .eq("recipient_id", user.id);
+    totalCount = count ?? 0;
+  }
+
+  // Free users: cap at 50 most recent. Premium: unlimited.
+  let query = supabase
     .from("messages")
     .select("*, replies(id, content, created_at)")
     .eq("recipient_id", user.id)
     .order("created_at", { ascending: false });
+
+  if (!isPremium) {
+    query = query.limit(MESSAGE_CAP);
+  }
+
+  const { data: messages } = await query;
 
   return (
     <div className="min-h-screen px-4 py-8">
@@ -33,8 +53,9 @@ export default async function Inbox() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Inbox</h1>
             <p className="text-zinc-500 text-sm">
-              {messages?.length || 0} message
-              {messages?.length !== 1 ? "s" : ""}
+              {isPremium
+                ? `${messages?.length || 0} message${messages?.length !== 1 ? "s" : ""}`
+                : `${messages?.length || 0} of ${totalCount} message${totalCount !== 1 ? "s" : ""}`}
             </p>
           </div>
           <div className="flex gap-2">
@@ -99,7 +120,11 @@ export default async function Inbox() {
           </div>
         ) : (
           <div className="animate-fade-in-up-delay-1">
-            <MessageList initialMessages={messages} />
+            <MessageList
+              initialMessages={messages}
+              isPremium={isPremium}
+              totalCount={isPremium ? (messages?.length ?? 0) : totalCount}
+            />
           </div>
         )}
       </div>
