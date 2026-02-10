@@ -31,6 +31,7 @@ export default function SettingsClient({
   const [generatingCard, setGeneratingCard] = useState(false);
   const [generatingSnapCard, setGeneratingSnapCard] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<"weekly" | "monthly" | "yearly">("yearly");
   const [filters, setFilters] = useState<Filter[]>(initialFilters);
   const [filterInput, setFilterInput] = useState("");
   const [savingFilters, setSavingFilters] = useState(false);
@@ -197,6 +198,8 @@ export default function SettingsClient({
     try {
       const res = await fetch("/api/create-checkout-session", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: selectedPlan }),
       });
       const data = await res.json();
       if (data.url) {
@@ -498,19 +501,74 @@ export default function SettingsClient({
           </div>
         ) : (
           <div>
-            <p className="text-sm text-zinc-400 mb-1">
+            <p className="text-sm text-zinc-400 mb-4">
               Unlock unlimited history, keyword filters, and custom link themes.
             </p>
-            <p className="text-lg font-bold text-white mb-3">
-              $4.99<span className="text-sm font-normal text-zinc-500">/mo</span>
-            </p>
+
+            {/* Pricing tiers */}
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              {/* Weekly */}
+              <button
+                type="button"
+                onClick={() => setSelectedPlan("weekly")}
+                className={`relative flex flex-col items-center p-3 rounded-xl border transition-all duration-200 ${
+                  selectedPlan === "weekly"
+                    ? "border-purple-500/50 bg-purple-500/10"
+                    : "border-border-subtle hover:border-border-default"
+                }`}
+              >
+                <span className="text-xs text-zinc-500 mb-1">Weekly</span>
+                <span className="text-lg font-bold text-white">$0.99</span>
+                <span className="text-xs text-zinc-600">/week</span>
+              </button>
+
+              {/* Monthly */}
+              <button
+                type="button"
+                onClick={() => setSelectedPlan("monthly")}
+                className={`relative flex flex-col items-center p-3 rounded-xl border transition-all duration-200 ${
+                  selectedPlan === "monthly"
+                    ? "border-purple-500/50 bg-purple-500/10"
+                    : "border-border-subtle hover:border-border-default"
+                }`}
+              >
+                <span className="text-xs text-zinc-500 mb-1">Monthly</span>
+                <span className="text-lg font-bold text-white">$4.99</span>
+                <span className="text-xs text-zinc-600">/month</span>
+              </button>
+
+              {/* Yearly — Best Value */}
+              <button
+                type="button"
+                onClick={() => setSelectedPlan("yearly")}
+                className={`relative flex flex-col items-center p-3 rounded-xl border transition-all duration-200 ${
+                  selectedPlan === "yearly"
+                    ? "border-purple-500/50 bg-purple-500/10"
+                    : "border-border-subtle hover:border-border-default"
+                }`}
+              >
+                <span
+                  className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                  style={{
+                    background: "linear-gradient(135deg, #a855f7, #7c3aed)",
+                    color: "#fff",
+                  }}
+                >
+                  Best value
+                </span>
+                <span className="text-xs text-zinc-500 mb-1 mt-1">Yearly</span>
+                <span className="text-lg font-bold text-white">$39.99</span>
+                <span className="text-xs text-zinc-600">/year</span>
+                <span className="text-[10px] text-emerald-400 font-medium mt-0.5">Save 33%</span>
+              </button>
+            </div>
+
             <button
               onClick={handleUpgrade}
               disabled={checkingOut}
               className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
               style={{
-                background:
-                  "linear-gradient(135deg, #a855f7, #7c3aed)",
+                background: "linear-gradient(135deg, #a855f7, #7c3aed)",
                 color: "#fff",
                 border: "1px solid rgba(168, 85, 247, 0.4)",
                 boxShadow: "0 0 20px rgba(168, 85, 247, 0.15)",
@@ -530,7 +588,9 @@ export default function SettingsClient({
                   d="M13 10V3L4 14h7v7l9-11h-7z"
                 />
               </svg>
-              {checkingOut ? "Redirecting..." : "Upgrade to Premium"}
+              {checkingOut
+                ? "Redirecting..."
+                : `Upgrade — ${selectedPlan === "weekly" ? "$0.99/wk" : selectedPlan === "monthly" ? "$4.99/mo" : "$39.99/yr"}`}
             </button>
           </div>
         )}

@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getStripe } from "@/lib/stripe";
 
-export async function POST() {
+export async function POST(request: Request) {
   // 1. Authenticate
   const cookieStore = await cookies();
   const supabase = createServerClient(
@@ -49,9 +49,19 @@ export async function POST() {
     );
   }
 
-  const priceId = process.env.STRIPE_PRICE_ID;
+  // 3. Determine price based on plan
+  const body = await request.json().catch(() => ({}));
+  const plan = body.plan || "monthly";
+
+  const priceMap: Record<string, string | undefined> = {
+    weekly: process.env.STRIPE_PRICE_ID_WEEKLY,
+    monthly: process.env.STRIPE_PRICE_ID,
+    yearly: process.env.STRIPE_PRICE_ID_YEARLY,
+  };
+
+  const priceId = priceMap[plan];
   if (!priceId) {
-    console.error("[checkout] STRIPE_PRICE_ID not set");
+    console.error(`[checkout] No price ID configured for plan: ${plan}`);
     return NextResponse.json(
       { error: "Payments not configured." },
       { status: 500 }
