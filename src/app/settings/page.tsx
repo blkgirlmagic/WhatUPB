@@ -13,25 +13,44 @@ export default async function Settings() {
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
+  // First get username (always exists)
+  const { data: baseProfile } = await supabase
     .from("profiles")
-    .select("username, is_premium, premium_expires_at, link_theme")
+    .select("username")
     .eq("id", user.id)
     .single();
 
-  if (!profile) {
+  if (!baseProfile) {
     redirect("/login");
   }
 
-  // Fetch keyword filters for premium users
+  // Try to fetch premium columns (may not exist if migration hasn't run)
+  const { data: premiumProfile } = await supabase
+    .from("profiles")
+    .select("is_premium, premium_expires_at, link_theme")
+    .eq("id", user.id)
+    .single();
+
+  const profile = {
+    username: baseProfile.username,
+    is_premium: premiumProfile?.is_premium ?? false,
+    premium_expires_at: premiumProfile?.premium_expires_at ?? null,
+    link_theme: premiumProfile?.link_theme ?? "dark",
+  };
+
+  // Fetch keyword filters for premium users (table may not exist yet)
   let filters: { id: string; keyword: string }[] = [];
   if (profile.is_premium) {
-    const { data } = await supabase
-      .from("keyword_filters")
-      .select("id, keyword")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: true });
-    filters = data ?? [];
+    try {
+      const { data } = await supabase
+        .from("keyword_filters")
+        .select("id, keyword")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+      filters = data ?? [];
+    } catch {
+      // keyword_filters table doesn't exist yet
+    }
   }
 
   return (

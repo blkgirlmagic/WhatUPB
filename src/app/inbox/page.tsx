@@ -13,13 +13,21 @@ export default async function Inbox() {
     redirect("/login");
   }
 
+  // Get username (always exists)
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, is_premium")
+    .select("username")
     .eq("id", user.id)
     .single();
 
-  const isPremium = profile?.is_premium ?? false;
+  // Try to get premium status (column may not exist if migration hasn't run)
+  const { data: premiumData } = await supabase
+    .from("profiles")
+    .select("is_premium")
+    .eq("id", user.id)
+    .single();
+
+  const isPremium = premiumData?.is_premium ?? false;
   const MESSAGE_CAP = 50;
 
   // Get total count for free users
@@ -33,6 +41,9 @@ export default async function Inbox() {
   }
 
   // Free users: cap at 50 most recent. Premium: unlimited.
+  // Try with replies join first, fall back to without if replies table doesn't exist
+  let messages: Array<{ id: string; content: string; created_at: string; replies?: Array<{ id: string; content: string; created_at: string }> }> | null = null;
+
   let query = supabase
     .from("messages")
     .select("*, replies(id, content, created_at)")
@@ -43,7 +54,25 @@ export default async function Inbox() {
     query = query.limit(MESSAGE_CAP);
   }
 
-  const { data: messages } = await query;
+  const { data, error: msgError } = await query;
+
+  if (msgError) {
+    // replies table may not exist — retry without join
+    let fallbackQuery = supabase
+      .from("messages")
+      .select("*")
+      .eq("recipient_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (!isPremium) {
+      fallbackQuery = fallbackQuery.limit(MESSAGE_CAP);
+    }
+
+    const { data: fallbackData } = await fallbackQuery;
+    messages = fallbackData?.map((m) => ({ ...m, replies: [] })) ?? null;
+  } else {
+    messages = data;
+  }
 
   return (
     <div className="min-h-screen px-4 py-8">
