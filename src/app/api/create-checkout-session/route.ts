@@ -94,7 +94,7 @@ export async function POST(request: Request) {
       customer: customerId,
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${origin}/settings?upgraded=true`,
+      success_url: `${origin}/checkout/success?plan=${plan}`,
       cancel_url: `${origin}/settings`,
       subscription_data: {
         metadata: { supabase_user_id: user.id },

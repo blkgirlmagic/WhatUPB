@@ -29,6 +29,7 @@ export default async function Inbox() {
 
   const isPremium = premiumData?.is_premium ?? false;
   const MESSAGE_CAP = 50;
+  const PREMIUM_PAGE_SIZE = 100;
 
   // Get total count for free users
   let totalCount = 0;
@@ -50,9 +51,8 @@ export default async function Inbox() {
     .eq("recipient_id", user.id)
     .order("created_at", { ascending: false });
 
-  if (!isPremium) {
-    query = query.limit(MESSAGE_CAP);
-  }
+  // Cap initial load: 50 for free, 100 for premium (prevents mega-fetches)
+  query = query.limit(isPremium ? PREMIUM_PAGE_SIZE : MESSAGE_CAP);
 
   const { data, error: msgError } = await query;
 
@@ -64,9 +64,7 @@ export default async function Inbox() {
       .eq("recipient_id", user.id)
       .order("created_at", { ascending: false });
 
-    if (!isPremium) {
-      fallbackQuery = fallbackQuery.limit(MESSAGE_CAP);
-    }
+    fallbackQuery = fallbackQuery.limit(isPremium ? PREMIUM_PAGE_SIZE : MESSAGE_CAP);
 
     const { data: fallbackData } = await fallbackQuery;
     messages = fallbackData?.map((m) => ({ ...m, replies: [] })) ?? null;

@@ -63,6 +63,25 @@ export async function POST(request: NextRequest) {
         ? new Date(periodEnd * 1000).toISOString()
         : null;
 
+      // Idempotency guard — skip if profile already matches this subscription state
+      const { data: existing } = await supabase
+        .from("profiles")
+        .select("is_premium, stripe_subscription_id, premium_expires_at")
+        .eq("id", userId)
+        .single();
+
+      if (
+        existing &&
+        existing.stripe_subscription_id === sub.id &&
+        existing.is_premium === isActive &&
+        existing.premium_expires_at === expiresAt
+      ) {
+        console.log(
+          `[stripe-webhook] Skipping duplicate event ${event.id} for user ${userId}`
+        );
+        break;
+      }
+
       const { error } = await supabase
         .from("profiles")
         .update({
