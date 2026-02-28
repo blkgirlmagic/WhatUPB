@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
   const priceMap: Record<string, string | undefined> = {
     weekly: process.env.STRIPE_PRICE_ID_WEEKLY,
-    monthly: process.env.STRIPE_PRICE_ID,
+    monthly: process.env.STRIPE_PRICE_ID_MONTHLY,
     yearly: process.env.STRIPE_PRICE_ID_YEARLY,
   };
 
