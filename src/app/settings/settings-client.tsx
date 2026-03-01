@@ -14,24 +14,36 @@ const THEME_OPTIONS = [
   { value: "ocean", label: "Ocean", bg: "#0a192f", accent: "#38bdf8" },
 ] as const;
 
+type PlanKey = "weekly" | "monthly" | "yearly";
+
+const PLANS: { key: PlanKey; label: string; price: string; period: string; badge?: string; savings?: string }[] = [
+  { key: "weekly", label: "Weekly", price: "$0.99", period: "/week" },
+  { key: "monthly", label: "Monthly", price: "$4.99", period: "/month" },
+  { key: "yearly", label: "Yearly", price: "$39.99", period: "/year", badge: "Best value", savings: "Save 33%" },
+];
+
 export default function SettingsClient({
   username,
   isPremium,
   premiumExpiresAt,
   linkTheme,
   initialFilters,
+  currentPlan,
 }: {
   username: string;
   isPremium: boolean;
   premiumExpiresAt: string | null;
   linkTheme: string;
   initialFilters: Filter[];
+  currentPlan: PlanKey | null;
 }) {
   const [copied, setCopied] = useState(false);
   const [generatingCard, setGeneratingCard] = useState(false);
   const [generatingSnapCard, setGeneratingSnapCard] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<"weekly" | "monthly" | "yearly">("yearly");
+  const [selectedPlan, setSelectedPlan] = useState<PlanKey>("yearly");
+  const [changingPlan, setChangingPlan] = useState(false);
+  const [openingPortal, setOpeningPortal] = useState(false);
   const [filters, setFilters] = useState<Filter[]>(initialFilters);
   const [filterInput, setFilterInput] = useState("");
   const [savingFilters, setSavingFilters] = useState(false);
@@ -211,6 +223,49 @@ export default function SettingsClient({
       toast("Failed to start checkout. Try again.", "error");
     } finally {
       setCheckingOut(false);
+    }
+  }
+
+  // ---- Change plan (for existing subscribers) ----
+  async function handleChangePlan(plan: PlanKey) {
+    setChangingPlan(true);
+    try {
+      const res = await fetch("/api/change-plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast("Plan updated! Changes take effect immediately.");
+        router.refresh();
+      } else {
+        toast(data.error || "Failed to change plan.", "error");
+      }
+    } catch {
+      toast("Failed to change plan. Try again.", "error");
+    } finally {
+      setChangingPlan(false);
+    }
+  }
+
+  // ---- Manage subscription (Stripe Customer Portal) ----
+  async function handleManageSubscription() {
+    setOpeningPortal(true);
+    try {
+      const res = await fetch("/api/create-portal-session", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast(data.error || "Failed to open billing portal.", "error");
+      }
+    } catch {
+      toast("Failed to open billing portal. Try again.", "error");
+    } finally {
+      setOpeningPortal(false);
     }
   }
 
@@ -456,7 +511,7 @@ export default function SettingsClient({
         </button>
       </div>
 
-      {/* Upgrade to Premium / Premium Status */}
+      {/* Plan Management */}
       <div
         className="card animate-fade-in-up-delay-2"
         style={
@@ -472,24 +527,30 @@ export default function SettingsClient({
           <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500">
             Plan
           </h2>
-          <span
-            className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
-              isPremium
-                ? "bg-purple-500/15 text-purple-300 border border-purple-500/30"
-                : "bg-zinc-800 text-zinc-400 border border-zinc-700"
-            }`}
-          >
-            {isPremium ? "Premium" : "Free"}
-          </span>
+          {isPremium && currentPlan ? (
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30">
+              Premium &middot; {currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)}
+            </span>
+          ) : (
+            <span
+              className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
+                isPremium
+                  ? "bg-purple-500/15 text-purple-300 border border-purple-500/30"
+                  : "bg-zinc-800 text-zinc-400 border border-zinc-700"
+              }`}
+            >
+              {isPremium ? "Premium" : "Free"}
+            </span>
+          )}
         </div>
 
         {isPremium ? (
           <div>
-            <p className="text-sm text-zinc-400 mb-3">
+            <p className="text-sm text-zinc-400 mb-1">
               Unlimited message history, keyword filters, custom themes.
             </p>
             {premiumExpiresAt && (
-              <p className="text-xs text-zinc-600">
+              <p className="text-xs text-zinc-600 mb-4">
                 Renews{" "}
                 {new Date(premiumExpiresAt).toLocaleDateString("en-US", {
                   month: "long",
@@ -498,6 +559,97 @@ export default function SettingsClient({
                 })}
               </p>
             )}
+
+            {/* Switch plan options — show plans the user is NOT on */}
+            {currentPlan && (
+              <>
+                <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-2 mt-4">
+                  Switch Plan
+                </p>
+                <div
+                  className={`grid gap-2 mb-4 ${
+                    PLANS.filter((p) => p.key !== currentPlan).length === 2
+                      ? "grid-cols-2"
+                      : "grid-cols-1"
+                  }`}
+                >
+                  {PLANS.filter((p) => p.key !== currentPlan).map((plan) => {
+                    const isUpgrade =
+                      (currentPlan === "weekly") ||
+                      (currentPlan === "monthly" && plan.key === "yearly");
+                    return (
+                      <button
+                        key={plan.key}
+                        type="button"
+                        onClick={() => handleChangePlan(plan.key)}
+                        disabled={changingPlan}
+                        className="relative flex flex-col items-center p-3 rounded-xl border border-border-subtle hover:border-purple-500/40 hover:bg-purple-500/5 transition-all duration-200"
+                        style={{ opacity: changingPlan ? 0.6 : 1 }}
+                      >
+                        {plan.badge && (
+                          <span
+                            className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                            style={{
+                              background: "linear-gradient(135deg, #a855f7, #7c3aed)",
+                              color: "#fff",
+                            }}
+                          >
+                            {plan.badge}
+                          </span>
+                        )}
+                        <span className="text-xs text-zinc-500 mb-1">{plan.label}</span>
+                        <span className="text-lg font-bold text-white">
+                          {plan.price}
+                        </span>
+                        <span className="text-xs text-zinc-600">{plan.period}</span>
+                        {plan.savings && (
+                          <span className="text-[10px] text-emerald-400 font-medium mt-0.5">
+                            {plan.savings}
+                          </span>
+                        )}
+                        <span
+                          className={`text-[10px] font-semibold mt-1.5 px-2 py-0.5 rounded-full ${
+                            isUpgrade
+                              ? "text-purple-300 bg-purple-500/10"
+                              : "text-zinc-400 bg-zinc-800"
+                          }`}
+                        >
+                          {isUpgrade ? "Upgrade" : "Downgrade"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {/* Manage Subscription — opens Stripe Customer Portal */}
+            <button
+              onClick={handleManageSubscription}
+              disabled={openingPortal}
+              className="w-full py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 border border-border-subtle text-zinc-400 hover:text-zinc-300 hover:border-border-default hover:bg-surface-2"
+              style={{ opacity: openingPortal ? 0.6 : 1 }}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              {openingPortal ? "Opening..." : "Manage Subscription"}
+            </button>
           </div>
         ) : (
           <div>
@@ -507,60 +659,40 @@ export default function SettingsClient({
 
             {/* Pricing tiers */}
             <div className="grid grid-cols-3 gap-2 mb-4">
-              {/* Weekly */}
-              <button
-                type="button"
-                onClick={() => setSelectedPlan("weekly")}
-                className={`relative flex flex-col items-center p-3 rounded-xl border transition-all duration-200 ${
-                  selectedPlan === "weekly"
-                    ? "border-purple-500/50 bg-purple-500/10"
-                    : "border-border-subtle hover:border-border-default"
-                }`}
-              >
-                <span className="text-xs text-zinc-500 mb-1">Weekly</span>
-                <span className="text-lg font-bold text-white">$0.99</span>
-                <span className="text-xs text-zinc-600">/week</span>
-              </button>
-
-              {/* Monthly */}
-              <button
-                type="button"
-                onClick={() => setSelectedPlan("monthly")}
-                className={`relative flex flex-col items-center p-3 rounded-xl border transition-all duration-200 ${
-                  selectedPlan === "monthly"
-                    ? "border-purple-500/50 bg-purple-500/10"
-                    : "border-border-subtle hover:border-border-default"
-                }`}
-              >
-                <span className="text-xs text-zinc-500 mb-1">Monthly</span>
-                <span className="text-lg font-bold text-white">$4.99</span>
-                <span className="text-xs text-zinc-600">/month</span>
-              </button>
-
-              {/* Yearly — Best Value */}
-              <button
-                type="button"
-                onClick={() => setSelectedPlan("yearly")}
-                className={`relative flex flex-col items-center p-3 rounded-xl border transition-all duration-200 ${
-                  selectedPlan === "yearly"
-                    ? "border-purple-500/50 bg-purple-500/10"
-                    : "border-border-subtle hover:border-border-default"
-                }`}
-              >
-                <span
-                  className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
-                  style={{
-                    background: "linear-gradient(135deg, #a855f7, #7c3aed)",
-                    color: "#fff",
-                  }}
+              {PLANS.map((plan) => (
+                <button
+                  key={plan.key}
+                  type="button"
+                  onClick={() => setSelectedPlan(plan.key)}
+                  className={`relative flex flex-col items-center p-3 rounded-xl border transition-all duration-200 ${
+                    selectedPlan === plan.key
+                      ? "border-purple-500/50 bg-purple-500/10"
+                      : "border-border-subtle hover:border-border-default"
+                  }`}
                 >
-                  Best value
-                </span>
-                <span className="text-xs text-zinc-500 mb-1 mt-1">Yearly</span>
-                <span className="text-lg font-bold text-white">$39.99</span>
-                <span className="text-xs text-zinc-600">/year</span>
-                <span className="text-[10px] text-emerald-400 font-medium mt-0.5">Save 33%</span>
-              </button>
+                  {plan.badge && (
+                    <span
+                      className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                      style={{
+                        background: "linear-gradient(135deg, #a855f7, #7c3aed)",
+                        color: "#fff",
+                      }}
+                    >
+                      {plan.badge}
+                    </span>
+                  )}
+                  <span className={`text-xs text-zinc-500 mb-1 ${plan.badge ? "mt-1" : ""}`}>
+                    {plan.label}
+                  </span>
+                  <span className="text-lg font-bold text-white">{plan.price}</span>
+                  <span className="text-xs text-zinc-600">{plan.period}</span>
+                  {plan.savings && (
+                    <span className="text-[10px] text-emerald-400 font-medium mt-0.5">
+                      {plan.savings}
+                    </span>
+                  )}
+                </button>
+              ))}
             </div>
 
             <button

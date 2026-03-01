@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getStripe } from "@/lib/stripe";
 import SettingsClient from "./settings-client";
 
 export default async function Settings() {
@@ -27,7 +28,7 @@ export default async function Settings() {
   // Try to fetch premium columns (may not exist if migration hasn't run)
   const { data: premiumProfile } = await supabase
     .from("profiles")
-    .select("is_premium, premium_expires_at, link_theme")
+    .select("is_premium, premium_expires_at, link_theme, stripe_subscription_id")
     .eq("id", user.id)
     .single();
 
@@ -36,7 +37,27 @@ export default async function Settings() {
     is_premium: premiumProfile?.is_premium ?? false,
     premium_expires_at: premiumProfile?.premium_expires_at ?? null,
     link_theme: premiumProfile?.link_theme ?? "dark",
+    stripe_subscription_id: premiumProfile?.stripe_subscription_id ?? null,
   };
+
+  // Determine the current plan from the Stripe subscription
+  let currentPlan: "weekly" | "monthly" | "yearly" | null = null;
+  if (profile.is_premium && profile.stripe_subscription_id) {
+    try {
+      const stripe = getStripe();
+      const sub = await stripe.subscriptions.retrieve(
+        profile.stripe_subscription_id
+      );
+      const priceId = sub.items?.data?.[0]?.price?.id;
+      if (priceId) {
+        if (priceId === process.env.STRIPE_PRICE_ID_WEEKLY) currentPlan = "weekly";
+        else if (priceId === process.env.STRIPE_PRICE_ID_MONTHLY) currentPlan = "monthly";
+        else if (priceId === process.env.STRIPE_PRICE_ID_YEARLY) currentPlan = "yearly";
+      }
+    } catch (err) {
+      console.error("[settings] Failed to fetch subscription:", err);
+    }
+  }
 
   // Fetch keyword filters for premium users (table may not exist yet)
   let filters: { id: string; keyword: string }[] = [];
@@ -82,6 +103,7 @@ export default async function Settings() {
           premiumExpiresAt={profile.premium_expires_at}
           linkTheme={profile.link_theme ?? "dark"}
           initialFilters={filters}
+          currentPlan={currentPlan}
         />
       </div>
     </div>

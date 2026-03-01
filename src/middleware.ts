@@ -2,6 +2,12 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Skip middleware entirely for webhook routes — they need the raw body
+  // untouched for signature verification and have no auth cookies.
+  if (request.nextUrl.pathname.startsWith('/api/webhooks/')) {
+    return NextResponse.next()
+  }
+
   // Redirect vercel.app preview URLs to the production domain
   const host = request.headers.get('host') || ''
   if (host.includes('vercel.app')) {

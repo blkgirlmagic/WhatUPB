@@ -95,17 +95,26 @@ export async function POST(request: NextRequest) {
         ? new Date(periodEnd * 1000).toISOString()
         : null;
 
-      const { error } = await supabase
+      console.log(
+        `[stripe-webhook] checkout.session.completed: updating user ${userId}, sub=${sub.id}, expires=${expiresAt}`
+      );
+
+      const { data: updated, error } = await supabase
         .from("profiles")
         .update({
           is_premium: true,
           stripe_subscription_id: sub.id,
           premium_expires_at: expiresAt,
         })
-        .eq("id", userId);
+        .eq("id", userId)
+        .select("id");
 
       if (error) {
         console.error("[stripe-webhook] checkout.session.completed: DB error:", error.message);
+      } else if (!updated || updated.length === 0) {
+        console.error(
+          `[stripe-webhook] checkout.session.completed: update matched 0 rows for user ${userId}`
+        );
       } else {
         console.log(
           `[stripe-webhook] checkout.session.completed: user ${userId} upgraded to premium, expires=${expiresAt}`
@@ -172,17 +181,22 @@ export async function POST(request: NextRequest) {
         break;
       }
 
-      const { error } = await supabase
+      const { data: updated, error } = await supabase
         .from("profiles")
         .update({
           is_premium: isActive,
           stripe_subscription_id: sub.id,
           premium_expires_at: expiresAt,
         })
-        .eq("id", userId);
+        .eq("id", userId)
+        .select("id");
 
       if (error) {
         console.error("[stripe-webhook] Failed to update profile:", error.message);
+      } else if (!updated || updated.length === 0) {
+        console.error(
+          `[stripe-webhook] ${event.type}: update matched 0 rows for user ${userId}`
+        );
       } else {
         console.log(
           `[stripe-webhook] User ${userId} premium=${isActive} expires=${expiresAt}`
