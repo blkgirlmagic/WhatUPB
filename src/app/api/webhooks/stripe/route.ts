@@ -28,9 +28,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const stripe = getStripe();
+
   let event: Stripe.Event;
   try {
-    const stripe = getStripe();
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (err) {
     console.error(
@@ -42,14 +43,103 @@ export async function POST(request: NextRequest) {
 
   const supabase = getSupabaseAdmin();
 
+  console.log(`[stripe-webhook] Processing event: ${event.type} (${event.id})`);
+
   switch (event.type) {
-    // ---- Subscription created or renewed ----
+    // ---- PRIMARY: Checkout completed (payment confirmed) ----
+    case "checkout.session.completed": {
+      const session = event.data.object as Stripe.Checkout.Session;
+
+      if (session.mode !== "subscription" || !session.subscription) {
+        console.log("[stripe-webhook] checkout.session.completed: not a subscription, skipping");
+        break;
+      }
+
+      // Retrieve the full subscription to get metadata + period info
+      const sub = await stripe.subscriptions.retrieve(
+        typeof session.subscription === "string"
+          ? session.subscription
+          : session.subscription.id
+      );
+
+      // Try metadata first, then fall back to customer lookup
+      let userId = sub.metadata?.supabase_user_id;
+
+      if (!userId) {
+        const customerId =
+          typeof session.customer === "string"
+            ? session.customer
+            : session.customer?.id;
+
+        if (customerId) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("stripe_customer_id", customerId)
+            .single();
+
+          userId = profile?.id;
+        }
+      }
+
+      if (!userId) {
+        console.error(
+          "[stripe-webhook] checkout.session.completed: could not resolve user"
+        );
+        break;
+      }
+
+      const firstItem = sub.items?.data?.[0];
+      const periodEnd = firstItem?.current_period_end ?? null;
+      const expiresAt = periodEnd
+        ? new Date(periodEnd * 1000).toISOString()
+        : null;
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          is_premium: true,
+          stripe_subscription_id: sub.id,
+          premium_expires_at: expiresAt,
+        })
+        .eq("id", userId);
+
+      if (error) {
+        console.error("[stripe-webhook] checkout.session.completed: DB error:", error.message);
+      } else {
+        console.log(
+          `[stripe-webhook] checkout.session.completed: user ${userId} upgraded to premium, expires=${expiresAt}`
+        );
+      }
+      break;
+    }
+
+    // ---- FALLBACK: Subscription created or renewed ----
     case "customer.subscription.created":
     case "customer.subscription.updated": {
       const sub = event.data.object as Stripe.Subscription;
-      const userId = sub.metadata.supabase_user_id;
+      let userId = sub.metadata?.supabase_user_id;
+
+      // Fallback: look up user by stripe_customer_id
       if (!userId) {
-        console.warn("[stripe-webhook] No supabase_user_id in subscription metadata");
+        const customerId =
+          typeof sub.customer === "string"
+            ? sub.customer
+            : (sub.customer as Stripe.Customer)?.id;
+
+        if (customerId) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("stripe_customer_id", customerId)
+            .single();
+
+          userId = profile?.id;
+        }
+      }
+
+      if (!userId) {
+        console.warn("[stripe-webhook] No user found for subscription", sub.id);
         break;
       }
 
@@ -104,7 +194,26 @@ export async function POST(request: NextRequest) {
     // ---- Subscription cancelled or expired ----
     case "customer.subscription.deleted": {
       const sub = event.data.object as Stripe.Subscription;
-      const userId = sub.metadata.supabase_user_id;
+      let userId = sub.metadata?.supabase_user_id;
+
+      // Fallback: look up user by stripe_customer_id
+      if (!userId) {
+        const customerId =
+          typeof sub.customer === "string"
+            ? sub.customer
+            : (sub.customer as Stripe.Customer)?.id;
+
+        if (customerId) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("stripe_customer_id", customerId)
+            .single();
+
+          userId = profile?.id;
+        }
+      }
+
       if (!userId) break;
 
       const { error } = await supabase
@@ -125,7 +234,7 @@ export async function POST(request: NextRequest) {
     }
 
     default:
-      // Unhandled event type — acknowledge receipt
+      console.log(`[stripe-webhook] Unhandled event type: ${event.type}`);
       break;
   }
 
