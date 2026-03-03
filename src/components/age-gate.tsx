@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import ScrollDrum from "./scroll-drum";
 
 const MONTHS = [
   { value: 1, label: "January" },
@@ -41,40 +40,35 @@ interface AgeGateProps {
 }
 
 export default function AgeGate({ onVerified }: AgeGateProps) {
-  const currentYear = new Date().getFullYear();
-
-  const [month, setMonth] = useState(1);
-  const [day, setDay] = useState(1);
-  const [year, setYear] = useState(2000);
+  const [month, setMonth] = useState(0);
+  const [day, setDay] = useState(0);
+  const [year, setYear] = useState(0);
   const [status, setStatus] = useState<"idle" | "exiting" | "rejected">(
     "idle"
   );
 
-  // Generate year items descending (most recent first)
-  const yearItems = useMemo(() => {
+  // Years: 2026 down to 1920
+  const yearOptions = useMemo(() => {
     const items = [];
-    for (let y = currentYear; y >= currentYear - 100; y--) {
-      items.push({ value: y, label: String(y) });
+    for (let y = 2026; y >= 1920; y--) {
+      items.push(y);
     }
     return items;
-  }, [currentYear]);
+  }, []);
 
-  // Day items adjust based on month/year
-  const dayItems = useMemo(() => {
-    const maxDay = getDaysInMonth(month, year);
-    const items = [];
-    for (let d = 1; d <= maxDay; d++) {
-      items.push({ value: d, label: String(d) });
-    }
-    return items;
+  // Days adjust based on month/year
+  const maxDays = useMemo(() => {
+    if (!month || !year) return 31;
+    return getDaysInMonth(month, year);
   }, [month, year]);
 
-  // Clamp day when month/year changes reduce available days
   const handleMonthChange = useCallback(
     (m: number) => {
       setMonth(m);
-      const maxDay = getDaysInMonth(m, year);
-      if (day > maxDay) setDay(maxDay);
+      if (day > 0 && year > 0) {
+        const max = getDaysInMonth(m, year);
+        if (day > max) setDay(max);
+      }
     },
     [year, day]
   );
@@ -82,13 +76,19 @@ export default function AgeGate({ onVerified }: AgeGateProps) {
   const handleYearChange = useCallback(
     (y: number) => {
       setYear(y);
-      const maxDay = getDaysInMonth(month, y);
-      if (day > maxDay) setDay(maxDay);
+      if (day > 0 && month > 0) {
+        const max = getDaysInMonth(month, y);
+        if (day > max) setDay(max);
+      }
     },
     [month, day]
   );
 
+  const allSelected = month > 0 && day > 0 && year > 0;
+
   const handleVerify = () => {
+    if (!allSelected) return;
+
     const age = calculateAge(month, day, year);
 
     if (age >= 18) {
@@ -106,11 +106,12 @@ export default function AgeGate({ onVerified }: AgeGateProps) {
 
   if (status === "rejected") {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center px-6"
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center px-6"
         style={{ background: "#0c0c10" }}
       >
         <div className="text-center max-w-md animate-rejection-fade-in">
-          <div className="text-4xl mb-6">
+          <div className="mb-6">
             <svg
               className="w-12 h-12 mx-auto text-denim-300 opacity-60"
               fill="none"
@@ -138,7 +139,7 @@ export default function AgeGate({ onVerified }: AgeGateProps) {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center px-6 ${
+      className={`fixed inset-0 z-50 flex items-center justify-center px-6 pt-16 ${
         status === "exiting" ? "animate-age-gate-exit" : ""
       }`}
       style={{ background: "#0c0c10" }}
@@ -147,41 +148,69 @@ export default function AgeGate({ onVerified }: AgeGateProps) {
         {/* Header */}
         <div className="animate-fade-in-up mb-3">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-denim-200 to-white bg-clip-text text-transparent">
-            WhatUPB is for adults only
+            WhatUPB is 18+
           </h1>
         </div>
 
         <div className="animate-fade-in-up-delay-1 mb-10">
           <p className="text-zinc-500 text-sm leading-relaxed">
-            You must be 18+ to enter. This is a space for honest, grown-up
-            conversations.
+            This is a space for honest, grown-up conversations.
           </p>
         </div>
 
-        {/* Date picker drums */}
+        {/* Date selects */}
         <div className="animate-fade-in-up-delay-2 mb-10">
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-600 mb-4">
             Date of birth
           </p>
-          <div className="flex items-center justify-center gap-3 sm:gap-4">
-            <ScrollDrum
-              items={MONTHS}
+          <div className="flex items-center justify-center gap-3">
+            {/* Month */}
+            <select
               value={month}
-              onChange={handleMonthChange}
-              width="130px"
-            />
-            <ScrollDrum
-              items={dayItems}
+              onChange={(e) => handleMonthChange(Number(e.target.value))}
+              className="age-select flex-1 min-w-0"
+            >
+              <option value={0} disabled>
+                Month
+              </option>
+              {MONTHS.map((m) => (
+                <option key={m.value} value={m.value}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+
+            {/* Day */}
+            <select
               value={day}
-              onChange={setDay}
-              width="70px"
-            />
-            <ScrollDrum
-              items={yearItems}
+              onChange={(e) => setDay(Number(e.target.value))}
+              className="age-select w-20"
+            >
+              <option value={0} disabled>
+                Day
+              </option>
+              {Array.from({ length: maxDays }, (_, i) => i + 1).map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+
+            {/* Year */}
+            <select
               value={year}
-              onChange={handleYearChange}
-              width="90px"
-            />
+              onChange={(e) => handleYearChange(Number(e.target.value))}
+              className="age-select w-24"
+            >
+              <option value={0} disabled>
+                Year
+              </option>
+              {yearOptions.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -189,6 +218,7 @@ export default function AgeGate({ onVerified }: AgeGateProps) {
         <div className="animate-fade-in-up-delay-3">
           <button
             onClick={handleVerify}
+            disabled={!allSelected}
             className="btn-primary py-3 px-8 animate-glow-pulse"
           >
             Verify &amp; Enter
