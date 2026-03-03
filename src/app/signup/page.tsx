@@ -1,10 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AgeGate from "@/components/age-gate";
+
+const PASSWORD_RULES = [
+  { key: "length", label: "At least 8 characters", test: (p: string) => p.length >= 8 },
+  { key: "uppercase", label: "One uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+  { key: "number", label: "One number", test: (p: string) => /[0-9]/.test(p) },
+  { key: "special", label: "One special character (!@#$%^&*)", test: (p: string) => /[!@#$%^&*]/.test(p) },
+] as const;
 
 interface AgeData {
   month: number;
@@ -24,6 +31,21 @@ export default function SignUp() {
   const router = useRouter();
   const supabase = createClient();
 
+  const passwordChecks = useMemo(
+    () => PASSWORD_RULES.map((rule) => ({ ...rule, passed: rule.test(password) })),
+    [password]
+  );
+  const passedCount = passwordChecks.filter((c) => c.passed).length;
+  const allPassed = passedCount === PASSWORD_RULES.length;
+  const strength: "none" | "weak" | "medium" | "strong" =
+    password.length === 0
+      ? "none"
+      : passedCount <= 1
+        ? "weak"
+        : passedCount <= 3
+          ? "medium"
+          : "strong";
+
   function handleAgeVerified(dob: AgeData) {
     setAgeData(dob);
     setPhase("signup");
@@ -40,6 +62,12 @@ export default function SignUp() {
       setError(
         "Username must be 3-20 characters: letters, numbers, underscores only."
       );
+      setLoading(false);
+      return;
+    }
+
+    if (!allPassed) {
+      setError("Password doesn't meet all requirements.");
       setLoading(false);
       return;
     }
@@ -176,15 +204,110 @@ export default function SignUp() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Min 6 characters"
+              placeholder="Min 8 characters"
               required
-              minLength={6}
               className="input"
             />
+
+            {/* Strength indicator */}
+            {password.length > 0 && (
+              <div className="mt-2.5 space-y-2.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex-1 flex gap-1">
+                    <div
+                      className="h-1 rounded-full flex-1 transition-colors duration-200"
+                      style={{
+                        background:
+                          strength === "weak"
+                            ? "#ef4444"
+                            : strength === "medium"
+                              ? "#f59e0b"
+                              : "#10b981",
+                      }}
+                    />
+                    <div
+                      className="h-1 rounded-full flex-1 transition-colors duration-200"
+                      style={{
+                        background:
+                          strength === "medium"
+                            ? "#f59e0b"
+                            : strength === "strong"
+                              ? "#10b981"
+                              : "var(--surface-3)",
+                      }}
+                    />
+                    <div
+                      className="h-1 rounded-full flex-1 transition-colors duration-200"
+                      style={{
+                        background:
+                          strength === "strong"
+                            ? "#10b981"
+                            : "var(--surface-3)",
+                      }}
+                    />
+                  </div>
+                  <span
+                    className="text-xs font-medium uppercase tracking-wider min-w-[52px] text-right"
+                    style={{
+                      color:
+                        strength === "weak"
+                          ? "#ef4444"
+                          : strength === "medium"
+                            ? "#f59e0b"
+                            : "#10b981",
+                    }}
+                  >
+                    {strength}
+                  </span>
+                </div>
+
+                <ul className="space-y-1">
+                  {passwordChecks.map((check) => (
+                    <li
+                      key={check.key}
+                      className="flex items-center gap-2 text-xs"
+                    >
+                      {check.passed ? (
+                        <svg
+                          className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-3.5 h-3.5 text-zinc-600 flex-shrink-0"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <circle cx="12" cy="12" r="9" />
+                        </svg>
+                      )}
+                      <span
+                        className={
+                          check.passed ? "text-zinc-400" : "text-zinc-600"
+                        }
+                      >
+                        {check.label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !allPassed}
             className="btn-primary py-3 mt-2"
           >
             {loading ? "Creating..." : "Create Account"}
