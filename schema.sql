@@ -6,6 +6,7 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   username text unique not null,
   email text,
+  age_verified boolean not null default false,
   created_at timestamptz default now()
 );
 
@@ -84,11 +85,12 @@ language plpgsql
 security definer
 as $$
 begin
-  insert into public.profiles (id, username, email)
+  insert into public.profiles (id, username, email, age_verified)
   values (
     new.id,
     coalesce(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)),
-    new.email
+    new.email,
+    coalesce((new.raw_user_meta_data->>'age_verified')::boolean, false)
   )
   on conflict (id) do nothing;
 

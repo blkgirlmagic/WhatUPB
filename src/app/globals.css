@@ -164,6 +164,119 @@ body {
 }
 
 /* ============================================================
+   Age Gate animations
+   ============================================================ */
+
+@keyframes age-gate-exit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes welcome-glow {
+  0% {
+    opacity: 0;
+    box-shadow: 0 0 0px rgba(99, 102, 241, 0);
+  }
+  30% {
+    opacity: 1;
+    box-shadow: 0 0 60px rgba(99, 102, 241, 0.15);
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0px rgba(99, 102, 241, 0);
+  }
+}
+
+@keyframes rejection-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-age-gate-exit {
+  animation: age-gate-exit 0.4s ease-in forwards;
+}
+
+.animate-welcome-glow {
+  animation: welcome-glow 0.8s ease-out forwards;
+}
+
+.animate-rejection-fade-in {
+  animation: rejection-fade-in 0.5s ease-out forwards;
+}
+
+/* ============================================================
+   Scroll drum (age gate date picker)
+   ============================================================ */
+
+.scroll-drum-wrapper {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,0,0,0.3) 15%,
+    black 35%,
+    black 65%,
+    rgba(0,0,0,0.3) 85%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,0,0,0.3) 15%,
+    black 35%,
+    black 65%,
+    rgba(0,0,0,0.3) 85%,
+    transparent 100%
+  );
+}
+
+.scroll-drum-track {
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  height: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.scroll-drum-track::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-drum-item {
+  height: 44px;
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  color: var(--foreground);
+  user-select: none;
+  cursor: default;
+}
+
+.scroll-drum-highlight {
+  position: absolute;
+  top: 88px;
+  left: 0;
+  right: 0;
+  height: 44px;
+  border-top: 1px solid var(--denim-400);
+  border-bottom: 1px solid var(--denim-400);
+  background: rgba(79, 70, 229, 0.08);
+  pointer-events: none;
+  z-index: 2;
+  border-radius: 4px;
+}
+
+/* ============================================================
    Premium button base
    ============================================================ */
 

@@ -4,8 +4,18 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import AgeGate from "@/components/age-gate";
+
+interface AgeData {
+  month: number;
+  day: number;
+  year: number;
+}
 
 export default function SignUp() {
+  const [phase, setPhase] = useState<"age-gate" | "signup">("age-gate");
+  const [ageData, setAgeData] = useState<AgeData | null>(null);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -13,6 +23,11 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+
+  function handleAgeVerified(dob: AgeData) {
+    setAgeData(dob);
+    setPhase("signup");
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -29,63 +44,79 @@ export default function SignUp() {
       return;
     }
 
-    // Check if username is taken
-    const { data: existing } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("username", trimmedUsername)
-      .single();
-
-    if (existing) {
-      setError("Username is already taken.");
-      setLoading(false);
-      return;
-    }
-
-    // Sign up — pass username in metadata so the DB trigger creates the profile
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: "https://whatupb.com/auth/callback",
-        data: {
+    try {
+      // Server-side signup with age validation
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           username: trimmedUsername,
-        },
-      },
-    });
+          email,
+          password,
+          month: ageData!.month,
+          day: ageData!.day,
+          year: ageData!.year,
+        }),
+      });
 
-    if (signUpError) {
-      setError(signUpError.message);
-      setLoading(false);
-      return;
-    }
+      const data = await res.json();
 
-    if (data.user) {
+      if (!res.ok) {
+        setError(data.error || "Signup failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      // Establish browser session
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        // User created but email confirmation required before login
+        setError(
+          "Account created! Please check your email to confirm, then log in."
+        );
+        setLoading(false);
+        return;
+      }
+
       router.push("/inbox");
       router.refresh();
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
+  // Phase 1: Age gate
+  if (phase === "age-gate") {
+    return <AgeGate onVerified={handleAgeVerified} />;
+  }
+
+  // Phase 2: Signup form (with welcome glow)
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm animate-fade-in-up">
-        <div className="text-center mb-8">
-          <Link
-            href="/"
-            className="text-2xl font-bold bg-gradient-to-r from-denim-200 to-white bg-clip-text text-transparent"
-          >
-            WhatUPB
-          </Link>
-        </div>
+      <div className="w-full max-w-sm animate-welcome-glow">
+        <div className="animate-fade-in-up">
+          <div className="text-center mb-8">
+            <Link
+              href="/"
+              className="text-2xl font-bold bg-gradient-to-r from-denim-200 to-white bg-clip-text text-transparent"
+            >
+              WhatUPB
+            </Link>
+          </div>
 
-        <h1 className="text-2xl font-bold mb-1 text-center tracking-tight">
-          Create your link
-        </h1>
-        <p className="text-zinc-500 text-sm text-center mb-8">
-          Takes 30 seconds. Start getting anonymous messages.
-        </p>
+          <h1 className="text-2xl font-bold mb-1 text-center tracking-tight">
+            Create your link
+          </h1>
+          <p className="text-zinc-500 text-sm text-center mb-8">
+            Takes 30 seconds. Start getting anonymous messages.
+          </p>
+        </div>
 
         {error && (
           <div className="flex items-start gap-3 bg-red-500/5 border border-red-500/20 text-red-300 px-4 py-3 rounded-xl mb-4 text-sm">
