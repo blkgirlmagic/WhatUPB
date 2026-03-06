@@ -28,7 +28,7 @@ export default async function Inbox() {
     .single();
 
   const isPremium = premiumData?.is_premium ?? false;
-  const MESSAGE_CAP = 50;
+  const MESSAGE_CAP = 15;
   const PREMIUM_PAGE_SIZE = 100;
 
   // Get total count for free users

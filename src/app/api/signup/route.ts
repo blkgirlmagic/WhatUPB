@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { getSupabase } from "@/lib/supabase";
 
 function calculateAge(month: number, day: number, year: number): number {
@@ -25,6 +26,16 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "All fields are required." },
         { status: 400 }
+      );
+    }
+
+    // 1.5 Check for age_blocked httpOnly cookie (set by /api/verify-age)
+    const cookieStore = await cookies();
+    const ageBlocked = cookieStore.get("age_blocked");
+    if (ageBlocked?.value === "1") {
+      return NextResponse.json(
+        { error: "You must be 18 or older to sign up." },
+        { status: 403 }
       );
     }
 

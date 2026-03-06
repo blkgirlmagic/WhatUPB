@@ -17,6 +17,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308)
   }
 
+  // Block signup for users with age_blocked httpOnly cookie
+  if (request.nextUrl.pathname === '/signup') {
+    const ageBlocked = request.cookies.get('age_blocked')
+    if (ageBlocked?.value === '1') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
+  }
+
   // Block cross-origin requests to the messages API
   if (request.nextUrl.pathname === '/api/messages') {
     const origin = request.headers.get('origin')

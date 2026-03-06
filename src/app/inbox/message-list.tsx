@@ -172,23 +172,19 @@ export default function MessageList({
     <div className="flex flex-col gap-3">
       {/* Upgrade banner when free tier is capped */}
       {isCapped && (
-        <div className="card border-denim-500/30 bg-gradient-to-r from-surface-1 to-surface-2">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-white font-medium text-sm">
-                Showing {messages.length} of {totalCount} messages
-              </p>
-              <p className="text-zinc-500 text-xs mt-0.5">
-                Upgrade for full history &amp; premium features
-              </p>
-            </div>
-            <Link
-              href="/settings"
-              className="btn-primary py-2 px-4 text-xs shrink-0"
-            >
-              Upgrade
-            </Link>
-          </div>
+        <div className="card border-denim-500/30 bg-gradient-to-r from-surface-1 to-surface-2 text-center py-6 px-5">
+          <p className="text-white font-medium text-base mb-1">
+            You have {totalCount - messages.length} more message{totalCount - messages.length !== 1 ? "s" : ""} waiting.
+          </p>
+          <p className="text-zinc-500 text-sm mb-4">
+            Upgrade to Premium to unlock your full inbox.
+          </p>
+          <Link
+            href="/settings"
+            className="btn-primary w-full py-3 text-sm"
+          >
+            Upgrade to Premium
+          </Link>
         </div>
       )}
 

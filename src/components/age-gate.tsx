@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 
 const MONTHS = [
   { value: 1, label: "January" },
@@ -46,6 +46,20 @@ export default function AgeGate({ onVerified }: AgeGateProps) {
   const [status, setStatus] = useState<"idle" | "exiting" | "rejected">(
     "idle"
   );
+  const [blocked, setBlocked] = useState(false);
+
+  // On mount: check localStorage for previous failed verification
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isBlocked = localStorage.getItem("whatupb_age_blocked") === "1";
+      if (isBlocked) {
+        setBlocked(true);
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 3000);
+      }
+    }
+  }, []);
 
   // Years: 2026 down to 1920
   const yearOptions = useMemo(() => {
@@ -86,17 +100,39 @@ export default function AgeGate({ onVerified }: AgeGateProps) {
 
   const allSelected = month > 0 && day > 0 && year > 0;
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     if (!allSelected) return;
 
     const age = calculateAge(month, day, year);
 
     if (age >= 18) {
       setStatus("exiting");
+      // Set httpOnly age_verified cookie via server
+      try {
+        await fetch("/api/verify-age", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ month, day, year }),
+        });
+      } catch {
+        // Non-blocking — signup API has its own server-side age check
+      }
       setTimeout(() => {
         onVerified({ month, day, year });
       }, 400);
     } else {
+      // Layer 1: localStorage (persists across tabs, survives refresh)
+      localStorage.setItem("whatupb_age_blocked", "1");
+      // Layer 2: Client cookie (readable by JS, backup for localStorage)
+      document.cookie =
+        "age_blocked_client=1; path=/; max-age=315360000; SameSite=Strict";
+      // Layer 3: httpOnly cookie via server (cannot be cleared by JS)
+      fetch("/api/verify-age", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ month, day, year }),
+      }).catch(() => {});
+
       setStatus("rejected");
       setTimeout(() => {
         window.location.href = "/";
@@ -104,7 +140,7 @@ export default function AgeGate({ onVerified }: AgeGateProps) {
     }
   };
 
-  if (status === "rejected") {
+  if (blocked || status === "rejected") {
     return (
       <div
         className="fixed inset-0 z-50 flex items-center justify-center px-6"
