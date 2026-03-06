@@ -112,6 +112,19 @@ export default async function Home() {
         <p className="text-xs text-zinc-600">
           Built for honest conversations. No human review of messages — ever.
         </p>
+        <div className="flex items-center justify-center gap-4 mt-2 text-xs text-zinc-600">
+          <Link href="/privacy" className="hover:text-zinc-400 transition">
+            Privacy
+          </Link>
+          <span className="text-zinc-700">·</span>
+          <Link href="/terms" className="hover:text-zinc-400 transition">
+            Terms
+          </Link>
+          <span className="text-zinc-700">·</span>
+          <Link href="/content-policy" className="hover:text-zinc-400 transition">
+            Content Policy
+          </Link>
+        </div>
       </footer>
     </div>
   );
