@@ -27,6 +27,7 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+  const [errorCode, setErrorCode] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
@@ -54,6 +55,7 @@ export default function SignUp() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    setErrorCode("");
     setLoading(true);
 
     const trimmedUsername = username.trim().toLowerCase();
@@ -91,6 +93,7 @@ export default function SignUp() {
 
       if (!res.ok) {
         setError(data.error || "Signup failed. Please try again.");
+        if (data.code) setErrorCode(data.code);
         setLoading(false);
         return;
       }
@@ -159,7 +162,20 @@ export default function SignUp() {
                 clipRule="evenodd"
               />
             </svg>
-            {error}
+            {errorCode === "EMAIL_EXISTS" ? (
+              <span>
+                This email is already in use. Try{" "}
+                <Link
+                  href="/login"
+                  className="text-denim-200 hover:text-denim-100 underline transition"
+                >
+                  logging in
+                </Link>{" "}
+                or use a different email.
+              </span>
+            ) : (
+              error
+            )}
           </div>
         )}
 

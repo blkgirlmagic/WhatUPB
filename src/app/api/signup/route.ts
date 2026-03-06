@@ -149,6 +149,22 @@ export async function POST(request: Request) {
       );
     }
 
+    // Detect duplicate email: Supabase returns a user with empty identities
+    // instead of an error when the email is already registered
+    if (
+      data.user &&
+      (!data.user.identities || data.user.identities.length === 0)
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "This email is already in use. Try logging in or use a different email.",
+          code: "EMAIL_EXISTS",
+        },
+        { status: 409 }
+      );
+    }
+
     return NextResponse.json(
       { success: true, user: data.user ? { id: data.user.id } : null },
       { status: 201 }
