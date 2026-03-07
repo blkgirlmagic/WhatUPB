@@ -10,4 +10,11 @@ CREATE TABLE IF NOT EXISTS age_verifications (
 );
 
 ALTER TABLE age_verifications ENABLE ROW LEVEL SECURITY;
--- No RLS policies — service role bypasses RLS; no client access needed.
+
+-- Allow anonymous/public inserts only — no select, update, or delete.
+-- Service role has full access automatically (bypasses RLS).
+CREATE POLICY "Allow public insert only"
+  ON age_verifications
+  FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (true);

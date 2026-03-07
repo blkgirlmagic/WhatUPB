@@ -178,10 +178,18 @@ function LoginForm() {
               className="input"
             />
           </div>
+          <div className="text-right">
+            <Link
+              href="/forgot-password"
+              className="text-xs text-zinc-500 hover:text-zinc-400 transition"
+            >
+              Forgot password?
+            </Link>
+          </div>
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary py-3 mt-2"
+            className="btn-primary py-3"
           >
             {loading ? "Logging in..." : "Log In"}
           </button>
