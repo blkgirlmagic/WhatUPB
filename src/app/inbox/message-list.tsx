@@ -228,6 +228,21 @@ export default function MessageList({
     quoteDecor.textContent = "\u201C";
     card.appendChild(quoteDecor);
 
+    // Closing quote mark decoration (bottom right, mirrored)
+    const quoteClose = document.createElement("div");
+    quoteClose.style.cssText = `
+      position: absolute;
+      bottom: 340px;
+      right: 100px;
+      font-size: 280px;
+      line-height: 1;
+      color: rgba(99, 102, 241, 0.08);
+      font-family: Georgia, serif;
+      pointer-events: none;
+    `;
+    quoteClose.textContent = "\u201D";
+    card.appendChild(quoteClose);
+
     // Message content area
     const contentWrap = document.createElement("div");
     contentWrap.style.cssText = `
@@ -607,7 +622,7 @@ export default function MessageList({
               <img
                 src={shareImageUrl}
                 alt="Share preview"
-                className="w-32 h-auto rounded-lg border border-border-subtle shadow-lg"
+                className="w-full max-h-[60vh] object-contain rounded-lg border border-border-subtle shadow-lg"
               />
             </div>
 
