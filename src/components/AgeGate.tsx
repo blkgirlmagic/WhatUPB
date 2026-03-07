@@ -39,6 +39,14 @@ export default function AgeGate({ children }: { children: React.ReactNode }) {
 
   const handleEnter = () => {
     if (!checked) return;
+
+    // Log verification in the background — fire-and-forget, never blocks user
+    fetch("/api/log-age-verification", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_agent: navigator.userAgent }),
+    }).catch(() => {});
+
     const expires = new Date();
     expires.setDate(expires.getDate() + 30);
     document.cookie = `age_verified=true; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
