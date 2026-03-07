@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase-browser";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AgeGate from "@/components/age-gate";
+import posthog from "posthog-js";
 
 const PASSWORD_RULES = [
   { key: "length", label: "At least 8 characters", test: (p: string) => p.length >= 8 },
@@ -113,6 +114,8 @@ export default function SignUp() {
         return;
       }
 
+      posthog.capture("user_signed_up");
+      posthog.capture("link_created");
       router.push("/inbox");
       router.refresh();
     } catch {

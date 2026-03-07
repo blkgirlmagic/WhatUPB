@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import posthog from "posthog-js";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
@@ -60,6 +61,7 @@ export default function MessageForm({
         return;
       }
 
+      posthog.capture("message_sent");
       setSent(true);
       setContent("");
       setLoading(false);

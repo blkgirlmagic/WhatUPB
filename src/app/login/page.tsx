@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import posthog from "posthog-js";
 
 function parseHashParams(hash: string): Record<string, string> {
   const params: Record<string, string> = {};
@@ -94,6 +95,7 @@ function LoginForm() {
       return;
     }
 
+    posthog.capture("user_logged_in");
     router.push("/inbox");
     router.refresh();
   }

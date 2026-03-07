@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase-browser";
+import posthog from "posthog-js";
 
 export default function AgeGate({ children }: { children: React.ReactNode }) {
   const [verified, setVerified] = useState<boolean | null>(null);
@@ -39,6 +40,8 @@ export default function AgeGate({ children }: { children: React.ReactNode }) {
 
   const handleEnter = () => {
     if (!checked) return;
+
+    posthog.capture("age_gate_passed");
 
     // Log verification in the background — fire-and-forget, never blocks user
     fetch("/api/log-age-verification", {
