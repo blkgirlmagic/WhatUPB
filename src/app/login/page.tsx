@@ -5,6 +5,16 @@ import { createClient } from "@/lib/supabase-browser";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
+function parseHashParams(hash: string): Record<string, string> {
+  const params: Record<string, string> = {};
+  const raw = hash.replace(/^#/, "");
+  for (const pair of raw.split("&")) {
+    const [key, ...rest] = pair.split("=");
+    if (key) params[key] = decodeURIComponent(rest.join("="));
+  }
+  return params;
+}
+
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,53 +27,46 @@ function LoginForm() {
   const supabase = createClient();
 
   // --- Priority 1: detect #access_token in the hash ---
-  // Supabase implicit-flow tokens can land here if the callback redirected
-  // through to /login.  The browser client auto-detects the hash fragment
-  // and creates a session — we just listen and redirect.
+  // Implicit-flow tokens can land on /login if the hash survived a redirect.
+  // The SSR browser client (PKCE) won't auto-detect these, so we parse the
+  // hash ourselves and call setSession() directly.
   useEffect(() => {
-    const hash = window.location.hash;
-    const hasToken = hash.includes("access_token=");
+    async function checkHash() {
+      const params = parseHashParams(window.location.hash);
+      const accessToken = params["access_token"];
+      const refreshToken = params["refresh_token"];
 
-    if (hasToken) {
-      // Supabase browser client picks up the hash automatically.
-      // Listen for the session to be established, then redirect.
-      const {
-        data: { subscription },
-      } = supabase.auth.onAuthStateChange((event) => {
-        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+      if (accessToken && refreshToken) {
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        if (!sessionError) {
+          window.history.replaceState(null, "", window.location.pathname);
           router.replace("/inbox");
+          return; // don't setChecking — we're navigating away
         }
-      });
 
-      // Fallback: if the event doesn't fire within 3s, check manually
-      const timeout = setTimeout(async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          router.replace("/inbox");
-        } else {
-          // Token was invalid or expired — show confirmation success anyway
-          setSuccess("Email confirmed! Log in to continue.");
-          setChecking(false);
-        }
-      }, 3000);
+        // Tokens were invalid/expired but email was likely confirmed
+        setSuccess("Email confirmed! Log in to continue.");
+        setChecking(false);
+        return;
+      }
 
-      return () => {
-        subscription.unsubscribe();
-        clearTimeout(timeout);
-      };
+      // --- Priority 2: no hash token — handle query params normally ---
+      if (searchParams.get("confirmed") === "true") {
+        setSuccess("Email confirmed! Log in to continue.");
+      } else if (searchParams.get("error") === "auth") {
+        setError("Authentication failed. Please try again.");
+      }
+      setChecking(false);
     }
 
-    // --- Priority 2: no hash token — handle query params normally ---
-    if (searchParams.get("confirmed") === "true") {
-      setSuccess("Email confirmed! Log in to continue.");
-    } else if (searchParams.get("error") === "auth") {
-      setError("Authentication failed. Please try again.");
-    }
-    setChecking(false);
+    checkHash();
   }, [searchParams, supabase.auth, router]);
 
-  // While we're checking for a hash token, show a spinner instead of the
-  // login form (prevents the false error from flashing)
+  // Show spinner while checking for hash tokens (prevents false error flash)
   if (checking) {
     return (
       <div className="min-h-screen flex items-center justify-center">

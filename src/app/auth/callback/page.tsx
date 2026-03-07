@@ -1,61 +1,85 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 
 /**
- * /auth/callback — client-side page that completes email confirmation.
+ * /auth/callback — handles email confirmation redirects.
  *
- * Supabase uses the implicit flow for email confirmations: the confirmed
- * session tokens arrive in the URL **hash fragment** (#access_token=...).
- * Hash fragments are invisible to server-side code, so this MUST be a
- * client component — a Route Handler (route.ts) can never see them.
+ * The signup uses the service-role client (@supabase/supabase-js) which
+ * defaults to implicit flow.  Supabase's auth server redirects here with
+ * tokens in the URL hash: #access_token=...&refresh_token=...
  *
- * The Supabase browser client automatically detects the hash fragment,
- * exchanges it for a session, and fires an onAuthStateChange event.
- * We just need to wait for that and then redirect.
+ * The SSR browser client (@supabase/ssr) is hardcoded to PKCE and will
+ * reject implicit-flow hash fragments.  So we parse the hash ourselves
+ * and call setSession() directly — this works regardless of flow type.
  */
+
+function parseHashParams(hash: string): Record<string, string> {
+  const params: Record<string, string> = {};
+  const raw = hash.replace(/^#/, "");
+  for (const pair of raw.split("&")) {
+    const [key, ...rest] = pair.split("=");
+    if (key) params[key] = decodeURIComponent(rest.join("="));
+  }
+  return params;
+}
+
 export default function AuthCallback() {
   const router = useRouter();
+  const [status, setStatus] = useState("Confirming your email...");
 
   useEffect(() => {
-    const supabase = createClient();
+    async function handleCallback() {
+      const hash = window.location.hash;
+      const params = parseHashParams(hash);
 
-    // The Supabase browser client auto-detects #access_token in the URL
-    // and sets the session.  Listen for the session to be established.
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        // Session established — go to inbox
-        router.replace("/inbox");
+      const accessToken = params["access_token"];
+      const refreshToken = params["refresh_token"];
+
+      if (accessToken && refreshToken) {
+        // Manually set the session — bypasses PKCE/implicit flow mismatch
+        const supabase = createClient();
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        if (!error) {
+          // Clean the hash from the URL before navigating
+          window.history.replaceState(null, "", window.location.pathname);
+          router.replace("/inbox");
+          return;
+        }
+
+        // setSession failed — tokens may be expired/invalid
+        console.error("[auth/callback] setSession failed:", error.message);
       }
-    });
 
-    // Fallback: if the hash fragment is missing or the event doesn't fire
-    // within 5 seconds, check if there's already a session (edge case where
-    // the user is already logged in), otherwise redirect to login gracefully.
-    const timeout = setTimeout(async () => {
+      // No tokens in hash or setSession failed.
+      // Check if user already has a session (e.g. already logged in).
+      const supabase = createClient();
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         router.replace("/inbox");
-      } else {
-        router.replace("/login?confirmed=true");
+        return;
       }
-    }, 5000);
 
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(timeout);
-    };
+      // No session at all — email was likely confirmed but we can't
+      // create a session.  Send to login with a success message.
+      setStatus("Email confirmed! Redirecting to login...");
+      setTimeout(() => router.replace("/login?confirmed=true"), 1500);
+    }
+
+    handleCallback();
   }, [router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center animate-fade-in-up">
         <div className="w-6 h-6 border-2 border-denim-200 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-zinc-400 text-sm">Confirming your email...</p>
+        <p className="text-zinc-400 text-sm">{status}</p>
       </div>
     </div>
   );
