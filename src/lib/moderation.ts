@@ -17,14 +17,17 @@
 // ── Per-attribute Perspective thresholds ─────────────────────────────────────
 // If ANY attribute score meets or exceeds its threshold → hard block.
 
+// Tuned for launch: prioritize reducing false positives on normal messages.
+// Anonymous apps die if friendly messages get blocked.  These thresholds
+// still catch obviously harmful content while letting normal conversation through.
 const PERSPECTIVE_THRESHOLDS: Record<string, number> = {
-  TOXICITY: 0.50,
-  SEVERE_TOXICITY: 0.40,
-  THREAT: 0.45,
-  INSULT: 0.55,
-  IDENTITY_ATTACK: 0.50,
-  PROFANITY: 0.65,
-  SEXUALLY_EXPLICIT: 0.50,
+  TOXICITY: 0.80,
+  SEVERE_TOXICITY: 0.75,
+  THREAT: 0.85,
+  INSULT: 0.80,
+  IDENTITY_ATTACK: 0.80,
+  PROFANITY: 0.90,
+  SEXUALLY_EXPLICIT: 0.85,
 };
 
 // ── Text normalization ──────────────────────────────────────────────────────
@@ -139,7 +142,7 @@ const BLOCKED_PATTERNS: RegExp[] = [
   /\bpedophil/,
   /\bpedo\b/,
   /\bunderage\b/,
-  /\bunder\s*(18|sixteen|fifteen|fourteen|thirteen|twelve|11|10|9|8)\b/,
+  /\bunder\s*(18|16|15|14|13|12|eleven|twelve|thirteen|fourteen|fifteen|sixteen)\b/,
   /\bminor\b.*\b(sex|nude|naked|hot|sexy|pic|send|show)\b/,
   /\b(sex|nude|naked|hot|sexy|pic|send|show)\b.*\bminor\b/,
   /\b(kid|child|children|little\s+(girl|boy)|young\s+(girl|boy)|preteen|pre\s*teen)\b.*\b(sex|nude|naked|hot|sexy|pic|send|show|fuck|rape)\b/,

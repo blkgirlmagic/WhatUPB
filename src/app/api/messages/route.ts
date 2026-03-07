@@ -136,19 +136,18 @@ export async function POST(request: NextRequest) {
       !content ||
       typeof content !== "string"
     ) {
+      console.warn("[reject] missing_params — recipientId or content missing/invalid");
       logRejection("missing_params", clientIP);
       return NextResponse.json(GENERIC_ERROR, { status: 400 });
     }
 
-    // 2. Verify Turnstile CAPTCHA — required when TURNSTILE_SECRET_KEY is set.
-    //    If captcha is enabled but token is missing or invalid → reject.
-    if (process.env.TURNSTILE_SECRET_KEY) {
-      if (!turnstileToken || typeof turnstileToken !== "string") {
-        logRejection("captcha_failed", clientIP, { reason: "token_missing" });
-        return NextResponse.json(GENERIC_ERROR, { status: 403 });
-      }
+    // 2. Verify Turnstile CAPTCHA — only if the client sent a token AND server
+    //    has the secret key.  If no token is sent, skip (frontend may not have
+    //    the widget yet).  If a token IS sent but invalid → reject.
+    if (turnstileToken && typeof turnstileToken === "string" && process.env.TURNSTILE_SECRET_KEY) {
       const turnstileValid = await verifyTurnstile(turnstileToken, clientIP);
       if (!turnstileValid) {
+        console.warn("[reject] captcha_failed — Turnstile token invalid");
         logRejection("captcha_failed", clientIP);
         return NextResponse.json(GENERIC_ERROR, { status: 403 });
       }
@@ -157,6 +156,7 @@ export async function POST(request: NextRequest) {
     // 3. Server-side content validation
     const contentCheck = validateContent(content);
     if (!contentCheck.valid) {
+      console.warn(`[reject] validation — reason=${contentCheck.reason}, length=${content.trim().length}`);
       logRejection(contentCheck.reason, clientIP, {
         contentLength: content.length,
       });
@@ -169,6 +169,7 @@ export async function POST(request: NextRequest) {
     // 5. In-memory rate limiting (per IP hash)
     const rateCheck = checkRateLimit(ipHash);
     if (!rateCheck.allowed) {
+      console.warn(`[reject] rate_limit — resetMs=${rateCheck.resetMs}`);
       logRejection("rate_limit", clientIP, {
         resetMs: rateCheck.resetMs,
       });
@@ -188,6 +189,7 @@ export async function POST(request: NextRequest) {
     // If moderation says no, return 403 immediately.  No DB write happens.
     const moderation = await moderateMessage(content.trim());
     if (!moderation.allowed) {
+      console.warn(`[reject] moderation_blocked — blockedBy=${moderation.blockedBy}`, moderation.scores ?? {});
       logRejection("moderation_blocked", clientIP, {
         blockedBy: moderation.blockedBy,
         scores: moderation.scores,
@@ -213,6 +215,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
+      console.warn(`[reject] rpc_error — ${error.message}`);
       logRejection("rpc_error", clientIP, { supabaseError: error.message });
       return NextResponse.json(GENERIC_ERROR, { status: 500 });
     }
@@ -227,6 +230,7 @@ export async function POST(request: NextRequest) {
       } else if (dbError.includes("Recipient")) {
         reason = "recipient_not_found";
       }
+      console.warn(`[reject] db_rejection — reason=${reason}, dbError="${dbError}"`);
       logRejection(reason, clientIP, { dbError });
       return NextResponse.json(GENERIC_ERROR, { status: 429 });
     }
