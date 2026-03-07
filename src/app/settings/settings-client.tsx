@@ -29,6 +29,7 @@ export default function SettingsClient({
   linkTheme,
   initialFilters,
   currentPlan,
+  emailNotifications: initialEmailNotifications,
 }: {
   username: string;
   isPremium: boolean;
@@ -36,6 +37,7 @@ export default function SettingsClient({
   linkTheme: string;
   initialFilters: Filter[];
   currentPlan: PlanKey | null;
+  emailNotifications: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const [generatingCard, setGeneratingCard] = useState(false);
@@ -50,6 +52,8 @@ export default function SettingsClient({
   const [showFilters, setShowFilters] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState(linkTheme);
   const [savingTheme, setSavingTheme] = useState(false);
+  const [emailNotifs, setEmailNotifs] = useState(initialEmailNotifications);
+  const [savingNotifs, setSavingNotifs] = useState(false);
   const router = useRouter();
   const supabase = createClient();
   const { toast } = useToast();
@@ -341,6 +345,30 @@ export default function SettingsClient({
       toast("Failed to save theme.", "error");
     } finally {
       setSavingTheme(false);
+    }
+  }
+
+  // ---- Email notifications ----
+  async function handleToggleEmailNotifs() {
+    const newVal = !emailNotifs;
+    setEmailNotifs(newVal);
+    setSavingNotifs(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ email_notifications: newVal })
+        .eq("username", username);
+      if (error) {
+        setEmailNotifs(!newVal);
+        toast("Failed to update notification preference.", "error");
+      } else {
+        toast(newVal ? "Email notifications enabled." : "Email notifications disabled.");
+      }
+    } catch {
+      setEmailNotifs(!newVal);
+      toast("Failed to update notification preference.", "error");
+    } finally {
+      setSavingNotifs(false);
     }
   }
 
@@ -856,6 +884,32 @@ export default function SettingsClient({
           Logged in as{" "}
           <span className="text-denim-200 font-medium">@{username}</span>
         </p>
+
+        {/* Email Notifications Toggle */}
+        <div className="flex items-center justify-between py-3 px-4 rounded-xl border border-border-subtle mb-4">
+          <div>
+            <p className="text-sm text-zinc-300 font-medium">Email Notifications</p>
+            <p className="text-xs text-zinc-600">Get notified when you receive a message</p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={emailNotifs}
+            onClick={handleToggleEmailNotifs}
+            disabled={savingNotifs}
+            className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+            style={{
+              backgroundColor: emailNotifs ? "#6366f1" : "#27272a",
+              opacity: savingNotifs ? 0.6 : 1,
+            }}
+          >
+            <span
+              className="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transform transition duration-200 ease-in-out"
+              style={{ transform: emailNotifs ? "translateX(20px)" : "translateX(0)" }}
+            />
+          </button>
+        </div>
+
         <button
           onClick={handleLogout}
           className="w-full border border-red-500/30 text-red-400/80 text-sm font-medium py-2.5 rounded-xl hover:bg-red-500/5 hover:border-red-500/50 transition"

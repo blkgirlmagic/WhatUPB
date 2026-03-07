@@ -59,6 +59,13 @@ export default async function Settings() {
     }
   }
 
+  // Fetch email notification preference (column may not exist yet)
+  const { data: notifProfile } = await supabase
+    .from("profiles")
+    .select("email_notifications")
+    .eq("id", user.id)
+    .single();
+
   // Fetch keyword filters for premium users (table may not exist yet)
   let filters: { id: string; keyword: string }[] = [];
   if (profile.is_premium) {
@@ -104,6 +111,7 @@ export default async function Settings() {
           linkTheme={profile.link_theme ?? "dark"}
           initialFilters={filters}
           currentPlan={currentPlan}
+          emailNotifications={notifProfile?.email_notifications ?? true}
         />
       </div>
     </div>

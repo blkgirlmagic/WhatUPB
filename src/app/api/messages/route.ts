@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { moderateMessage } from "@/lib/moderation";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logModerationBlock } from "@/lib/moderation-log";
+import { sendNewMessageNotification } from "@/lib/email";
 
 // --- Supabase admin-free client for anonymous RPC calls ---
 // No cookies needed — this route has no user session.
@@ -220,6 +221,23 @@ export async function POST(request: NextRequest) {
       logRejection(reason, clientIP, { dbError });
       return NextResponse.json(GENERIC_ERROR, { status: 429 });
     }
+
+    // Fire-and-forget: send email notification to recipient
+    Promise.resolve(
+      supabase
+        .from("profiles")
+        .select("email, email_notifications")
+        .eq("id", recipientId)
+        .single()
+    )
+      .then(({ data: profile }) => {
+        if (profile?.email && profile.email_notifications !== false) {
+          sendNewMessageNotification(profile.email, recipientId).catch(
+            () => {}
+          );
+        }
+      })
+      .catch(() => {});
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (err) {
