@@ -28,8 +28,7 @@ function ResetPasswordForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [sessionReady, setSessionReady] = useState(false);
-  const [sessionError, setSessionError] = useState(false);
+  const [sessionState, setSessionState] = useState<"loading" | "ready" | "error">("loading");
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
@@ -60,7 +59,7 @@ function ResetPasswordForm() {
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (!error) {
-          setSessionReady(true);
+          setSessionState("ready");
           return;
         }
       }
@@ -76,7 +75,7 @@ function ResetPasswordForm() {
         });
         if (!error) {
           window.history.replaceState(null, "", window.location.pathname);
-          setSessionReady(true);
+          setSessionState("ready");
           return;
         }
       }
@@ -84,11 +83,11 @@ function ResetPasswordForm() {
       // Check if there's already an active session (e.g. from cookie)
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        setSessionReady(true);
+        setSessionState("ready");
         return;
       }
 
-      setSessionError(true);
+      setSessionState("error");
     }
 
     exchangeToken();
@@ -115,7 +114,7 @@ function ResetPasswordForm() {
   }
 
   // Loading — exchanging token
-  if (!sessionReady && !sessionError) {
+  if (sessionState === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -127,11 +126,19 @@ function ResetPasswordForm() {
   }
 
   // Invalid or expired link
-  if (sessionError) {
+  if (sessionState === "error") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-sm animate-fade-in-up text-center">
-          <div className="flex items-start gap-3 bg-red-500/5 border border-red-500/20 text-red-300 px-4 py-3 rounded-xl mb-6 text-sm">
+          <div className="text-center mb-8">
+            <Link
+              href="/"
+              className="text-2xl font-bold bg-gradient-to-r from-denim-200 to-white bg-clip-text text-transparent"
+            >
+              WhatUPB
+            </Link>
+          </div>
+          <div className="flex items-start gap-3 bg-red-500/5 border border-red-500/20 text-red-300 px-4 py-3 rounded-xl mb-6 text-sm text-left">
             <svg
               className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-400"
               fill="currentColor"
@@ -143,13 +150,10 @@ function ResetPasswordForm() {
                 clipRule="evenodd"
               />
             </svg>
-            This reset link is invalid or has expired.
+            This reset link has expired or already been used. Please request a new one.
           </div>
-          <Link
-            href="/forgot-password"
-            className="text-denim-200 hover:text-denim-100 transition text-sm"
-          >
-            Request a new reset link
+          <Link href="/forgot-password" className="btn-secondary py-2.5 px-6">
+            Request a new link
           </Link>
         </div>
       </div>
