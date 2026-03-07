@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase-browser";
 
 export default function AgeGate({ children }: { children: React.ReactNode }) {
   const [verified, setVerified] = useState<boolean | null>(null);
@@ -8,10 +9,32 @@ export default function AgeGate({ children }: { children: React.ReactNode }) {
   const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
-    const hasVerified = document.cookie
-      .split("; ")
-      .some((c) => c === "age_verified=true");
-    setVerified(hasVerified);
+    async function check() {
+      // 1. Cookie check — fastest, no network call
+      const hasCookie = document.cookie
+        .split("; ")
+        .some((c) => c === "age_verified=true");
+      if (hasCookie) {
+        setVerified(true);
+        return;
+      }
+
+      // 2. Session check — logged-in users already passed age gate at signup
+      try {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          setVerified(true);
+          return;
+        }
+      } catch {
+        // Supabase unavailable — fall through to show gate
+      }
+
+      setVerified(false);
+    }
+
+    check();
   }, []);
 
   const handleEnter = () => {
@@ -32,10 +55,18 @@ export default function AgeGate({ children }: { children: React.ReactNode }) {
     <>
       {children}
       <div
-        className={`fixed inset-0 z-[100] flex items-center justify-center px-4 ${
+        className={`flex items-center justify-center px-4 ${
           exiting ? "animate-age-gate-exit" : ""
         }`}
-        style={{ background: "#0c0c10" }}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 9999,
+          background: "#0c0c10",
+        }}
       >
         <div className="w-full max-w-sm text-center animate-fade-in-up">
           {/* Logo */}
