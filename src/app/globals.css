@@ -435,3 +435,62 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-default);
 }
+
+/* ============================================================
+   Share sheet
+   ============================================================ */
+
+.share-sheet {
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  animation: share-sheet-up 0.25s ease-out forwards;
+}
+
+@keyframes share-sheet-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.share-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.share-option:hover {
+  transform: scale(1.08);
+}
+
+.share-option:active {
+  transform: scale(0.95);
+}
+
+.share-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Spin animation for loading */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
