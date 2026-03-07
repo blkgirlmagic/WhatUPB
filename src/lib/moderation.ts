@@ -18,12 +18,13 @@
 // If ANY attribute score meets or exceeds its threshold → hard block.
 
 const PERSPECTIVE_THRESHOLDS: Record<string, number> = {
-  TOXICITY: 0.55,
-  SEVERE_TOXICITY: 0.60,
-  THREAT: 0.50,
+  TOXICITY: 0.50,
+  SEVERE_TOXICITY: 0.40,
+  THREAT: 0.45,
   INSULT: 0.55,
-  IDENTITY_ATTACK: 0.60,
-  PROFANITY: 0.70,
+  IDENTITY_ATTACK: 0.50,
+  PROFANITY: 0.65,
+  SEXUALLY_EXPLICIT: 0.50,
 };
 
 // ── Text normalization ──────────────────────────────────────────────────────
@@ -131,6 +132,31 @@ const BLOCKED_PATTERNS: RegExp[] = [
   // ── Sexual harassment ──
   /\b(send|show)\s*(me\s*)?(nudes|tits|dick\s*pic|boobs|ass\s*pic)/,
   /\b(want|wanna|gonna)\s+(to\s+)?(rape|fuck|grope)\s+(you|u|her|him)\b/,
+
+  // ── CSAM / minor-related sexual content ──
+  /\bchild\s*(porn|sex|abuse|molest|rape)/,
+  /\b(cp|csam)\b/,
+  /\bpedophil/,
+  /\bpedo\b/,
+  /\bunderage\b/,
+  /\bunder\s*(18|sixteen|fifteen|fourteen|thirteen|twelve|11|10|9|8)\b/,
+  /\bminor\b.*\b(sex|nude|naked|hot|sexy|pic|send|show)\b/,
+  /\b(sex|nude|naked|hot|sexy|pic|send|show)\b.*\bminor\b/,
+  /\b(kid|child|children|little\s+(girl|boy)|young\s+(girl|boy)|preteen|pre\s*teen)\b.*\b(sex|nude|naked|hot|sexy|pic|send|show|fuck|rape)\b/,
+  /\b(sex|nude|naked|hot|sexy|pic|send|show|fuck|rape)\b.*\b(kid|child|children|little\s+(girl|boy)|young\s+(girl|boy)|preteen|pre\s*teen)\b/,
+  /\bgroom(ing|er|ed)?\b.*\b(kid|child|minor|teen|young)\b/,
+  /\b(kid|child|minor|teen|young)\b.*\bgroom(ing|er|ed)?\b/,
+  /\bschool\s*(girl|boy)\b.*\b(sex|nude|naked|hot|sexy|fuck)\b/,
+  /\b(sex|nude|naked|hot|sexy|fuck)\b.*\bschool\s*(girl|boy)\b/,
+
+  // ── Doxxing / PII / stalking ──
+  /\bi\s+know\s+where\s+you\s+(live|work|go\s+to\s+school|sleep)\b/,
+  /\bi\s+know\s+your\s+(address|phone|number|school|full\s+name|ip|location)\b/,
+  /\bi\s+(will|am going to|am gonna|gonna)\s+(find|track|locate|dox|doxx|swat)\s+(you|u)\b/,
+  /\byour\s+(home\s+)?address\s+is\b/,
+  /\bi\s+(have|got|found)\s+your\s+(address|phone|number|ip|location)\b/,
+  /\b\d{3}[-\s]?\d{2}[-\s]?\d{4}\b/,         // SSN pattern (xxx-xx-xxxx)
+  /\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/,        // Phone number (xxx-xxx-xxxx)
 ];
 
 function localBlocklistCheck(

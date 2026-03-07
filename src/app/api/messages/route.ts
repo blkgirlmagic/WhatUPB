@@ -64,6 +64,9 @@ function validateContent(
   if (!trimmed || trimmed.length < 1) {
     return { valid: false, reason: "validation_empty" };
   }
+  if (trimmed.length < 6) {
+    return { valid: false, reason: "validation_length" };
+  }
   if (trimmed.length > 1000) {
     return { valid: false, reason: "validation_length" };
   }
@@ -137,8 +140,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(GENERIC_ERROR, { status: 400 });
     }
 
-    // 2. Verify Turnstile CAPTCHA (only if client sent a token AND server has secret)
-    if (turnstileToken && typeof turnstileToken === "string" && process.env.TURNSTILE_SECRET_KEY) {
+    // 2. Verify Turnstile CAPTCHA — required when TURNSTILE_SECRET_KEY is set.
+    //    If captcha is enabled but token is missing or invalid → reject.
+    if (process.env.TURNSTILE_SECRET_KEY) {
+      if (!turnstileToken || typeof turnstileToken !== "string") {
+        logRejection("captcha_failed", clientIP, { reason: "token_missing" });
+        return NextResponse.json(GENERIC_ERROR, { status: 403 });
+      }
       const turnstileValid = await verifyTurnstile(turnstileToken, clientIP);
       if (!turnstileValid) {
         logRejection("captcha_failed", clientIP);
