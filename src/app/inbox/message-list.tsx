@@ -323,6 +323,16 @@ export default function MessageList({
     tagline.textContent = "anonymous messages";
     bottomArea.appendChild(tagline);
 
+    // URL
+    const url = document.createElement("div");
+    url.style.cssText = `
+      font-size: 18px;
+      color: rgba(165, 180, 252, 0.18);
+      letter-spacing: 0.04em;
+    `;
+    url.textContent = "whatupb.com";
+    bottomArea.appendChild(url);
+
     card.appendChild(bottomArea);
     container.appendChild(card);
 
@@ -614,7 +624,7 @@ export default function MessageList({
 
           {/* Share sheet */}
           <div
-            className="share-sheet relative z-10 w-full max-w-sm mx-4 mb-4 sm:mb-0"
+            className="share-sheet relative z-10 w-full max-w-md mx-4 mb-4 sm:mb-0"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Preview */}
