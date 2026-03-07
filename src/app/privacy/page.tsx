@@ -141,7 +141,52 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-3">
-              6. Cookies and Authentication
+              6. Third-Party Services
+            </h2>
+            <p className="mb-3">
+              We use the following third-party services to operate WhatUPB:
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-zinc-500">
+              <li>
+                <span className="text-zinc-400">Stripe</span> — payment
+                processing (
+                <a
+                  href="https://stripe.com/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-denim-200 hover:text-denim-100 underline transition"
+                >
+                  stripe.com/privacy
+                </a>
+                )
+              </li>
+              <li>
+                <span className="text-zinc-400">Google Perspective API</span> —
+                automated content moderation
+              </li>
+              <li>
+                <span className="text-zinc-400">Supabase</span> —
+                authentication and database
+              </li>
+              <li>
+                <span className="text-zinc-400">PostHog</span> — product
+                analytics (
+                <a
+                  href="https://posthog.com/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-denim-200 hover:text-denim-100 underline transition"
+                >
+                  posthog.com/privacy
+                </a>
+                )
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-semibold text-foreground mb-3">
+              7. Cookies and Authentication
             </h2>
             <p>
               We use Supabase for authentication. Cookies are used solely to
@@ -153,7 +198,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-3">
-              7. Data Retention
+              8. Data Retention
             </h2>
             <p>
               We retain your account information and messages for as long as
@@ -166,7 +211,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-3">
-              8. Your Rights
+              9. Your Rights
             </h2>
             <p className="mb-3">You have the right to:</p>
             <ul className="list-disc list-inside space-y-2 text-zinc-500">
@@ -192,7 +237,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-3">
-              9. CCPA (California Residents)
+              10. CCPA (California Residents)
             </h2>
             <p>
               If you are a California resident, the California Consumer Privacy
@@ -212,7 +257,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-3">
-              10. GDPR (European Residents)
+              11. GDPR (European Residents)
             </h2>
             <p>
               If you are located in the European Economic Area, you have rights
@@ -234,7 +279,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-3">
-              11. Changes to This Policy
+              12. Changes to This Policy
             </h2>
             <p>
               We may update this Privacy Policy from time to time. If we make
@@ -246,7 +291,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-3">
-              12. Contact Us
+              13. Contact Us
             </h2>
             <p>
               If you have questions about this Privacy Policy, contact Aurora
