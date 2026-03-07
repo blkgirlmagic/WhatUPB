@@ -223,40 +223,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(GENERIC_ERROR, { status: 429 });
     }
 
-    // Fire-and-forget: send email notification to recipient
-    // Uses service role client to bypass RLS (anon key can't read email column)
-    (async () => {
-      try {
-        const adminClient = getServiceSupabase();
-        const { data: profile, error: profileError } = await adminClient
-          .from("profiles")
-          .select("email, email_notifications")
-          .eq("id", recipientId)
-          .single();
+    // Send email notification to recipient before returning response
+    // Must be awaited — Vercel kills the function after response is sent,
+    // so fire-and-forget async code never executes on serverless.
+    try {
+      const adminClient = getServiceSupabase();
+      const { data: profile, error: profileError } = await adminClient
+        .from("profiles")
+        .select("email, email_notifications")
+        .eq("id", recipientId)
+        .single();
 
-        console.log("[email-notif] Profile lookup:", {
-          recipientId,
-          email: profile?.email ? `${profile.email.substring(0, 3)}***` : null,
-          email_notifications: profile?.email_notifications,
-          error: profileError?.message ?? null,
-        });
+      console.log("[email-notif] Profile lookup:", {
+        recipientId,
+        email: profile?.email ? `${profile.email.substring(0, 3)}***` : null,
+        email_notifications: profile?.email_notifications,
+        error: profileError?.message ?? null,
+      });
 
-        if (!profile?.email) {
-          console.log("[email-notif] Skipped: no email on profile");
-          return;
-        }
-        if (profile.email_notifications === false) {
-          console.log("[email-notif] Skipped: notifications disabled");
-          return;
-        }
-
+      if (profile?.email && profile.email_notifications !== false) {
         console.log("[email-notif] Sending email to:", profile.email.substring(0, 3) + "***");
         await sendNewMessageNotification(profile.email, recipientId);
         console.log("[email-notif] Email sent successfully");
-      } catch (err) {
-        console.error("[email-notif] Error:", err instanceof Error ? err.message : err);
+      } else if (!profile?.email) {
+        console.log("[email-notif] Skipped: no email on profile");
+      } else {
+        console.log("[email-notif] Skipped: notifications disabled");
       }
-    })();
+    } catch (emailErr) {
+      // Email failure should never block message delivery
+      console.error("[email-notif] Error:", emailErr instanceof Error ? emailErr.message : emailErr);
+    }
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (err) {
