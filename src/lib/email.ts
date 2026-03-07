@@ -30,7 +30,8 @@ export function verifyUnsubscribeToken(
 
 export async function sendNewMessageNotification(
   recipientEmail: string,
-  recipientId: string
+  recipientId: string,
+  username?: string
 ): Promise<void> {
   const resend = getResend();
   if (!resend) {
@@ -43,6 +44,8 @@ export async function sendNewMessageNotification(
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://whatupb.com";
   const unsubscribeUrl = `${baseUrl}/api/unsubscribe?uid=${recipientId}&token=${token}`;
   const inboxUrl = `${baseUrl}/inbox`;
+  const profileUrl = username ? `https://whatupb.com/${username}` : "https://whatupb.com";
+  const profileDisplay = username ? `whatupb.com/${username}` : "whatupb.com";
 
   const { data: emailResult, error: emailError } = await resend.emails.send({
     from: "WhatUPB <notifications@whatupb.com>",
@@ -70,7 +73,7 @@ export async function sendNewMessageNotification(
               <span style="font-size:24px;font-weight:700;color:#a5b4fc;letter-spacing:0.05em;">WhatUPB</span>
             </td>
           </tr>
-          <!-- Card -->
+          <!-- Single Card -->
           <tr>
             <td style="background-color:#141418;border:1px solid #2a2a35;border-radius:14px;padding:40px 32px;text-align:center;">
               <p style="color:#ededed;font-size:20px;font-weight:700;margin:0 0 12px;">
@@ -82,21 +85,22 @@ export async function sendNewMessageNotification(
               <a href="${inboxUrl}" style="display:inline-block;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;font-weight:600;font-size:15px;padding:12px 32px;border-radius:12px;text-decoration:none;">
                 Read Message
               </a>
-            </td>
-          </tr>
-          <!-- Share Section -->
-          <tr>
-            <td style="background-color:#141418;border:1px solid #2a2a35;border-radius:14px;padding:28px 32px;text-align:center;margin-top:12px;">
+              <!-- Divider -->
+              <div style="border-top:1px solid #2a2a35;margin:32px 0 24px;"></div>
+              <!-- Share section -->
               <p style="color:#a5b4fc;font-size:14px;font-weight:600;margin:0 0 6px;">
                 Want more messages?
               </p>
-              <p style="color:#71717a;font-size:13px;margin:0 0 14px;">
+              <p style="color:#71717a;font-size:13px;margin:0 0 16px;">
                 Share your WhatUPB link:
               </p>
-              <a href="https://whatupb.com" style="display:inline-block;color:#a5b4fc;font-size:16px;font-weight:700;text-decoration:none;letter-spacing:0.02em;">
-                whatupb.com
+              <a href="${profileUrl}" style="display:inline-block;background-color:#1c1c24;border:1px solid #2a2a35;border-radius:10px;padding:12px 24px;color:#a5b4fc;font-size:16px;font-weight:700;text-decoration:none;letter-spacing:0.02em;">
+                ${profileDisplay}
               </a>
-              <p style="color:#3f3f46;font-size:12px;font-style:italic;margin:14px 0 0;">
+              <p style="color:#52525b;font-size:11px;margin:10px 0 0;">
+                Tap and hold to copy link
+              </p>
+              <p style="color:#3f3f46;font-size:12px;font-style:italic;margin:18px 0 0;">
                 Say what you mean.
               </p>
             </td>

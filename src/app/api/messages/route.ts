@@ -230,7 +230,7 @@ export async function POST(request: NextRequest) {
       const adminClient = getServiceSupabase();
       const { data: profile, error: profileError } = await adminClient
         .from("profiles")
-        .select("email, email_notifications")
+        .select("email, email_notifications, username")
         .eq("id", recipientId)
         .single();
 
@@ -243,7 +243,7 @@ export async function POST(request: NextRequest) {
 
       if (profile?.email && profile.email_notifications !== false) {
         console.log("[email-notif] Sending email to:", profile.email.substring(0, 3) + "***");
-        await sendNewMessageNotification(profile.email, recipientId);
+        await sendNewMessageNotification(profile.email, recipientId, profile.username);
         console.log("[email-notif] Email sent successfully");
       } else if (!profile?.email) {
         console.log("[email-notif] Skipped: no email on profile");
