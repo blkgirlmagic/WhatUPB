@@ -33,14 +33,18 @@ export async function sendNewMessageNotification(
   recipientId: string
 ): Promise<void> {
   const resend = getResend();
-  if (!resend) return;
+  if (!resend) {
+    console.log("[email] Skipped: RESEND_API_KEY not set");
+    return;
+  }
+  console.log("[email] RESEND_API_KEY is set, preparing email...");
 
   const token = generateUnsubscribeToken(recipientId);
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://whatupb.com";
   const unsubscribeUrl = `${baseUrl}/api/unsubscribe?uid=${recipientId}&token=${token}`;
   const inboxUrl = `${baseUrl}/inbox`;
 
-  await resend.emails.send({
+  const { data: emailResult, error: emailError } = await resend.emails.send({
     from: "WhatUPB <notifications@whatupb.com>",
     to: recipientEmail,
     subject: "Someone sent you a message on WhatUPB",
@@ -97,4 +101,10 @@ export async function sendNewMessageNotification(
 </html>
     `.trim(),
   });
+
+  if (emailError) {
+    console.error("[email] Resend API error:", emailError);
+    throw new Error(`Resend error: ${JSON.stringify(emailError)}`);
+  }
+  console.log("[email] Resend API success:", emailResult);
 }

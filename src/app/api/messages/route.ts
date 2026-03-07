@@ -5,6 +5,7 @@ import { moderateMessage } from "@/lib/moderation";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logModerationBlock } from "@/lib/moderation-log";
 import { sendNewMessageNotification } from "@/lib/email";
+import { getSupabase as getServiceSupabase } from "@/lib/supabase";
 
 // --- Supabase admin-free client for anonymous RPC calls ---
 // No cookies needed — this route has no user session.
@@ -223,21 +224,39 @@ export async function POST(request: NextRequest) {
     }
 
     // Fire-and-forget: send email notification to recipient
-    Promise.resolve(
-      supabase
-        .from("profiles")
-        .select("email, email_notifications")
-        .eq("id", recipientId)
-        .single()
-    )
-      .then(({ data: profile }) => {
-        if (profile?.email && profile.email_notifications !== false) {
-          sendNewMessageNotification(profile.email, recipientId).catch(
-            () => {}
-          );
+    // Uses service role client to bypass RLS (anon key can't read email column)
+    (async () => {
+      try {
+        const adminClient = getServiceSupabase();
+        const { data: profile, error: profileError } = await adminClient
+          .from("profiles")
+          .select("email, email_notifications")
+          .eq("id", recipientId)
+          .single();
+
+        console.log("[email-notif] Profile lookup:", {
+          recipientId,
+          email: profile?.email ? `${profile.email.substring(0, 3)}***` : null,
+          email_notifications: profile?.email_notifications,
+          error: profileError?.message ?? null,
+        });
+
+        if (!profile?.email) {
+          console.log("[email-notif] Skipped: no email on profile");
+          return;
         }
-      })
-      .catch(() => {});
+        if (profile.email_notifications === false) {
+          console.log("[email-notif] Skipped: notifications disabled");
+          return;
+        }
+
+        console.log("[email-notif] Sending email to:", profile.email.substring(0, 3) + "***");
+        await sendNewMessageNotification(profile.email, recipientId);
+        console.log("[email-notif] Email sent successfully");
+      } catch (err) {
+        console.error("[email-notif] Error:", err instanceof Error ? err.message : err);
+      }
+    })();
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (err) {
