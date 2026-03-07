@@ -80,7 +80,7 @@ export async function sendNewMessageNotification(
                 Someone left you a message
               </p>
               <p style="color:#71717a;font-size:14px;margin:0 0 28px;line-height:1.5;">
-                You received an anonymous message on WhatUPB. Open your inbox to read it.
+                You received an anonymous message on WhatUPB.
               </p>
               <a href="${inboxUrl}" style="display:inline-block;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;font-weight:600;font-size:15px;padding:12px 32px;border-radius:12px;text-decoration:none;">
                 Read Message
