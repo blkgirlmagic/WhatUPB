@@ -1,16 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import crypto from "crypto";
 import { moderateMessage } from "@/lib/moderation";
+import { requireCsrfHeader } from "@/lib/csrf";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const GENERIC_ERROR = {
   error: "Reply could not be sent. Please try again.",
 };
 
+function hashIP(ip: string): string {
+  return crypto
+    .createHash("sha256")
+    .update(ip + "_whatupb_rate_limit")
+    .digest("hex")
+    .substring(0, 16);
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ messageId: string }> }
 ) {
+  // 0a. CSRF protection
+  const csrfError = requireCsrfHeader(request);
+  if (csrfError) return csrfError;
+
+  // 0b. Rate limit — 10 replies per minute per IP
+  const clientIP =
+    request.headers.get("cf-connecting-ip") ||
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+  const ipHash = clientIP !== "unknown" ? hashIP(clientIP) : null;
+  const rateCheck = checkRateLimit(ipHash, { maxRequests: 10, prefix: "reply" });
+  if (!rateCheck.allowed) {
+    return NextResponse.json(
+      { error: "Too many replies. Please wait a moment." },
+      { status: 429 }
+    );
+  }
+
   const { messageId } = await params;
 
   // 1. Authenticate — only the inbox owner can reply

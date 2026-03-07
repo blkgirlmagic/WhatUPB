@@ -214,7 +214,7 @@ export default function SettingsClient({
     try {
       const res = await fetch("/api/create-checkout-session", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-csrf-protection": "1" },
         body: JSON.stringify({ plan: selectedPlan }),
       });
       const data = await res.json();
@@ -236,7 +236,7 @@ export default function SettingsClient({
     try {
       const res = await fetch("/api/change-plan", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-csrf-protection": "1" },
         body: JSON.stringify({ plan }),
       });
       const data = await res.json();
@@ -259,6 +259,7 @@ export default function SettingsClient({
     try {
       const res = await fetch("/api/create-portal-session", {
         method: "POST",
+        headers: { "x-csrf-protection": "1" },
       });
       const data = await res.json();
       if (data.url) {
@@ -285,7 +286,7 @@ export default function SettingsClient({
     try {
       const res = await fetch("/api/filters", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-csrf-protection": "1" },
         body: JSON.stringify({ keywords }),
       });
       const data = await res.json();
@@ -312,7 +313,7 @@ export default function SettingsClient({
   async function handleRemoveFilter(id: string) {
     setFilters((prev) => prev.filter((f) => f.id !== id));
     try {
-      const res = await fetch(`/api/filters?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/filters?id=${id}`, { method: "DELETE", headers: { "x-csrf-protection": "1" } });
       if (!res.ok) {
         toast("Failed to remove filter.", "error");
         // Refetch on failure

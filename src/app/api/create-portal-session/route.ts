@@ -1,9 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getStripe } from "@/lib/stripe";
+import { requireCsrfHeader } from "@/lib/csrf";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  // 0. CSRF protection
+  const csrfError = requireCsrfHeader(request);
+  if (csrfError) return csrfError;
   const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

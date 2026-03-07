@@ -53,6 +53,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // --- Admin check: only the "tiptoe" account may access this endpoint ---
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.username !== "tiptoe") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     // --- Parse query params ---
     const url = new URL(request.url);
     const limit = Math.min(Number(url.searchParams.get("limit")) || 50, 200);

@@ -53,16 +53,33 @@ export interface RateLimitResult {
   resetMs: number; // ms until the oldest request in the window expires
 }
 
+export interface RateLimitOptions {
+  /** Max requests allowed per window (default: 5) */
+  maxRequests?: number;
+  /** A namespace prefix so different routes have independent buckets */
+  prefix?: string;
+}
+
 /**
  * Check (and consume) a rate-limit slot for the given IP hash.
  * Returns `allowed: false` if the limit has been exceeded.
  *
  * Pass `null` to skip rate limiting (e.g. when IP is unknown).
+ *
+ * Options:
+ *   maxRequests — override the default 5-per-minute cap
+ *   prefix     — namespace key so different routes don't share buckets
  */
-export function checkRateLimit(ipHash: string | null): RateLimitResult {
+export function checkRateLimit(
+  ipHash: string | null,
+  options?: RateLimitOptions
+): RateLimitResult {
+  const max = options?.maxRequests ?? MAX_REQUESTS;
+  const key = options?.prefix ? `${options.prefix}:${ipHash}` : ipHash;
+
   // No IP → can't rate-limit → allow through
-  if (!ipHash) {
-    return { allowed: true, remaining: MAX_REQUESTS, resetMs: 0 };
+  if (!ipHash || !key) {
+    return { allowed: true, remaining: max, resetMs: 0 };
   }
 
   gc();
@@ -70,10 +87,10 @@ export function checkRateLimit(ipHash: string | null): RateLimitResult {
   const now = Date.now();
   const cutoff = now - WINDOW_MS;
 
-  let entry = store.get(ipHash);
+  let entry = store.get(key);
   if (!entry) {
     entry = { timestamps: [] };
-    store.set(ipHash, entry);
+    store.set(key, entry);
   }
 
   // Prune expired timestamps
@@ -81,7 +98,7 @@ export function checkRateLimit(ipHash: string | null): RateLimitResult {
     entry.timestamps.shift();
   }
 
-  if (entry.timestamps.length >= MAX_REQUESTS) {
+  if (entry.timestamps.length >= max) {
     // Over limit — compute when the oldest request expires
     const resetMs = entry.timestamps[0] + WINDOW_MS - now;
     return {
@@ -96,7 +113,7 @@ export function checkRateLimit(ipHash: string | null): RateLimitResult {
 
   return {
     allowed: true,
-    remaining: MAX_REQUESTS - entry.timestamps.length,
+    remaining: max - entry.timestamps.length,
     resetMs: entry.timestamps[0] + WINDOW_MS - now,
   };
 }

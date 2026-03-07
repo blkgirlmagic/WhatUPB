@@ -92,7 +92,7 @@ export default function MessageList({
     try {
       const res = await fetch(`/api/messages/${messageId}/reply`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-csrf-protection": "1" },
         body: JSON.stringify({ content }),
       });
 

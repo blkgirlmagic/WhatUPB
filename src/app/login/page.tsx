@@ -9,18 +9,71 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
 
+  // --- Priority 1: detect #access_token in the hash ---
+  // Supabase implicit-flow tokens can land here if the callback redirected
+  // through to /login.  The browser client auto-detects the hash fragment
+  // and creates a session — we just listen and redirect.
   useEffect(() => {
-    if (searchParams.get("error") === "auth") {
-      setError(
-        "Email confirmation failed or link expired. Please try again."
-      );
+    const hash = window.location.hash;
+    const hasToken = hash.includes("access_token=");
+
+    if (hasToken) {
+      // Supabase browser client picks up the hash automatically.
+      // Listen for the session to be established, then redirect.
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((event) => {
+        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+          router.replace("/inbox");
+        }
+      });
+
+      // Fallback: if the event doesn't fire within 3s, check manually
+      const timeout = setTimeout(async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          router.replace("/inbox");
+        } else {
+          // Token was invalid or expired — show confirmation success anyway
+          setSuccess("Email confirmed! Log in to continue.");
+          setChecking(false);
+        }
+      }, 3000);
+
+      return () => {
+        subscription.unsubscribe();
+        clearTimeout(timeout);
+      };
     }
-  }, [searchParams]);
+
+    // --- Priority 2: no hash token — handle query params normally ---
+    if (searchParams.get("confirmed") === "true") {
+      setSuccess("Email confirmed! Log in to continue.");
+    } else if (searchParams.get("error") === "auth") {
+      setError("Authentication failed. Please try again.");
+    }
+    setChecking(false);
+  }, [searchParams, supabase.auth, router]);
+
+  // While we're checking for a hash token, show a spinner instead of the
+  // login form (prevents the false error from flashing)
+  if (checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-6 h-6 border-2 border-denim-200 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-zinc-400 text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -60,6 +113,23 @@ function LoginForm() {
         <p className="text-zinc-500 text-sm text-center mb-8">
           Log in to your account
         </p>
+
+        {success && (
+          <div className="flex items-start gap-3 bg-green-500/5 border border-green-500/20 text-green-300 px-4 py-3 rounded-xl mb-4 text-sm">
+            <svg
+              className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clipRule="evenodd"
+              />
+            </svg>
+            {success}
+          </div>
+        )}
 
         {error && (
           <div className="flex items-start gap-3 bg-red-500/5 border border-red-500/20 text-red-300 px-4 py-3 rounded-xl mb-4 text-sm">

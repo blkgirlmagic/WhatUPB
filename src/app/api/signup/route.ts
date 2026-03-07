@@ -1,6 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import crypto from "crypto";
 import { getSupabase } from "@/lib/supabase";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 function calculateAge(month: number, day: number, year: number): number {
   const today = new Date();
@@ -16,8 +18,31 @@ function calculateAge(month: number, day: number, year: number): number {
   return age;
 }
 
-export async function POST(request: Request) {
+function hashIP(ip: string): string {
+  return crypto
+    .createHash("sha256")
+    .update(ip + "_whatupb_rate_limit")
+    .digest("hex")
+    .substring(0, 16);
+}
+
+export async function POST(request: NextRequest) {
   try {
+    // 0. Rate limit — 3 signup attempts per minute per IP
+    const clientIP =
+      request.headers.get("cf-connecting-ip") ||
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+    const ipHash = clientIP !== "unknown" ? hashIP(clientIP) : null;
+    const rateCheck = checkRateLimit(ipHash, { maxRequests: 3, prefix: "signup" });
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { error: "Too many signup attempts. Please wait a moment." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { username, email, password, month, day, year } = body;
 
