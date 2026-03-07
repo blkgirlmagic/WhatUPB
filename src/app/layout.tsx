@@ -45,7 +45,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased texture-overlay`}
       >
         <AgeGate>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <main>{children}</main>
+          </ToastProvider>
         </AgeGate>
       </body>
     </html>
