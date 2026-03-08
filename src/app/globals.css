@@ -1,11 +1,69 @@
 @import "tailwindcss";
 
-/* Homepage glass card hover lift */
+/* Homepage glass card */
 .glass-card {
   transition: transform 0.3s ease;
 }
 .glass-card:hover {
   transform: translateY(-4px);
+}
+
+/* Homepage button overrides */
+.home-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 14px;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.home-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.home-btn-primary {
+  background: linear-gradient(135deg, #7c6aac, #9b7fd4);
+  color: white;
+}
+.home-btn-dark {
+  background: #2d2840;
+  color: white;
+}
+
+/* Homepage trust meta */
+.home-meta {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 20px;
+  font-size: 13px;
+  font-family: 'Cormorant Garamond', serif;
+  color: #7a6e8a;
+  letter-spacing: 0.2px;
+}
+
+/* Homepage responsive */
+@media (max-width: 720px) {
+  .glass-card {
+    width: 92vw !important;
+    padding: 40px 28px !important;
+  }
+  .glass-card h1 {
+    font-size: 38px !important;
+  }
+  .home-meta {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
 }
 
 /* ============================================================

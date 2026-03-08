@@ -26,120 +26,79 @@ export default async function Home() {
           height: 700,
           background: "radial-gradient(circle, rgba(255,255,255,0.35), transparent 70%)",
           filter: "blur(80px)",
-          zIndex: -1,
+          zIndex: 0,
         }}
       />
 
       <div
         className="glass-card text-center relative"
         style={{
-          width: 650,
+          zIndex: 1,
+          width: 680,
           maxWidth: "100%",
           padding: "56px 48px",
-          background: "rgba(255,255,255,0.65)",
+          background: "rgba(255,255,255,0.55)",
           backdropFilter: "blur(22px)",
           WebkitBackdropFilter: "blur(22px)",
-          borderRadius: 24,
-          boxShadow: "0 40px 80px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.5)",
+          borderRadius: 28,
+          border: "1px solid rgba(255,255,255,0.45)",
+          boxShadow: "0 40px 90px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.5)",
         }}
       >
         {/* Logo */}
         <h1
-          className="font-bold tracking-tight animate-fade-in-up"
+          className="font-bold animate-fade-in-up"
           style={{
             fontFamily: "'Cormorant Garamond', serif",
-            fontSize: 42,
-            marginBottom: 12,
+            fontSize: 52,
+            letterSpacing: "-0.5px",
+            marginBottom: 10,
             color: "#2d2840",
           }}
         >
           WhatUPB
         </h1>
 
-        {/* Tagline */}
+        {/* Subtitle */}
         <p
-          className="text-lg sm:text-xl animate-fade-in-up-delay-1 leading-relaxed"
-          style={{ fontFamily: "'Cormorant Garamond', serif", color: "#5a5070", marginBottom: 28 }}
+          className="animate-fade-in-up-delay-1"
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 20,
+            lineHeight: 1.5,
+            color: "#5a5070",
+            marginBottom: 36,
+          }}
         >
-          Share your link. Get real talk from anyone.
-        </p>
-        <p
-          className="text-sm animate-fade-in-up-delay-2"
-          style={{ fontFamily: "'Cormorant Garamond', serif", color: "#5a5070", marginBottom: 28 }}
-        >
-          Anonymous. Honest. Abuse blocked automatically.
+          Say what people really think — anonymously.
         </p>
 
         {/* CTA buttons */}
         {user ? (
-          <div className="flex flex-col gap-3 animate-fade-in-up-delay-3">
-            <Link href="/inbox" className="btn-primary text-base py-3.5 animate-glow-pulse">
+          <div className="animate-fade-in-up-delay-2">
+            <Link href="/inbox" className="home-btn home-btn-primary">
               Go to Inbox
             </Link>
-            <Link href="/settings" className="btn-secondary py-3">
+            <Link href="/settings" className="home-btn home-btn-dark">
               Settings
             </Link>
           </div>
         ) : (
-          <div className="flex flex-col gap-3 animate-fade-in-up-delay-3">
-            <Link
-              href="/signup"
-              className="btn-primary text-base py-3.5 animate-glow-pulse"
-            >
+          <div className="animate-fade-in-up-delay-2">
+            <Link href="/signup" className="home-btn home-btn-primary">
               Create Your Link
             </Link>
-            <Link href="/login" className="btn-secondary py-3">
+            <Link href="/login" className="home-btn home-btn-dark">
               Log In
             </Link>
           </div>
         )}
 
-        {/* Social proof / trust */}
-        <div className="mt-12 animate-fade-in-up-delay-4">
-          <div className="flex items-center justify-center gap-6 text-xs" style={{ color: "#5a5070" }}>
-            <span className="flex items-center gap-1.5">
-              <svg
-                className="w-3.5 h-3.5 text-emerald-500/70"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Abuse auto-blocked
-            </span>
-            <span className="flex items-center gap-1.5">
-              <svg
-                className="w-3.5 h-3.5 text-emerald-500/70"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Fully anonymous
-            </span>
-            <span className="flex items-center gap-1.5">
-              <svg
-                className="w-3.5 h-3.5 text-emerald-500/70"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Takes 30 seconds
-            </span>
-          </div>
+        {/* Trust badges */}
+        <div className="home-meta animate-fade-in-up-delay-3">
+          <span>&#10004; Abuse auto-blocked</span>
+          <span>&#10004; Fully anonymous</span>
+          <span>&#10004; Takes 30 seconds</span>
         </div>
       </div>
 
