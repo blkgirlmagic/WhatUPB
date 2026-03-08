@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { moderateMessage } from "@/lib/moderation";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logModerationBlock } from "@/lib/moderation-log";
+import { checkContentFilter, logBlockedMessage } from "@/lib/content-filter";
 import { sendNewMessageNotification } from "@/lib/email";
 import { getSupabase as getServiceSupabase } from "@/lib/supabase";
 
@@ -30,6 +31,7 @@ type RejectReason =
   | "validation_length"
   | "validation_links"
   | "moderation_blocked"
+  | "content_filter"
   | "rate_limit"
   | "recipient_not_found"
   | "rpc_error"
@@ -181,7 +183,25 @@ export async function POST(request: NextRequest) {
         ipHash,
         recipientId,
       }).catch(() => {});
-      return NextResponse.json(GENERIC_ERROR, { status: 429 });
+      return NextResponse.json({ error: "Slow down" }, { status: 429 });
+    }
+
+    // 5.5. Pre-moderation content filter — catches PII, spam, URLs, doxxing
+    //      Runs BEFORE Perspective API to save quota on obvious violations.
+    const filterResult = checkContentFilter(content.trim());
+    if (filterResult.blocked) {
+      console.warn(
+        `[reject] content_filter — reason=${filterResult.reason}`
+      );
+      logRejection("content_filter", clientIP, {
+        filterReason: filterResult.reason,
+      });
+      // Fire-and-forget: log to blocked_messages table
+      logBlockedMessage(filterResult.reason!, ipHash).catch(() => {});
+      return NextResponse.json(
+        { error: "Message contains restricted content" },
+        { status: 403 }
+      );
     }
 
     // 6. Content moderation — HARD GUARD
