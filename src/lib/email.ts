@@ -70,7 +70,7 @@ export async function sendNewMessageNotification(
           <!-- Logo -->
           <tr>
             <td align="center" style="padding-bottom:32px;">
-              <span style="font-size:24px;font-weight:700;color:#a5b4fc;letter-spacing:0.05em;">WhatUPB</span>
+              <span style="font-size:24px;font-weight:700;color:#b9a3e0;letter-spacing:0.05em;">WhatUPB</span>
             </td>
           </tr>
           <!-- Single Card -->
@@ -82,19 +82,19 @@ export async function sendNewMessageNotification(
               <p style="color:#71717a;font-size:14px;margin:0 0 28px;line-height:1.5;">
                 You received an anonymous message on WhatUPB.
               </p>
-              <a href="${inboxUrl}" style="display:inline-block;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;font-weight:600;font-size:15px;padding:12px 32px;border-radius:12px;text-decoration:none;">
+              <a href="${inboxUrl}" style="display:inline-block;background:linear-gradient(135deg,#7c6aac,#9b7fd4);color:#fff;font-weight:600;font-size:15px;padding:12px 32px;border-radius:12px;text-decoration:none;">
                 Read Message
               </a>
               <!-- Divider -->
               <div style="border-top:1px solid #2a2a35;margin:32px 0 24px;"></div>
               <!-- Share section -->
-              <p style="color:#a5b4fc;font-size:14px;font-weight:600;margin:0 0 6px;">
+              <p style="color:#b9a3e0;font-size:14px;font-weight:600;margin:0 0 6px;">
                 Want more messages?
               </p>
               <p style="color:#71717a;font-size:13px;margin:0 0 16px;">
                 Share your WhatUPB link:
               </p>
-              <a href="${profileUrl}" style="display:inline-block;background-color:#1c1c24;border:1px solid #2a2a35;border-radius:10px;padding:12px 24px;color:#a5b4fc;font-size:16px;font-weight:700;text-decoration:none;letter-spacing:0.02em;">
+              <a href="${profileUrl}" style="display:inline-block;background-color:#1c1c24;border:1px solid #2a2a35;border-radius:10px;padding:12px 24px;color:#b9a3e0;font-size:16px;font-weight:700;text-decoration:none;letter-spacing:0.02em;">
                 ${profileDisplay}
               </a>
               <p style="color:#52525b;font-size:11px;margin:10px 0 0;">
@@ -110,7 +110,7 @@ export async function sendNewMessageNotification(
             <td align="center" style="padding-top:24px;">
               <p style="color:#3f3f46;font-size:12px;margin:0;line-height:1.5;">
                 You're receiving this because you have an account on WhatUPB.<br>
-                <a href="${unsubscribeUrl}" style="color:#6366f1;text-decoration:underline;">Unsubscribe</a> from email notifications.
+                <a href="${unsubscribeUrl}" style="color:#9b7fd4;text-decoration:underline;">Unsubscribe</a> from email notifications.
               </p>
             </td>
           </tr>

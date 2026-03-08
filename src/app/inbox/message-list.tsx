@@ -226,7 +226,7 @@ export default function MessageList({
       width: 600px;
       height: 600px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(124, 106, 172, 0.12) 0%, transparent 70%);
       top: 30%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -242,7 +242,7 @@ export default function MessageList({
       left: 100px;
       font-size: 280px;
       line-height: 1;
-      color: rgba(99, 102, 241, 0.08);
+      color: rgba(124, 106, 172, 0.08);
       font-family: Georgia, serif;
       pointer-events: none;
     `;
@@ -257,7 +257,7 @@ export default function MessageList({
       right: 100px;
       font-size: 280px;
       line-height: 1;
-      color: rgba(99, 102, 241, 0.08);
+      color: rgba(124, 106, 172, 0.08);
       font-family: Georgia, serif;
       pointer-events: none;
     `;
@@ -317,7 +317,7 @@ export default function MessageList({
     divider.style.cssText = `
       width: 60px;
       height: 2px;
-      background: rgba(99, 102, 241, 0.3);
+      background: rgba(124, 106, 172, 0.3);
       border-radius: 1px;
       margin-bottom: 12px;
     `;

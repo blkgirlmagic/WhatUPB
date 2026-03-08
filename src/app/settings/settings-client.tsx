@@ -8,8 +8,8 @@ import { useToast } from "@/components/toast";
 type Filter = { id: string; keyword: string };
 
 const THEME_OPTIONS = [
-  { value: "dark", label: "Dark", bg: "#0c0c10", accent: "#6366f1" },
-  { value: "light", label: "Light", bg: "#f8f8f8", accent: "#4f46e5" },
+  { value: "dark", label: "Dark", bg: "#0c0c10", accent: "#7c6aac" },
+  { value: "light", label: "Light", bg: "#f8f8f8", accent: "#6a5a96" },
   { value: "purple", label: "Purple", bg: "#1a0a2e", accent: "#a855f7" },
   { value: "ocean", label: "Ocean", bg: "#0a192f", accent: "#38bdf8" },
 ] as const;
@@ -387,9 +387,9 @@ export default function SettingsClient({
         className="animate-fade-in-up rounded-2xl p-6 text-center"
         style={{
           background: "var(--surface-1)",
-          border: "1px solid rgba(99, 102, 241, 0.2)",
+          border: "1px solid rgba(124, 106, 172, 0.2)",
           boxShadow:
-            "0 0 40px rgba(99, 102, 241, 0.06), 0 4px 24px rgba(0, 0, 0, 0.3)",
+            "0 0 40px rgba(124, 106, 172, 0.06), 0 4px 24px rgba(0, 0, 0, 0.3)",
         }}
       >
         <p className="text-xs font-medium uppercase tracking-widest text-zinc-500 mb-3">
@@ -900,7 +900,7 @@ export default function SettingsClient({
             disabled={savingNotifs}
             className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
             style={{
-              backgroundColor: emailNotifs ? "#6366f1" : "#27272a",
+              backgroundColor: emailNotifs ? "#7c6aac" : "#27272a",
               opacity: savingNotifs ? 0.6 : 1,
             }}
           >

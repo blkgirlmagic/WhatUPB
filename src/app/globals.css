@@ -77,14 +77,14 @@
   --background: #0c0c10;
   --foreground: #ededed;
 
-  /* Denim accent spectrum */
-  --denim-50:  #eef2ff;
-  --denim-100: #c7d2fe;
-  --denim-200: #a5b4fc;
-  --denim-300: #818cf8;
-  --denim-400: #6366f1;
-  --denim-500: #4f46e5;
-  --denim-600: #3730a3;
+  /* Brand purple accent spectrum */
+  --denim-50:  #f3eeff;
+  --denim-100: #d4c7f2;
+  --denim-200: #b9a3e0;
+  --denim-300: #9b7fd4;
+  --denim-400: #7c6aac;
+  --denim-500: #6a5a96;
+  --denim-600: #4a3d75;
 
   /* Surface layers */
   --surface-1: #141418;
@@ -247,15 +247,15 @@ body {
 @keyframes welcome-glow {
   0% {
     opacity: 0;
-    box-shadow: 0 0 0px rgba(99, 102, 241, 0);
+    box-shadow: 0 0 0px rgba(124, 106, 172, 0);
   }
   30% {
     opacity: 1;
-    box-shadow: 0 0 60px rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 60px rgba(124, 106, 172, 0.15);
   }
   100% {
     opacity: 1;
-    box-shadow: 0 0 0px rgba(99, 102, 241, 0);
+    box-shadow: 0 0 0px rgba(124, 106, 172, 0);
   }
 }
 
@@ -301,7 +301,7 @@ body {
 .age-select:focus {
   outline: none;
   border-color: var(--denim-400);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(124, 106, 172, 0.1);
 }
 
 .age-select option {
@@ -437,7 +437,7 @@ body {
 .input:focus {
   outline: none;
   border-color: var(--denim-400);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(124, 106, 172, 0.1);
 }
 
 /* ============================================================
