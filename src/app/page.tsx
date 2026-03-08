@@ -8,29 +8,44 @@ export default async function Home() {
   } = await supabase.auth.getUser();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 relative">
-      {/* Subtle radial glow behind hero */}
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 relative"
+      style={{
+        backgroundImage: "url('/My_WhaUPB_home_page.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        minHeight: "100vh",
+      }}
+    >
       <div
-        className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]"
+        className="text-center max-w-lg relative rounded-2xl px-8 py-10 sm:px-10 sm:py-12"
         style={{
-          background:
-            "radial-gradient(circle, var(--denim-400) 0%, transparent 70%)",
+          background: "rgba(255,255,255,0.25)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          border: "1px solid rgba(255,255,255,0.45)",
         }}
-      />
-
-      <div className="text-center max-w-lg relative">
+      >
         {/* Logo */}
-        <h1 className="text-6xl sm:text-7xl font-bold tracking-tight animate-fade-in-up">
-          <span className="bg-gradient-to-r from-denim-200 via-denim-100 to-white bg-clip-text text-transparent">
-            WhatUPB
-          </span>
+        <h1
+          className="text-6xl sm:text-7xl font-bold tracking-tight animate-fade-in-up"
+          style={{ fontFamily: "'Cormorant Garamond', serif", color: "#2d2840" }}
+        >
+          WhatUPB
         </h1>
 
         {/* Tagline */}
-        <p className="text-zinc-400 text-lg sm:text-xl mt-4 mb-2 animate-fade-in-up-delay-1 leading-relaxed">
+        <p
+          className="text-lg sm:text-xl mt-4 mb-2 animate-fade-in-up-delay-1 leading-relaxed"
+          style={{ fontFamily: "'Cormorant Garamond', serif", color: "#5a5070" }}
+        >
           Share your link. Get real talk from anyone.
         </p>
-        <p className="text-zinc-500 text-sm mb-10 animate-fade-in-up-delay-2">
+        <p
+          className="text-sm mb-10 animate-fade-in-up-delay-2"
+          style={{ fontFamily: "'Cormorant Garamond', serif", color: "#5a5070" }}
+        >
           Anonymous. Honest. Abuse blocked automatically.
         </p>
 
@@ -60,7 +75,7 @@ export default async function Home() {
 
         {/* Social proof / trust */}
         <div className="mt-12 animate-fade-in-up-delay-4">
-          <div className="flex items-center justify-center gap-6 text-xs text-zinc-500">
+          <div className="flex items-center justify-center gap-6 text-xs" style={{ color: "#5a5070" }}>
             <span className="flex items-center gap-1.5">
               <svg
                 className="w-3.5 h-3.5 text-emerald-500/70"
@@ -109,19 +124,19 @@ export default async function Home() {
 
       {/* Footer */}
       <footer className="absolute bottom-6 text-center">
-        <p className="text-xs text-zinc-600">
+        <p className="text-xs" style={{ color: "#5a5070" }}>
           Built for honest conversations. No human review of messages — ever.
         </p>
-        <nav aria-label="Legal" className="flex items-center justify-center gap-4 mt-2 text-xs text-zinc-600">
-          <Link href="/privacy" className="hover:text-zinc-400 transition">
+        <nav aria-label="Legal" className="flex items-center justify-center gap-4 mt-2 text-xs" style={{ color: "#5a5070" }}>
+          <Link href="/privacy" className="hover:opacity-70 transition">
             Privacy
           </Link>
-          <span className="text-zinc-700">·</span>
-          <Link href="/terms" className="hover:text-zinc-400 transition">
+          <span style={{ color: "#5a5070" }}>·</span>
+          <Link href="/terms" className="hover:opacity-70 transition">
             Terms
           </Link>
-          <span className="text-zinc-700">·</span>
-          <Link href="/content-policy" className="hover:text-zinc-400 transition">
+          <span style={{ color: "#5a5070" }}>·</span>
+          <Link href="/content-policy" className="hover:opacity-70 transition">
             Content Policy
           </Link>
         </nav>
