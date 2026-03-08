@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ToastProvider } from "@/components/toast";
 import AgeGate from "@/components/AgeGate";
+import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,10 +15,34 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#0c0c10",
+  colorScheme: "dark",
+};
+
 export const metadata: Metadata = {
   title: "WhatUPB - Anonymous Honest Feedback",
   description:
     "Send and receive anonymous messages honestly. WhatUPB lets anyone share real thoughts without revealing their identity—with built-in abuse blocking.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "WhatUPB",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/icon.svg" }],
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
   keywords: [
     "anonymous messaging app",
     "anonymous feedback",
@@ -56,6 +81,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased texture-overlay`}
       >
+        <ServiceWorkerRegistrar />
         <AgeGate>
           <ToastProvider>
             <main>{children}</main>
