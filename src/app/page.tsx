@@ -37,7 +37,7 @@ export default async function Home() {
           width: 680,
           maxWidth: "100%",
           padding: "56px 48px",
-          background: "rgba(255,255,255,0.55)",
+          background: "rgba(255,255,255,0.25)",
           backdropFilter: "blur(22px)",
           WebkitBackdropFilter: "blur(22px)",
           borderRadius: 28,
