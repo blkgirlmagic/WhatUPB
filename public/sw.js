@@ -6,10 +6,10 @@
 //  Registration is gated to production in ServiceWorkerRegistrar.tsx.
 // ---------------------------------------------------------------------------
 
-const CACHE_NAME = "whatupb-v1";
+const CACHE_NAME = "whatupb-v2";
 
 // Assets to pre-cache during install
-const PRECACHE_ASSETS = ["/offline", "/icon.svg", "/favicon.ico"];
+const PRECACHE_ASSETS = ["/offline", "/favicon.png", "/icon-192.png"];
 
 // ── INSTALL ─────────────────────────────────────────────────────────────────
 
