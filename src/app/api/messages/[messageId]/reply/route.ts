@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { moderateMessage } from "@/lib/moderation";
 import { requireCsrfHeader } from "@/lib/csrf";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { checkContentFilter, logBlockedMessage } from "@/lib/content-filter";
 
 const GENERIC_ERROR = {
   error: "Reply could not be sent. Please try again.",
@@ -93,6 +94,17 @@ export async function POST(
     return NextResponse.json(
       { error: "Reply is too long (max 1000 characters)." },
       { status: 400 }
+    );
+  }
+
+  // 2.5. Pre-moderation content filter — same filter as messages route
+  const filterResult = checkContentFilter(content);
+  if (filterResult.blocked) {
+    console.warn(`[reply-reject] content_filter — reason=${filterResult.reason}`);
+    logBlockedMessage(filterResult.reason!, ipHash).catch(() => {});
+    return NextResponse.json(
+      { error: "Message contains restricted content" },
+      { status: 403 }
     );
   }
 

@@ -10,14 +10,26 @@
 
 import { getSupabase } from "@/lib/supabase";
 
-// ── Phone numbers (any common format) ────────────────────────────────────────
+// ── Phone numbers (any format with 9+ digits) ───────────────────────────────
 
-const PHONE_PATTERNS: RegExp[] = [
-  /\(\d{3}\)\s*\d{3}[-.\s]?\d{4}/,          // (123) 456-7890
-  /\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b/,         // 123-456-7890  123.456.7890
-  /\+\d{10,}/,                                // +1234567890
-  /\b\d{10,}\b/,                              // 10+ consecutive digits
-];
+/**
+ * Detect phone numbers by finding digit-heavy runs separated by common
+ * phone separators (spaces, dashes, dots, parentheses).  If a run contains
+ * 9 or more digits it's treated as a phone number regardless of format.
+ *
+ * Catches: (123) 456-7890, 123-456-890, 444-123-098, 123.456.7890,
+ *          +1234567890, 123456789, and any other 9+ digit sequence.
+ */
+function containsPhoneNumber(text: string): boolean {
+  // Find contiguous runs that start with a digit/( /+ , contain only
+  // digits and phone-separator chars, and end with a digit.
+  const runs = text.matchAll(/[\d(+][\d\s\-.()]+\d/g);
+  for (const match of runs) {
+    const digitCount = match[0].replace(/\D/g, "").length;
+    if (digitCount >= 9) return true;
+  }
+  return false;
+}
 
 // ── Email addresses ──────────────────────────────────────────────────────────
 
@@ -88,11 +100,9 @@ export interface ContentFilterResult {
  * Returns immediately if any pattern matches.
  */
 export function checkContentFilter(text: string): ContentFilterResult {
-  // 1. Phone numbers
-  for (const pattern of PHONE_PATTERNS) {
-    if (pattern.test(text)) {
-      return { blocked: true, reason: "phone_number" };
-    }
+  // 1. Phone numbers (9+ digits in any format)
+  if (containsPhoneNumber(text)) {
+    return { blocked: true, reason: "phone_number" };
   }
 
   // 2. Email addresses
