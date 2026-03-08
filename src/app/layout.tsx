@@ -15,22 +15,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WhatUPB — Anonymous Messages",
+  title: "WhatUPB - Anonymous Honest Feedback",
   description:
-    "Get honest, anonymous messages from friends and followers. Share your link, get real talk. Abuse automatically blocked.",
+    "Send and receive anonymous messages honestly. WhatUPB lets anyone share real thoughts without revealing their identity—with built-in abuse blocking.",
+  keywords: [
+    "anonymous messaging app",
+    "anonymous feedback",
+    "honest feedback",
+    "send anonymous messages",
+  ],
   openGraph: {
-    title: "WhatUPB — Anonymous Messages",
+    title: "WhatUPB - Anonymous Honest Feedback",
     description:
-      "Send and receive anonymous messages. Safe, private, and abuse-free.",
+      "Send and receive anonymous messages honestly. WhatUPB lets anyone share real thoughts without revealing their identity—with built-in abuse blocking.",
     url: "https://whatupb.com",
     siteName: "WhatUPB",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "WhatUPB — Anonymous Messages",
+    title: "WhatUPB - Anonymous Honest Feedback",
     description:
-      "Send and receive anonymous messages. Safe, private, and abuse-free.",
+      "Send and receive anonymous messages honestly. WhatUPB lets anyone share real thoughts without revealing their identity—with built-in abuse blocking.",
   },
 };
 
