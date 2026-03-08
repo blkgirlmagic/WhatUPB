@@ -1,5 +1,12 @@
+import * as Sentry from "@sentry/nextjs";
 import posthog from 'posthog-js'
 
+// Sentry — error monitoring
+import "./sentry.client.config";
+
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+
+// PostHog — product analytics
 posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
   api_host: 'https://t.whatupb.com',
   ui_host: 'https://us.posthog.com',

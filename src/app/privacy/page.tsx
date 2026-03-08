@@ -181,6 +181,19 @@ export default function PrivacyPolicy() {
                 </a>
                 )
               </li>
+              <li>
+                <span className="text-zinc-400">Sentry</span> — error
+                monitoring and performance tracking (
+                <a
+                  href="https://sentry.io/privacy/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-denim-200 hover:text-denim-100 underline transition"
+                >
+                  sentry.io/privacy
+                </a>
+                )
+              </li>
             </ul>
           </section>
 
