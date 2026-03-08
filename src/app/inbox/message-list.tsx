@@ -114,7 +114,7 @@ export default function MessageList({
         );
 
         if (res.status === 403) {
-          toast("Reply blocked for safety.", "error");
+          toast("Message blocked — threats and abuse aren't allowed. Try rephrasing.", "error");
         } else {
           toast(data.error || "Failed to send reply.", "error");
         }

@@ -119,6 +119,10 @@ export default async function Home() {
           <Link href="/content-policy" className="hover:opacity-70 transition">
             Content Policy
           </Link>
+          <span style={{ color: "#5a5070" }}>·</span>
+          <Link href="/safety" className="hover:opacity-70 transition">
+            Safety
+          </Link>
         </nav>
       </footer>
     </div>

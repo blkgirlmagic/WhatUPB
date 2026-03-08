@@ -40,3 +40,26 @@ create index if not exists idx_blocked_messages_reason
 create index if not exists idx_blocked_messages_ip_hash
   on public.blocked_messages (ip_hash, created_at desc)
   where ip_hash is not null;
+
+-- ---------------------------------------------------------------------------
+--  SECURITY DEFINER function: log_blocked_message
+--  Called from the API route via supabase.rpc().  Bypasses RLS.
+--  Same pattern as log_moderation_block.
+-- ---------------------------------------------------------------------------
+
+create or replace function public.log_blocked_message(
+  p_reason   text,
+  p_ip_hash  text
+)
+returns json
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.blocked_messages (reason, ip_hash)
+  values (p_reason, p_ip_hash);
+
+  return json_build_object('success', true);
+end;
+$$;

@@ -8,7 +8,7 @@
 //  and hashed IP are written to the blocked_messages table.
 // ---------------------------------------------------------------------------
 
-import { getSupabase } from "@/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
 
 // ── Phone numbers (any format with 9+ digits) ───────────────────────────────
 
@@ -142,19 +142,29 @@ export function checkContentFilter(text: string): ContentFilterResult {
 
 // ── Logging to Supabase blocked_messages table ───────────────────────────────
 
+// Fresh anon client per call — avoids stale singleton fetch issues on Vercel.
+// Uses a SECURITY DEFINER RPC function to bypass RLS, same pattern as
+// moderation-log.ts (which works reliably).
+function getAnonSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+}
+
 /**
  * Fire-and-forget log of a blocked message to the blocked_messages table.
- * Uses service role client to bypass RLS.
+ * Uses anon client + SECURITY DEFINER RPC to bypass RLS.
  */
 export async function logBlockedMessage(
   reason: string,
   ipHash: string | null
 ): Promise<void> {
   try {
-    const supabase = getSupabase();
-    const { error } = await supabase.from("blocked_messages").insert({
-      reason,
-      ip_hash: ipHash,
+    const supabase = getAnonSupabase();
+    const { error } = await supabase.rpc("log_blocked_message", {
+      p_reason: reason,
+      p_ip_hash: ipHash,
     });
 
     if (error) {

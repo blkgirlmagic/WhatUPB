@@ -257,6 +257,12 @@ export default function ContentPolicy() {
           >
             Terms of Service
           </Link>
+          <Link
+            href="/safety"
+            className="hover:text-zinc-400 transition"
+          >
+            Safety
+          </Link>
           <Link href="/" className="hover:text-zinc-400 transition">
             Home
           </Link>
