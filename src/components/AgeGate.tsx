@@ -5,11 +5,20 @@ import { createClient } from "@/lib/supabase-browser";
 import posthog from "posthog-js";
 
 export default function AgeGate({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
   const [verified, setVerified] = useState<boolean | null>(null);
   const [checked, setChecked] = useState(false);
   const [exiting, setExiting] = useState(false);
 
+  // Gate all browser-only work behind a mounted flag so the first client
+  // render matches the server render (both return just <>{children}</>).
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     async function check() {
       // 1. Cookie check — fastest, no network call
       const hasCookie = document.cookie
@@ -36,7 +45,7 @@ export default function AgeGate({ children }: { children: React.ReactNode }) {
     }
 
     check();
-  }, []);
+  }, [mounted]);
 
   const handleEnter = () => {
     if (!checked) return;
@@ -57,8 +66,9 @@ export default function AgeGate({ children }: { children: React.ReactNode }) {
     setTimeout(() => setVerified(true), 400);
   };
 
-  // Still checking cookie or already verified — render children only
-  if (verified === null || verified) {
+  // Before mount or while checking — render children only (matches server HTML).
+  // After mount + verified === true — also render children only.
+  if (!mounted || verified === null || verified) {
     return <>{children}</>;
   }
 

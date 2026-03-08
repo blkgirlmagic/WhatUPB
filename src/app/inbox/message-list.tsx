@@ -27,6 +27,7 @@ export default function MessageList({
   isPremium: boolean;
   totalCount: number;
 }) {
+  const [mounted, setMounted] = useState(false);
   const [messages, setMessages] = useState(initialMessages);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -38,6 +39,11 @@ export default function MessageList({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const supabase = createClient();
   const { toast } = useToast();
+
+  // Hydration guard — defer timezone-dependent rendering to the client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Focus textarea when reply form opens
   useEffect(() => {
@@ -160,6 +166,21 @@ export default function MessageList({
 
   function formatDate(dateStr: string) {
     const date = new Date(dateStr);
+
+    // Before hydration, use a timezone-safe UTC format so server
+    // and client produce identical HTML (prevents hydration mismatch).
+    if (!mounted) {
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone: "UTC",
+      });
+    }
+
+    // After mount, render in the user's local timezone.
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
