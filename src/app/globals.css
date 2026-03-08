@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Homepage glass card hover lift */
+.glass-card {
+  transition: transform 0.3s ease;
+}
+.glass-card:hover {
+  transform: translateY(-4px);
+}
+
 /* ============================================================
    WhatUPB Design System — "Denim" palette
    Premium, calm, worn-in texture vibe.

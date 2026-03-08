@@ -18,33 +18,54 @@ export default async function Home() {
         minHeight: "100vh",
       }}
     >
+      {/* Radial glow behind card */}
       <div
-        className="text-center max-w-lg relative rounded-2xl px-8 py-10 sm:px-10 sm:py-12"
+        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         style={{
-          background: "rgba(255,255,255,0.25)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255,255,255,0.45)",
+          width: 700,
+          height: 700,
+          background: "radial-gradient(circle, rgba(255,255,255,0.35), transparent 70%)",
+          filter: "blur(80px)",
+          zIndex: -1,
+        }}
+      />
+
+      <div
+        className="glass-card text-center relative"
+        style={{
+          width: 650,
+          maxWidth: "100%",
+          padding: "56px 48px",
+          background: "rgba(255,255,255,0.65)",
+          backdropFilter: "blur(22px)",
+          WebkitBackdropFilter: "blur(22px)",
+          borderRadius: 24,
+          boxShadow: "0 40px 80px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.5)",
         }}
       >
         {/* Logo */}
         <h1
-          className="text-6xl sm:text-7xl font-bold tracking-tight animate-fade-in-up"
-          style={{ fontFamily: "'Cormorant Garamond', serif", color: "#2d2840" }}
+          className="font-bold tracking-tight animate-fade-in-up"
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 42,
+            marginBottom: 12,
+            color: "#2d2840",
+          }}
         >
           WhatUPB
         </h1>
 
         {/* Tagline */}
         <p
-          className="text-lg sm:text-xl mt-4 mb-2 animate-fade-in-up-delay-1 leading-relaxed"
-          style={{ fontFamily: "'Cormorant Garamond', serif", color: "#5a5070" }}
+          className="text-lg sm:text-xl animate-fade-in-up-delay-1 leading-relaxed"
+          style={{ fontFamily: "'Cormorant Garamond', serif", color: "#5a5070", marginBottom: 28 }}
         >
           Share your link. Get real talk from anyone.
         </p>
         <p
-          className="text-sm mb-10 animate-fade-in-up-delay-2"
-          style={{ fontFamily: "'Cormorant Garamond', serif", color: "#5a5070" }}
+          className="text-sm animate-fade-in-up-delay-2"
+          style={{ fontFamily: "'Cormorant Garamond', serif", color: "#5a5070", marginBottom: 28 }}
         >
           Anonymous. Honest. Abuse blocked automatically.
         </p>
