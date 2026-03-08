@@ -47,9 +47,10 @@ export default async function Home() {
       >
         {/* Logo */}
         <h1
-          className="font-bold animate-fade-in-up"
+          className="animate-fade-in-up"
           style={{
-            fontFamily: "'Cormorant Garamond', serif",
+            fontFamily: "var(--font-inter), 'Inter', sans-serif",
+            fontWeight: 800,
             fontSize: 52,
             letterSpacing: "-0.5px",
             marginBottom: 10,
