@@ -42,35 +42,19 @@ export default async function Inbox() {
   }
 
   // Free users: cap at 50 most recent. Premium: unlimited.
-  // Try with replies join first, fall back to without if replies table doesn't exist
-  let messages: Array<{ id: string; content: string; created_at: string; replies?: Array<{ id: string; content: string; created_at: string }> }> | null = null;
+  let messages: Array<{ id: string; content: string; created_at: string }> | null = null;
 
   let query = supabase
     .from("messages")
-    .select("*, replies(id, content, created_at)")
+    .select("*")
     .eq("recipient_id", user.id)
     .order("created_at", { ascending: false });
 
   // Cap initial load: 50 for free, 100 for premium (prevents mega-fetches)
   query = query.limit(isPremium ? PREMIUM_PAGE_SIZE : MESSAGE_CAP);
 
-  const { data, error: msgError } = await query;
-
-  if (msgError) {
-    // replies table may not exist — retry without join
-    let fallbackQuery = supabase
-      .from("messages")
-      .select("*")
-      .eq("recipient_id", user.id)
-      .order("created_at", { ascending: false });
-
-    fallbackQuery = fallbackQuery.limit(isPremium ? PREMIUM_PAGE_SIZE : MESSAGE_CAP);
-
-    const { data: fallbackData } = await fallbackQuery;
-    messages = fallbackData?.map((m) => ({ ...m, replies: [] })) ?? null;
-  } else {
-    messages = data;
-  }
+  const { data } = await query;
+  messages = data;
 
   return (
     <div className="min-h-screen px-4 py-8">

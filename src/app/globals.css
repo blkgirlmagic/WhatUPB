@@ -466,19 +466,27 @@ body {
 }
 
 /* ============================================================
-   Scrollbar styling (subtle, matches theme)
-   ============================================================ */
-
-/* ============================================================
-   Reply threads — mobile visibility
+   React button — mobile visibility
    On touch devices, hover states don't work, so we always show
-   the Reply button. Delete stays hidden until hover/focus.
+   the React button. Delete stays hidden until hover/focus.
    ============================================================ */
 
 @media (hover: none) {
-  .reply-toggle-btn {
+  .react-toggle-btn {
     opacity: 1 !important;
   }
+}
+
+/* ============================================================
+   Reaction cards — public profile feed
+   ============================================================ */
+
+.reaction-card {
+  background: var(--surface-1, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+  border-left: 2px solid rgba(96, 130, 182, 0.3);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
 }
 
 /* ============================================================

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
 import MessageForm from "./message-form";
+import ReactionsFeed from "./reactions-feed";
 
 export default async function PublicProfile({
   params,
@@ -20,8 +21,22 @@ export default async function PublicProfile({
     notFound();
   }
 
+  // Fetch public reactions for this profile
+  const { data: reactions } = await supabase
+    .from("reactions")
+    .select("id, content, created_at")
+    .eq("author_id", profile.id)
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  // Check if the current visitor is the profile owner
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isOwner = user?.id === profile.id;
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 relative">
+    <div className="min-h-screen flex flex-col items-center px-4 pt-20 pb-24 relative">
       {/* Subtle glow */}
       <div
         className="pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full opacity-[0.05]"
@@ -42,10 +57,11 @@ export default async function PublicProfile({
           </p>
         </div>
         <MessageForm recipientId={profile.id} username={profile.username} />
+        <ReactionsFeed reactions={reactions ?? []} isOwner={isOwner} />
       </div>
 
       {/* Branding link */}
-      <footer className="absolute bottom-6 text-center">
+      <footer className="mt-12 mb-6 text-center">
         <a
           href="/"
           className="text-xs text-zinc-600 hover:text-denim-300 transition"
