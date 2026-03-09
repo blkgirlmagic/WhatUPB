@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getStripe } from "@/lib/stripe";
 import SettingsClient from "./settings-client";
 import AppNav from "@/components/app-nav";
+import { resolveTheme } from "@/lib/themes";
 
 export default async function Settings() {
   const supabase = await createClient();
@@ -39,6 +40,8 @@ export default async function Settings() {
     link_theme: premiumProfile?.link_theme ?? "dark",
     stripe_subscription_id: premiumProfile?.stripe_subscription_id ?? null,
   };
+
+  const { name: theme, vars: themeVars } = resolveTheme(profile.link_theme);
 
   // Determine the current plan from the Stripe subscription
   let currentPlan: "weekly" | "monthly" | "yearly" | null = null;
@@ -82,7 +85,15 @@ export default async function Settings() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-8">
+    <div
+      className="min-h-screen px-4 py-8"
+      data-theme={theme}
+      style={{
+        ...themeVars,
+        background: themeVars["--background"] || "var(--background)",
+        color: themeVars["--foreground"] || "var(--foreground)",
+      } as React.CSSProperties}
+    >
       <div className="max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-8 animate-fade-in-up">
           <h1 className="text-2xl font-bold tracking-tight">Settings</h1>

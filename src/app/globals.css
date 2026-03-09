@@ -563,13 +563,17 @@ body {
 
 /* ----- Purple theme accent glow tweaks ----- */
 [data-theme="purple"] .btn-primary {
-  background: linear-gradient(135deg, #a855f7, #9333ea);
+  background: linear-gradient(135deg, #c084fc, #a855f7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3),
+              0 0 16px rgba(192, 132, 252, 0.15);
 }
 
 [data-theme="purple"] .btn-primary:hover {
-  background: linear-gradient(135deg, #c084fc, #a855f7);
+  background: linear-gradient(135deg, #d8b4fe, #c084fc);
+  border-color: rgba(255, 255, 255, 0.4);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4),
-              0 0 30px rgba(168, 85, 247, 0.2);
+              0 0 30px rgba(192, 132, 252, 0.25);
 }
 
 [data-theme="purple"] .input:focus {
@@ -580,10 +584,12 @@ body {
 /* ----- Ocean theme accent tweaks ----- */
 [data-theme="ocean"] .btn-primary {
   background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 [data-theme="ocean"] .btn-primary:hover {
   background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+  border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4),
               0 0 30px rgba(56, 189, 248, 0.2);
 }
@@ -591,6 +597,48 @@ body {
 [data-theme="ocean"] .input:focus {
   border-color: #38bdf8;
   box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+/* ============================================================
+   Crisis banner — universal high-contrast override
+   Uses opaque red so it's readable on dark, light, purple, ocean.
+   ============================================================ */
+
+.crisis-banner {
+  background: rgba(220, 38, 38, 0.15) !important;
+  border: 1px solid rgba(220, 38, 38, 0.5) !important;
+  color: #fca5a5 !important;
+}
+
+.crisis-banner a {
+  color: #fca5a5 !important;
+  text-decoration: underline !important;
+}
+
+.crisis-banner a:hover {
+  color: #fff !important;
+}
+
+.crisis-banner .crisis-icon {
+  color: #f87171 !important;
+}
+
+[data-theme="light"] .crisis-banner {
+  background: rgba(220, 38, 38, 0.08) !important;
+  border-color: rgba(220, 38, 38, 0.4) !important;
+  color: #991b1b !important;
+}
+
+[data-theme="light"] .crisis-banner a {
+  color: #dc2626 !important;
+}
+
+[data-theme="light"] .crisis-banner a:hover {
+  color: #7f1d1d !important;
+}
+
+[data-theme="light"] .crisis-banner .crisis-icon {
+  color: #dc2626 !important;
 }
 
 /* ============================================================
