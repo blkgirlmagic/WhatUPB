@@ -10,9 +10,11 @@ const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 export default function MessageForm({
   recipientId,
   username,
+  prompt,
 }: {
   recipientId: string;
   username: string;
+  prompt?: string;
 }) {
   const [content, setContent] = useState("");
   const [sent, setSent] = useState(false);
@@ -142,6 +144,16 @@ export default function MessageForm({
             />
           </svg>
           {error}
+        </div>
+      )}
+      {prompt && (
+        <div className="mb-3 text-left">
+          <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">
+            They want to know:
+          </p>
+          <p className="text-sm text-denim-200 font-medium italic">
+            &ldquo;{prompt}&rdquo;
+          </p>
         </div>
       )}
       <textarea

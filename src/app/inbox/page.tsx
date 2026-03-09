@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import MessageList from "./message-list";
 import AppNav from "@/components/app-nav";
+import { resolveTheme } from "@/lib/themes";
 
 export default async function Inbox() {
   const supabase = await createClient();
@@ -17,7 +18,7 @@ export default async function Inbox() {
   // Get username (always exists)
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username")
+    .select("username, link_theme")
     .eq("id", user.id)
     .single();
 
@@ -29,6 +30,11 @@ export default async function Inbox() {
     .single();
 
   const isPremium = premiumData?.is_premium ?? false;
+
+  const { name: theme, vars: themeVars } = resolveTheme(
+    (profile as Record<string, unknown> | null)?.link_theme as string
+  );
+
   const MESSAGE_CAP = 15;
   const PREMIUM_PAGE_SIZE = 100;
 
@@ -58,7 +64,15 @@ export default async function Inbox() {
   messages = data;
 
   return (
-    <div className="min-h-screen px-4 py-8">
+    <div
+      className="min-h-screen px-4 py-8"
+      data-theme={theme}
+      style={{
+        ...themeVars,
+        background: themeVars["--background"] || "var(--background)",
+        color: themeVars["--foreground"] || "var(--foreground)",
+      } as React.CSSProperties}
+    >
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 animate-fade-in-up">
