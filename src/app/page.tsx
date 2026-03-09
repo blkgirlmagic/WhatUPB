@@ -109,6 +109,10 @@ export default async function Home() {
           Built for honest conversations. No human review of messages — ever.
         </p>
         <nav aria-label="Legal" className="flex items-center justify-center gap-4 mt-2 text-xs" style={{ color: "#5a5070" }}>
+          <Link href="/" className="hover:opacity-70 transition">
+            Home
+          </Link>
+          <span style={{ color: "#5a5070" }}>·</span>
           <Link href="/privacy" className="hover:opacity-70 transition">
             Privacy
           </Link>
@@ -123,6 +127,10 @@ export default async function Home() {
           <span style={{ color: "#5a5070" }}>·</span>
           <Link href="/safety" className="hover:opacity-70 transition">
             Safety
+          </Link>
+          <span style={{ color: "#5a5070" }}>·</span>
+          <Link href="/support" className="hover:opacity-70 transition">
+            Support
           </Link>
         </nav>
       </footer>
