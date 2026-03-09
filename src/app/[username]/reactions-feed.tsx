@@ -78,7 +78,22 @@ export default function ReactionsFeed({
     }
   }
 
-  if (reactions.length === 0) return null;
+  if (reactions.length === 0) {
+    return (
+      <div className="mt-10 w-full animate-fade-in-up">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="flex-1 h-px bg-border-subtle" />
+          <span className="text-xs text-zinc-600 uppercase tracking-widest">
+            Reactions
+          </span>
+          <div className="flex-1 h-px bg-border-subtle" />
+        </div>
+        <p className="text-center text-sm text-zinc-600 italic py-6">
+          nothing yet. someone&apos;s being mysterious.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-10 w-full animate-fade-in-up">
