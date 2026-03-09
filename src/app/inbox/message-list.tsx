@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-browser";
 import { useToast } from "@/components/toast";
+import { detectCrisis } from "@/lib/crisis-detection";
 
 type Reply = {
   id: string;
@@ -493,6 +494,23 @@ export default function MessageList({
               <p className="text-white whitespace-pre-wrap break-words mb-3 leading-relaxed">
                 {msg.content}
               </p>
+              {detectCrisis(msg.content) && (
+                <div className="flex items-start gap-2.5 bg-amber-500/5 border border-amber-500/20 rounded-xl px-3.5 py-2.5 mb-3 text-xs leading-relaxed">
+                  <span className="flex-shrink-0 mt-0.5 text-amber-400" aria-hidden="true">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                    </svg>
+                  </span>
+                  <p className="text-amber-200/90">
+                    <span className="font-medium">This message may indicate distress.</span>{" "}
+                    If this person needs help:{" "}
+                    <a href="tel:988" className="text-amber-300 underline hover:text-amber-200 transition">
+                      988 Suicide &amp; Crisis Lifeline
+                    </a>{" "}
+                    &mdash; call or text 988. Available 24/7.
+                  </p>
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <span className="text-xs text-zinc-600 tabular-nums">
                   {formatDate(msg.created_at)}
