@@ -466,6 +466,134 @@ body {
 }
 
 /* ============================================================
+   Profile page theme overrides
+   Applied via data-theme attribute on the profile wrapper.
+   Dark/purple/ocean all use light text on dark bg (no text
+   overrides needed). Light theme inverts text colors.
+   ============================================================ */
+
+/* Helper classes used by the profile page */
+.profile-text-muted {
+  color: var(--color-zinc-500, #71717a);
+}
+.profile-text-faint {
+  color: var(--color-zinc-600, #52525b);
+}
+
+/* ----- Light theme text & component overrides ----- */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="light"] h1,
+[data-theme="light"] .text-white {
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .text-zinc-300 {
+  color: #3a3a4a;
+}
+
+[data-theme="light"] .text-zinc-400 {
+  color: #555568;
+}
+
+[data-theme="light"] .text-zinc-500,
+[data-theme="light"] .profile-text-muted {
+  color: #6b6b80;
+}
+
+[data-theme="light"] .text-zinc-600,
+[data-theme="light"] .profile-text-faint {
+  color: #8888a0;
+}
+
+[data-theme="light"] .text-emerald-400 {
+  color: #059669;
+}
+
+[data-theme="light"] .text-red-300 {
+  color: #dc2626;
+}
+
+[data-theme="light"] .text-red-400 {
+  color: #b91c1c;
+}
+
+[data-theme="light"] .input {
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .input::placeholder {
+  color: #999;
+}
+
+[data-theme="light"] .input:focus {
+  box-shadow: 0 0 0 3px rgba(106, 90, 150, 0.15);
+}
+
+[data-theme="light"] .btn-primary {
+  background: linear-gradient(135deg, #7a6aa6, #6a5a96);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(106, 90, 150, 0.25);
+}
+
+[data-theme="light"] .btn-primary:hover {
+  background: linear-gradient(135deg, #8a7ab6, #7a6aa6);
+  box-shadow: 0 4px 12px rgba(106, 90, 150, 0.3);
+}
+
+[data-theme="light"] .btn-ghost {
+  color: #4a4a5a;
+}
+
+[data-theme="light"] .btn-ghost:hover {
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .card-elevated {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .reaction-card {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.08);
+  border-left-color: rgba(106, 90, 150, 0.3);
+}
+
+/* ----- Purple theme accent glow tweaks ----- */
+[data-theme="purple"] .btn-primary {
+  background: linear-gradient(135deg, #a855f7, #9333ea);
+}
+
+[data-theme="purple"] .btn-primary:hover {
+  background: linear-gradient(135deg, #c084fc, #a855f7);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4),
+              0 0 30px rgba(168, 85, 247, 0.2);
+}
+
+[data-theme="purple"] .input:focus {
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+/* ----- Ocean theme accent tweaks ----- */
+[data-theme="ocean"] .btn-primary {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+}
+
+[data-theme="ocean"] .btn-primary:hover {
+  background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4),
+              0 0 30px rgba(56, 189, 248, 0.2);
+}
+
+[data-theme="ocean"] .input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+/* ============================================================
    React button — mobile visibility
    On touch devices, hover states don't work, so we always show
    the React button. Delete stays hidden until hover/focus.
