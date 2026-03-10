@@ -77,8 +77,8 @@ export default async function Home() {
         {/* CTA buttons */}
         {user ? (
           <div className="animate-fade-in-up-delay-2">
-            <Link href="/inbox" className="home-btn home-btn-primary">
-              Go to Inbox
+            <Link href="/signup" className="home-btn home-btn-primary">
+              Create Your Link
             </Link>
             <Link href="/login" className="home-btn home-btn-dark">
               Log In
