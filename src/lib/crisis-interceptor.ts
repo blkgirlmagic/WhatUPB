@@ -8,7 +8,7 @@
 //    'crisis' — Self-harm / suicidal ideation (directed at SELF)
 //               → Block message, show 988 Lifeline resources
 //
-//    'abuse'  — Harassment / death wishes (directed at RECIPIENT)
+//    'abuse'  — Harassment / threats / death wishes (directed at RECIPIENT)
 //               → Block message, show community guidelines violation
 //
 //  This file is ONLY called when the Hive API returns { available: false }.
@@ -128,8 +128,9 @@ const HARDCODED_CRISIS_PATTERNS: RegExp[] = [
   /\bwanna end my life\b/,
 ];
 
-// Harassment / death wishes (directed at RECIPIENT → community guidelines block)
+// Harassment / threats / death wishes (directed at RECIPIENT → community guidelines block)
 const HARDCODED_ABUSE_PATTERNS: RegExp[] = [
+  // ── Death wishes ──
   /\bi wish you were dead\b/,
   /\bi wish you wasnt alive\b/,
   /\bi wish you was not alive\b/,
@@ -170,6 +171,35 @@ const HARDCODED_ABUSE_PATTERNS: RegExp[] = [
   /\bhang yourself\b/,
   /\bneck yourself\b/,
   /\boff yourself\b/,
+
+  // ── Direct threats / intimidation ──
+  /\bfuck you up\b/,
+  /\bfuk you up\b/,
+  /\bfck you up\b/,
+  /\bmess you up\b/,
+  /\bbeat you up\b/,
+  /\bbeat (you|u|yo) up\b/,
+  /\bhurt you\b/,
+  /\bhurt (u|yo)\b/,
+  /\bcome for you\b/,
+  /\bcome for (u|yo)\b/,
+  /\bcoming for you\b/,
+  /\bcoming for (u|yo)\b/,
+  /\bfind you\b/,
+  /\bfind (u|yo)\b/,
+  /\byou dead\b/,
+  /\bu dead\b/,
+  /\byou are dead\b/,
+  /\bu are dead\b/,
+  /\bmake you pay\b/,
+  /\bmake (u|yo) pay\b/,
+  /\bgoing to get you\b/,
+  /\bgonna get you\b/,
+  /\bgon get you\b/,
+  /\bgoing to get (u|yo)\b/,
+  /\bgonna get (u|yo)\b/,
+  /\bi will get you\b/,
+  /\bi will get (u|yo)\b/,
 ];
 
 // ── Response messages ───────────────────────────────────────────────────────

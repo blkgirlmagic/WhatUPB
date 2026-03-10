@@ -8,7 +8,7 @@
 //  Score thresholds (any score ≥ threshold → block):
 //    self_harm ≥ 0.7   → crisis response (988 Lifeline resources)
 //    hate ≥ 0.5        → abuse response (community guidelines violation)
-//    harassment ≥ 0.5  → abuse response (community guidelines violation)
+//    harassment ≥ 0.4  → abuse response (community guidelines violation)
 //    violence ≥ 0.5    → abuse response (community guidelines violation)
 //
 //  IMPORTANT: Hive V2 returns multiple output entries — one per classification
@@ -41,7 +41,7 @@ const HIVE_URL = "https://api.thehive.ai/api/v2/task/sync";
 const THRESHOLDS: [string, number, ModerationAction][] = [
   ["self_harm", 0.7, "crisis"],
   ["hate", 0.5, "abuse"],
-  ["harassment", 0.5, "abuse"],
+  ["harassment", 0.4, "abuse"],
   ["violence", 0.5, "abuse"],
 ];
 
