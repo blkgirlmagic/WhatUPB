@@ -5,6 +5,9 @@ import MessageForm from "./message-form";
 import ReactionsFeed from "./reactions-feed";
 import OwnerToolbar from "./owner-toolbar";
 
+// Never cache this page — auth-dependent owner controls must be fresh
+export const dynamic = "force-dynamic";
+
 export default async function PublicProfile({
   params,
 }: {
@@ -31,21 +34,18 @@ export default async function PublicProfile({
     .order("created_at", { ascending: false })
     .limit(50);
 
-  // Check if the current visitor is the profile owner.
-  // Compare the logged-in user's ID with this profile's owner ID
-  // so the toolbar only appears for the actual owner — never other users.
+  // Ownership gate: toolbar only renders for the actual profile owner.
+  // Two independent checks must BOTH pass:
+  //   1. Auth user ID matches the profile row's owner ID
+  //   2. The profile's stored username matches the URL slug
+  // This prevents any logged-in user from seeing another user's controls.
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  let isOwner = false;
-  if (user) {
-    const { data: visitorProfile } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("id", user.id)
-      .single();
-    isOwner = visitorProfile?.username?.toLowerCase() === username.toLowerCase();
-  }
+  const isOwner =
+    !!user &&
+    user.id === profile.id &&
+    profile.username.toLowerCase() === username.toLowerCase();
 
   const prof = profile as Record<string, unknown>;
   const { name: theme, vars: themeVars } = resolveTheme(prof.link_theme as string);
