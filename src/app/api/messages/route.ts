@@ -191,16 +191,19 @@ export async function POST(request: NextRequest) {
     }
 
     // ─── 5.2. CRISIS KEYWORD SAFETY NET ───────────────────────────────
+    // Two-layer check: queries crisis_keywords DB table first (cached 5 min),
+    // then falls back to hardcoded regex patterns if DB is unreachable.
     // Runs BEFORE Perspective API and all other content filters.
-    // Catches self-harm / suicidal ideation that Perspective misses.
     // Blocks the message and shows crisis resources to the sender.
     // Logs ONLY timestamp + IP hash — NO message content stored.
-    const crisisCheck = checkCrisisIntercept(content.trim());
+    const crisisCheck = await checkCrisisIntercept(content.trim());
     if (crisisCheck.intercepted) {
-      console.warn("[crisis-intercept] Self-harm language detected — blocking message, showing resources");
-      logRejection("crisis_intercept", clientIP);
+      console.warn(`[crisis-intercept] Self-harm language detected (source: ${crisisCheck.source}) — blocking message, showing resources`);
+      logRejection("crisis_intercept", clientIP, { source: crisisCheck.source });
       // Fire-and-forget: log to crisis_intercepts table (timestamp + IP only)
       logCrisisIntercept(ipHash).catch(() => {});
+      // Fire-and-forget: also log to blocked_messages for admin dashboard visibility
+      logBlockedMessage("crisis_intercept", ipHash).catch(() => {});
       return NextResponse.json(
         { crisis: true, message: CRISIS_MESSAGE },
         { status: 200 }
