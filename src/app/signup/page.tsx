@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import posthog from "posthog-js";
 
-// ── Age gate inline styles — Elegant Light theme ──────────────────────────
+// ── Age gate inline styles — Redesigned Elegant Light theme ──────────────
 
 const ageGateStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
   :root {
-    --gate-bg: #faf8f5;
+    --gate-bg: #fdfcfb;
+    --gate-bg-end: #f5f2ed;
     --gate-surface: rgba(0,0,0,0.02);
     --gate-border: rgba(0,0,0,0.07);
     --gate-accent: #8b5cf6;
@@ -23,7 +24,7 @@ const ageGateStyles = `
 
   .gate-wrap {
     min-height: 100vh;
-    background: var(--gate-bg);
+    background: linear-gradient(180deg, var(--gate-bg) 0%, var(--gate-bg-end) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,14 +33,15 @@ const ageGateStyles = `
     overflow: hidden;
   }
 
+  /* Subtle warm grain texture */
   .gate-wrap::before {
     content: '';
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(ellipse 70% 55% at 20% 50%, rgba(139,92,246,0.07) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 65% at 80% 30%, rgba(167,139,250,0.05) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 50% at 50% 90%, rgba(196,181,253,0.06) 0%, transparent 70%);
+      radial-gradient(ellipse 70% 55% at 20% 50%, rgba(139,92,246,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 65% at 80% 30%, rgba(167,139,250,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 50% 90%, rgba(196,181,253,0.05) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
   }
@@ -51,7 +53,7 @@ const ageGateStyles = `
     width: 200%;
     height: 200%;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-    opacity: 0.12;
+    opacity: 0.15;
     pointer-events: none;
     z-index: 0;
     animation: grain 0.5s steps(1) infinite;
@@ -70,40 +72,58 @@ const ageGateStyles = `
     90% { transform: translate(-2%,4%); }
   }
 
+  /* ── Floating glassmorphism message cards ─────────────────────── */
+
   .msg-float {
     position: fixed;
-    border: 1px solid rgba(0,0,0,0.05);
-    background: rgba(255,255,255,0.6);
-    backdrop-filter: blur(8px);
-    border-radius: 14px;
-    padding: 10px 14px;
-    font-size: 12px;
-    color: rgba(26,26,46,0.35);
-    max-width: 200px;
-    line-height: 1.4;
-    pointer-events: none;
+    background: rgba(255,255,255,0.30);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.20);
+    border-radius: 16px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #1a1a2e;
+    max-width: 240px;
+    line-height: 1.5;
+    pointer-events: auto;
     z-index: 1;
-    filter: blur(1px);
     opacity: 0;
-    animation: floatIn 8s ease-in-out infinite;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: floatFadeIn 0.8s ease forwards;
   }
 
-  .msg-float:nth-child(1) { top: 18%; left: 8%; animation-delay: 0s; }
-  .msg-float:nth-child(2) { top: 35%; right: 7%; animation-delay: 2s; }
-  .msg-float:nth-child(3) { bottom: 25%; left: 10%; animation-delay: 4s; }
-  .msg-float:nth-child(4) { bottom: 20%; right: 9%; animation-delay: 6s; }
-
-  @keyframes floatIn {
-    0%, 100% { opacity: 0; transform: translateY(8px); }
-    20%, 80% { opacity: 1; transform: translateY(0); }
+  .msg-float:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 12px 40px rgba(139,92,246,0.15);
   }
+
+  /* Positions: asymmetric layout */
+  .msg-float:nth-child(1) { top: 8%; left: 4%; animation-delay: 0s; }
+  .msg-float:nth-child(2) { top: 10%; right: 4%; animation-delay: 0.3s; }
+  .msg-float:nth-child(3) { top: 38%; left: 2%; animation-delay: 0.6s; }
+  .msg-float:nth-child(4) { top: 42%; right: 2%; animation-delay: 0.9s; }
+  .msg-float:nth-child(5) { bottom: 14%; left: 5%; animation-delay: 1.2s; }
+  .msg-float:nth-child(6) { bottom: 10%; right: 5%; animation-delay: 1.5s; }
+
+  @keyframes floatFadeIn {
+    0% { opacity: 0; transform: translateY(16px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Hide floating cards on small screens to avoid overlap */
+  @media (max-width: 900px) {
+    .msg-float { display: none; }
+  }
+
+  /* ── Card & Badge ─────────────────────────────────────────────── */
 
   .gate-card {
     position: relative;
     z-index: 10;
     width: 100%;
-    max-width: 420px;
+    max-width: 460px;
     margin: 24px;
     animation: cardUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
@@ -142,12 +162,15 @@ const ageGateStyles = `
     50% { opacity: 0.5; transform: scale(0.7); }
   }
 
+  /* ── Headline — Playfair Display ──────────────────────────────── */
+
   .gate-headline {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(48px, 9vw, 68px);
-    line-height: 0.95;
+    font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 7vw, 52px);
+    font-weight: 800;
+    line-height: 1.1;
     color: var(--gate-text);
-    letter-spacing: 0.01em;
+    letter-spacing: -0.02em;
     margin-bottom: 16px;
     animation: cardUp 0.7s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
@@ -167,6 +190,8 @@ const ageGateStyles = `
     font-weight: 300;
     animation: cardUp 0.7s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
+
+  /* ── Trust badges with 4th AI badge ───────────────────────────── */
 
   .gate-features {
     display: flex;
@@ -189,12 +214,14 @@ const ageGateStyles = `
     box-shadow: 0 1px 3px rgba(0,0,0,0.03);
   }
 
+  /* ── Example message ──────────────────────────────────────────── */
+
   .gate-example {
     background: rgba(139,92,246,0.04);
     border: 1px solid rgba(139,92,246,0.1);
     border-radius: 14px;
     padding: 14px 18px;
-    margin-bottom: 28px;
+    margin-bottom: 20px;
     animation: cardUp 0.7s 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
@@ -214,6 +241,48 @@ const ageGateStyles = `
     font-style: italic;
   }
 
+  /* ── Social proof section ─────────────────────────────────────── */
+
+  .social-proof {
+    margin-bottom: 28px;
+    animation: cardUp 0.7s 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .social-proof-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(26,26,46,0.35);
+    margin-bottom: 10px;
+  }
+
+  .social-proof-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .social-proof-card {
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(0,0,0,0.04);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: rgba(26,26,46,0.5);
+    line-height: 1.5;
+    font-style: italic;
+    filter: blur(0.5px);
+    transition: filter 0.3s ease;
+  }
+
+  .social-proof-card:hover {
+    filter: blur(0px);
+  }
+
+  /* ── Main card box ────────────────────────────────────────────── */
+
   .gate-box {
     background: rgba(255,255,255,0.7);
     border: 1px solid rgba(0,0,0,0.06);
@@ -221,7 +290,7 @@ const ageGateStyles = `
     padding: 28px;
     backdrop-filter: blur(12px);
     box-shadow: 0 8px 32px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.03);
-    animation: cardUp 0.7s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: cardUp 0.7s 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .gate-label {
@@ -232,6 +301,8 @@ const ageGateStyles = `
     color: var(--gate-muted);
     margin-bottom: 14px;
   }
+
+  /* ── Start my page button with ripple ─────────────────────────── */
 
   .tap-btn {
     width: 100%;
@@ -245,7 +316,7 @@ const ageGateStyles = `
     font-weight: 500;
     cursor: pointer;
     margin-bottom: 12px;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 16px rgba(139,92,246,0.25);
@@ -257,12 +328,18 @@ const ageGateStyles = `
     inset: 0;
     background: linear-gradient(135deg, #a78bfa, #c4b5fd);
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity 0.25s;
   }
 
   .tap-btn:hover::before { opacity: 1; }
-  .tap-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(139,92,246,0.35); }
-  .tap-btn:active { transform: translateY(0); }
+  .tap-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(139,92,246,0.4);
+  }
+  .tap-btn:active {
+    transform: translateY(0);
+    background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  }
 
   .tap-btn-text {
     position: relative;
@@ -272,6 +349,26 @@ const ageGateStyles = `
     justify-content: center;
     gap: 8px;
   }
+
+  /* Ripple effect */
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    transform: scale(0);
+    animation: rippleAnim 0.6s ease-out forwards;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes rippleAnim {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  /* ── DOB section ──────────────────────────────────────────────── */
 
   .gate-divider {
     display: flex;
@@ -345,14 +442,15 @@ const ageGateStyles = `
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
     margin-bottom: 14px;
     box-shadow: 0 2px 8px rgba(139,92,246,0.2);
   }
 
   .verify-btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(139,92,246,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139,92,246,0.35);
+    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
   }
 
   .verify-btn:disabled {
@@ -373,7 +471,7 @@ const ageGateStyles = `
     margin-top: 18px;
     font-size: 13px;
     color: rgba(26,26,46,0.35);
-    animation: cardUp 0.7s 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: cardUp 0.7s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .gate-error-msg {
@@ -393,6 +491,8 @@ const ageGateStyles = `
     75% { transform: translateX(6px); }
   }
 
+  /* ── Success overlay with confetti ────────────────────────────── */
+
   .gate-success-overlay {
     position: fixed;
     inset: 0;
@@ -401,7 +501,7 @@ const ageGateStyles = `
     justify-content: center;
     flex-direction: column;
     gap: 16px;
-    background: var(--gate-bg);
+    background: linear-gradient(180deg, #fdfcfb 0%, #f5f2ed 100%);
     z-index: 100;
     animation: fadeIn 0.4s ease;
   }
@@ -430,10 +530,55 @@ const ageGateStyles = `
   }
 
   .gate-success-text {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px;
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
     color: var(--gate-text);
-    letter-spacing: 0.05em;
+    letter-spacing: -0.01em;
+  }
+
+  .gate-toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(139,92,246,0.95);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 200;
+    animation: toastSlide 0.5s ease forwards;
+    box-shadow: 0 4px 20px rgba(139,92,246,0.3);
+  }
+
+  @keyframes toastSlide {
+    from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* Confetti */
+  .confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 150;
+    overflow: hidden;
+  }
+
+  .confetti-piece {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    top: -10px;
+    opacity: 0;
+    animation: confettiFall 3s ease forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { opacity: 1; top: -10px; transform: rotate(0deg) translateX(0); }
+    100% { opacity: 0; top: 110vh; transform: rotate(720deg) translateX(80px); }
   }
 `;
 
@@ -484,6 +629,34 @@ async function setAgeCookie(dob: AgeData): Promise<void> {
   }
 }
 
+// Confetti generator for success state
+function generateConfetti(): React.ReactNode {
+  const pieces = [];
+  const colors = ["#8b5cf6", "#a78bfa", "#c4b5fd", "#ffffff", "#ddd6fe"];
+  for (let i = 0; i < 40; i++) {
+    const left = Math.random() * 100;
+    const delay = Math.random() * 1.5;
+    const size = 6 + Math.random() * 6;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const shape = Math.random() > 0.5 ? "50%" : "2px";
+    pieces.push(
+      <div
+        key={i}
+        className="confetti-piece"
+        style={{
+          left: `${left}%`,
+          animationDelay: `${delay}s`,
+          width: size,
+          height: size,
+          background: color,
+          borderRadius: shape,
+        }}
+      />
+    );
+  }
+  return <div className="confetti-container">{pieces}</div>;
+}
+
 export default function SignUp() {
   const [phase, setPhase] = useState<"age-gate" | "signup">("age-gate");
   const [ageData, setAgeData] = useState<AgeData | null>(null);
@@ -531,10 +704,27 @@ export default function SignUp() {
   function handleAgeVerified(dob: AgeData) {
     setAgeData(dob);
     setAgeSuccess(true);
-    setTimeout(() => { setPhase("signup"); }, 1200);
+    setTimeout(() => { setPhase("signup"); }, 1800);
   }
 
-  async function handleTap() {
+  // Ripple effect handler
+  const handleRipple = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    const btn = e.currentTarget;
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const ripple = document.createElement("span");
+    ripple.className = "ripple";
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    ripple.style.width = "20px";
+    ripple.style.height = "20px";
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  }, []);
+
+  async function handleTap(e: React.MouseEvent<HTMLButtonElement>) {
+    handleRipple(e);
     const today = new Date();
     const dob: AgeData = {
       month: today.getMonth() + 1,
@@ -634,7 +824,7 @@ export default function SignUp() {
   if (phase === "age-gate") {
     if (blocked && !ageSuccess) {
       return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6" style={{ background: "#faf8f5" }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-6" style={{ background: "linear-gradient(180deg, #fdfcfb 0%, #f5f2ed 100%)" }}>
           <div className="text-center max-w-md animate-rejection-fade-in">
             <div className="mb-6">
               <svg className="w-12 h-12 mx-auto opacity-40" fill="none" viewBox="0 0 24 24" stroke="#8b5cf6" strokeWidth={1.5}>
@@ -652,6 +842,8 @@ export default function SignUp() {
       return (
         <>
           <style>{ageGateStyles}</style>
+          {generateConfetti()}
+          <div className="gate-toast">Welcome to real talk</div>
           <div className="gate-success-overlay">
             <div className="gate-success-icon">&#10003;</div>
             <div className="gate-success-text">Welcome In</div>
@@ -665,10 +857,13 @@ export default function SignUp() {
       <>
         <style>{ageGateStyles}</style>
         <div className="gate-wrap">
-          <div className="msg-float">you&apos;re honestly one of my favorite people</div>
-          <div className="msg-float">I wish I told you this sooner</div>
-          <div className="msg-float">can we talk? for real this time</div>
-          <div className="msg-float">you made my entire week and didn&apos;t even know it</div>
+          {/* 6 Floating glassmorphism message cards */}
+          <div className="msg-float">You&apos;ve always had my back &mdash; thank you for being real.</div>
+          <div className="msg-float">Your advice changed how I see things. You&apos;re wiser than you think.</div>
+          <div className="msg-float">I admire how you handle tough days with grace.</div>
+          <div className="msg-float">You&apos;re low-key hilarious &mdash; I laugh every time we&apos;re together.</div>
+          <div className="msg-float">I wish I could tell you face-to-face how much you mean to me.</div>
+          <div className="msg-float">Your energy lights up the room &mdash; don&apos;t ever dim it.</div>
 
           <div className="gate-card">
             <div className="gate-badge">
@@ -676,24 +871,38 @@ export default function SignUp() {
               18+ Community
             </div>
 
-            <h1 className="gate-headline">Unlock<br /><span>Real Talk.</span></h1>
+            <h1 className="gate-headline">
+              Unlock the <span>Real Talk</span><br />You&apos;ve Been Missing.
+            </h1>
 
             <p className="gate-subtext">
-              Create your page and let people send anonymous messages
-              they&apos;d never say out loud. Fast to set up, simple to share,
-              and fully anonymous.
+              Get the honest words your friends think but never say &mdash; anonymously and safely.
             </p>
 
             <div className="gate-features">
               <div className="gate-feat">&#128274; 100% anonymous</div>
               <div className="gate-feat">&#128737; No data sold</div>
               <div className="gate-feat">&#10024; Real conversations</div>
+              <div className="gate-feat">&#129302; Abuse auto-blocked with AI</div>
             </div>
 
             <div className="gate-example">
               <div className="gate-example-label">Example message</div>
               <div className="gate-example-text">
                 &ldquo;I think you inspire more people than you know.&rdquo;
+              </div>
+            </div>
+
+            {/* Social proof section */}
+            <div className="social-proof">
+              <div className="social-proof-title">What people are saying:</div>
+              <div className="social-proof-cards">
+                <div className="social-proof-card">
+                  &ldquo;Brutal but fair roast on my dating profile &mdash; exactly what I needed &#128517;&rdquo;
+                </div>
+                <div className="social-proof-card">
+                  &ldquo;Got surprisingly sweet feedback from friends I never expected.&rdquo;
+                </div>
               </div>
             </div>
 
@@ -724,7 +933,7 @@ export default function SignUp() {
                 </select>
               </div>
 
-              <p className="gate-reassurance">&#128274; We don&apos;t store your DOB &mdash; just checking you&apos;re ready for honest convos.</p>
+              <p className="gate-reassurance">&#128274; Ready for unfiltered honesty? We keep everything 100% private.</p>
 
               {ageError && <div className="gate-error-msg">{ageError}</div>}
 
@@ -749,7 +958,7 @@ export default function SignUp() {
   // ════════════════════════════════════════════════════════════════════════
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#faf8f5" }}>
+    <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "linear-gradient(180deg, #fdfcfb 0%, #f5f2ed 100%)" }}>
       <div className="w-full max-w-sm animate-welcome-glow">
         <div className="animate-fade-in-up">
           <div className="text-center mb-8">
