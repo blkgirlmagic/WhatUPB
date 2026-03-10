@@ -229,9 +229,9 @@ export async function POST(request: NextRequest) {
     // POST to https://api.thehive.ai/v3/hive/text-moderation
     // Score thresholds:
     //   self_harm ≥ 0.7  → crisis (988 Lifeline resources)
-    //   hate ≥ 0.7       → abuse (community guidelines)
-    //   harassment ≥ 0.7 → abuse (community guidelines)
-    //   violence ≥ 0.7   → abuse (community guidelines)
+    //   hate ≥ 0.5       → abuse (community guidelines)
+    //   harassment ≥ 0.5 → abuse (community guidelines)
+    //   violence ≥ 0.5   → abuse (community guidelines)
     //
     // Fallback: hardcoded keyword patterns if Hive is unreachable.
     const hive = await moderateWithHive(content.trim());
