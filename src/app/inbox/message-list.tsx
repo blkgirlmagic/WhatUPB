@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-browser";
 import { useToast } from "@/components/toast";
@@ -30,6 +30,8 @@ export default function MessageList({
   const [sharingId, setSharingId] = useState<string | null>(null);
   const [shareMenuId, setShareMenuId] = useState<string | null>(null);
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
+  const [visibleIds, setVisibleIds] = useState<Set<string>>(new Set());
+  const observerRef = useRef<IntersectionObserver | null>(null);
   const supabase = createClient();
   const { toast } = useToast();
 
@@ -37,6 +39,36 @@ export default function MessageList({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Progressive reveal: intersection observer for scroll animations
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute("data-msg-id");
+            if (id) {
+              setVisibleIds((prev) => new Set(prev).add(id));
+              observerRef.current?.unobserve(entry.target);
+            }
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+    );
+
+    return () => observerRef.current?.disconnect();
+  }, []);
+
+  // Observe new message cards
+  const cardRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (node && observerRef.current) {
+        observerRef.current.observe(node);
+      }
+    },
+    []
+  );
 
   async function handleDelete(id: string) {
     setDeletingId(id);
@@ -71,7 +103,7 @@ export default function MessageList({
         return;
       }
 
-      toast("Reaction posted! It’s now on your profile.");
+      toast("Reaction posted! It's now on your profile.");
       setReactionText("");
       setShowReactionModal(false);
     } catch {
@@ -79,6 +111,11 @@ export default function MessageList({
     } finally {
       setSendingReaction(false);
     }
+  }
+
+  // Quick emoji reactions
+  function handleQuickReact(emoji: string) {
+    toast(`${emoji} reaction noted!`);
   }
 
   function formatDate(dateStr: string) {
@@ -382,14 +419,14 @@ export default function MessageList({
 
   return (
     <>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         {/* Upgrade banner when free tier is capped */}
         {isCapped && (
-          <div className="card border-denim-500/30 bg-gradient-to-r from-surface-1 to-surface-2 text-center py-6 px-5">
-            <p className="text-white font-medium text-base mb-1">
+          <div className="bg-white/75 backdrop-blur-md rounded-xl border border-purple-200/50 text-center py-6 px-5 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
+            <p className="text-slate-800 font-medium text-base mb-1">
               You have {totalCount - messages.length} more message{totalCount - messages.length !== 1 ? "s" : ""} waiting.
             </p>
-            <p className="text-zinc-500 text-sm mb-4">
+            <p className="text-slate-500 text-sm mb-4">
               Upgrade to Premium to unlock your full inbox.
             </p>
             <Link
@@ -401,86 +438,143 @@ export default function MessageList({
           </div>
         )}
 
-        {messages.map((msg) => {
+        {messages.map((msg, index) => {
+          const isVisible = visibleIds.has(msg.id);
+          const isCrisis = detectCrisis(msg.content);
+
           return (
-            <div key={msg.id} className="card group">
-              {/* Original anonymous message */}
-              <p className="text-white whitespace-pre-wrap break-words mb-3 leading-relaxed">
-                {msg.content}
-              </p>
-              {detectCrisis(msg.content) && (
-                <div className="crisis-banner flex items-start gap-2.5 rounded-xl px-3.5 py-2.5 mb-3 text-xs leading-relaxed">
-                  <span className="crisis-icon flex-shrink-0 mt-0.5" aria-hidden="true">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                    </svg>
+            <div
+              key={msg.id}
+              ref={cardRef}
+              data-msg-id={msg.id}
+              className="group"
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? "translateY(0)" : "translateY(12px)",
+                transition: `opacity 0.3s ease ${index * 0.03}s, transform 0.3s ease ${index * 0.03}s`,
+              }}
+            >
+              <div
+                className="bg-white/75 backdrop-blur-md rounded-xl p-5 border border-white/30 hover:bg-white/90 hover:shadow-md transition-all duration-200"
+                style={{
+                  boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
+                }}
+              >
+                {/* Message text */}
+                <p className="text-slate-800 whitespace-pre-wrap break-words mb-3 leading-relaxed">
+                  {msg.content}
+                </p>
+
+                {/* Crisis banner — softer styling */}
+                {isCrisis && (
+                  <div className="flex items-start gap-2.5 rounded-xl px-3.5 py-2.5 mb-3 text-xs leading-relaxed bg-red-50 border border-red-200 text-red-700">
+                    <span className="flex-shrink-0 mt-0.5 text-red-400" aria-hidden="true">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                      </svg>
+                    </span>
+                    <p>
+                      <span className="font-medium">This message may indicate distress.</span>{" "}
+                      If this person needs help:{" "}
+                      <a href="tel:988" className="underline font-medium hover:text-red-900 transition">
+                        988 Suicide &amp; Crisis Lifeline
+                      </a>{" "}
+                      &mdash; call or text 988. Available 24/7.
+                    </p>
+                  </div>
+                )}
+
+                {/* Bottom row: timestamp + actions */}
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 text-sm tabular-nums">
+                    {formatDate(msg.created_at)}
                   </span>
-                  <p>
-                    <span className="font-medium">This message may indicate distress.</span>{" "}
-                    If this person needs help:{" "}
-                    <a href="tel:988" className="transition">
-                      988 Suicide &amp; Crisis Lifeline
-                    </a>{" "}
-                    &mdash; call or text 988. Available 24/7.
-                  </p>
-                </div>
-              )}
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-zinc-600 tabular-nums">
-                  {formatDate(msg.created_at)}
-                </span>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => generateShareImage(msg)}
-                    disabled={sharingId === msg.id}
-                    className="text-xs text-zinc-600 hover:text-denim-200 transition opacity-0 group-hover:opacity-100 focus:opacity-100 flex items-center gap-1"
-                    type="button"
-                  >
-                    {sharingId === msg.id ? (
-                      <>
-                        <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                        </svg>
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0-12.814a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0 12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
-                        </svg>
-                        Share
-                      </>
-                    )}
-                  </button>
-                  <button
-                    onClick={() => setShowReactionModal(true)}
-                    className="react-toggle-btn text-xs text-denim-300 hover:text-denim-200 transition opacity-0 group-hover:opacity-100 focus:opacity-100 flex items-center gap-1"
-                    type="button"
-                  >
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
+                  <div className="flex items-center gap-1">
+                    {/* Quick emoji reactions */}
+                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 mr-2">
+                      <button
+                        onClick={() => handleQuickReact("\u2764\uFE0F")}
+                        className="text-base hover:scale-125 transition-transform p-1"
+                        type="button"
+                        aria-label="Heart reaction"
+                      >
+                        &#10084;&#65039;
+                      </button>
+                      <button
+                        onClick={() => handleQuickReact("\uD83D\uDD25")}
+                        className="text-base hover:scale-125 transition-transform p-1"
+                        type="button"
+                        aria-label="Fire reaction"
+                      >
+                        &#128293;
+                      </button>
+                      <button
+                        onClick={() => handleQuickReact("\uD83D\uDC40")}
+                        className="text-base hover:scale-125 transition-transform p-1"
+                        type="button"
+                        aria-label="Eyes reaction"
+                      >
+                        &#128064;
+                      </button>
+                    </div>
+
+                    {/* Share button */}
+                    <button
+                      onClick={() => generateShareImage(msg)}
+                      disabled={sharingId === msg.id}
+                      className="text-xs text-slate-500 hover:text-purple-600 transition opacity-0 group-hover:opacity-100 focus:opacity-100 flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-purple-50"
+                      type="button"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-                      />
-                    </svg>
-                    React
-                  </button>
-                  <button
-                    onClick={() => handleDelete(msg.id)}
-                    disabled={deletingId === msg.id}
-                    className="text-xs text-zinc-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100 focus:opacity-100"
-                    type="button"
-                  >
-                    {deletingId === msg.id ? "Deleting..." : "Delete"}
-                  </button>
+                      {sharingId === msg.id ? (
+                        <>
+                          <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0-12.814a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0 12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                          </svg>
+                          Share
+                        </>
+                      )}
+                    </button>
+
+                    {/* React button */}
+                    <button
+                      onClick={() => setShowReactionModal(true)}
+                      className="react-toggle-btn text-xs text-purple-500 hover:text-purple-700 transition opacity-0 group-hover:opacity-100 focus:opacity-100 flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-purple-50"
+                      type="button"
+                    >
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                        />
+                      </svg>
+                      React
+                    </button>
+
+                    {/* Delete button */}
+                    <button
+                      onClick={() => handleDelete(msg.id)}
+                      disabled={deletingId === msg.id}
+                      className="text-xs text-slate-400 hover:text-red-500 transition opacity-0 group-hover:opacity-100 focus:opacity-100 px-2 py-1 rounded-lg hover:bg-red-50"
+                      type="button"
+                    >
+                      {deletingId === msg.id ? "Deleting..." : "Delete"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -495,15 +589,15 @@ export default function MessageList({
           onClick={() => setShowReactionModal(false)}
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
 
           {/* Modal card */}
           <div
-            className="relative z-10 w-full max-w-md mx-4 bg-surface-1 border border-border-subtle rounded-2xl p-6 animate-fade-in-up"
+            className="relative z-10 w-full max-w-md mx-4 bg-white/90 backdrop-blur-xl border border-white/40 rounded-2xl p-6 animate-fade-in-up shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-white text-lg font-semibold mb-1">Post a reaction</h2>
-            <p className="text-zinc-500 text-sm mb-4">This will appear on your public profile.</p>
+            <h2 className="text-slate-800 text-lg font-semibold mb-1">Post a reaction</h2>
+            <p className="text-slate-500 text-sm mb-4">This will appear on your public profile.</p>
 
             <textarea
               value={reactionText}
@@ -518,7 +612,7 @@ export default function MessageList({
                   setShowReactionModal(false);
                 }
               }}
-              placeholder="say something back to the void…"
+              placeholder="say something back to the void\u2026"
               maxLength={280}
               rows={3}
               className="input text-sm resize-none mb-2 w-full"
@@ -527,7 +621,7 @@ export default function MessageList({
             />
 
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-600">
+              <span className="text-xs text-slate-400">
                 {reactionText.length}/280
               </span>
               <div className="flex items-center gap-2">
@@ -536,7 +630,7 @@ export default function MessageList({
                     setReactionText("");
                     setShowReactionModal(false);
                   }}
-                  className="text-xs text-zinc-500 hover:text-zinc-300 transition px-3 py-1.5"
+                  className="text-xs text-slate-500 hover:text-slate-700 transition px-3 py-1.5"
                   type="button"
                 >
                   Cancel
@@ -562,11 +656,11 @@ export default function MessageList({
           onClick={closeShareMenu}
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
 
           {/* Share sheet */}
           <div
-            className="share-sheet relative z-10 w-full max-w-md mx-4 mb-4 sm:mb-0"
+            className="relative z-10 w-full max-w-md mx-4 mb-4 sm:mb-0 bg-white/90 backdrop-blur-xl border border-white/40 rounded-2xl p-6 animate-fade-in-up shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Preview */}
@@ -574,11 +668,11 @@ export default function MessageList({
               <img
                 src={shareImageUrl}
                 alt="Share preview"
-                className="w-full max-h-[60vh] object-contain rounded-lg border border-border-subtle shadow-lg"
+                className="w-full max-h-[60vh] object-contain rounded-lg border border-slate-200 shadow-lg"
               />
             </div>
 
-            <p className="text-center text-sm text-zinc-400 mb-5">Share this message as an image</p>
+            <p className="text-center text-sm text-slate-500 mb-5">Share this message as an image</p>
 
             {/* Share options grid */}
             <div className="grid grid-cols-4 gap-3 mb-5">
@@ -588,7 +682,7 @@ export default function MessageList({
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
                   </svg>
                 </div>
-                <span className="text-xs text-zinc-400 mt-1.5">Stories</span>
+                <span className="text-xs text-slate-500 mt-1.5">Stories</span>
               </button>
 
               <button onClick={handleShareSnapchat} className="share-option">
@@ -597,32 +691,32 @@ export default function MessageList({
                     <path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12.922-.253.481-.25.406-.698.887-.698.246 0 .491.098.653.237.248.21.135.745-.174 1.064-.192.196-.476.363-.761.466-.285.102-.59.148-.824.178-.084.012-.156.019-.213.027l-.022.003c-.352.055-.474.135-.568.425-.153.457-.236.883-.344 1.164-.397 1.044-1.175 1.861-2.31 2.428-.259.129-.541.24-.838.332-.017.053-.027.112-.027.175 0 .146.072.284.181.388.228.212.586.342.91.438.48.141.987.207 1.311.445.338.247.389.675.086.978-.358.36-1.225.472-1.98.472-.526 0-1.073-.063-1.48-.13-.283-.046-.533-.088-.764-.088-.261 0-.42.047-.691.106-.406.089-.925.222-1.569.222-.069 0-.14-.003-.211-.01h-.033c-.643 0-1.163-.133-1.569-.222-.271-.059-.431-.106-.691-.106-.231 0-.481.042-.764.088-.407.067-.955.13-1.48.13-.756 0-1.623-.112-1.98-.472-.303-.303-.253-.73.085-.978.324-.238.832-.304 1.311-.445.324-.096.682-.226.91-.438.11-.104.181-.242.181-.388 0-.063-.01-.122-.027-.175-.297-.092-.579-.203-.838-.332-1.136-.567-1.913-1.384-2.31-2.428-.108-.281-.191-.707-.344-1.164-.094-.29-.216-.37-.568-.425l-.022-.003c-.057-.008-.129-.015-.213-.027-.234-.03-.539-.076-.824-.178-.285-.103-.569-.27-.761-.466-.309-.319-.422-.854-.174-1.064.162-.139.407-.237.653-.237.481 0 .406.448.887.698.263.133.622.269.922.253.198 0 .326-.045.401-.09-.008-.165-.018-.33-.03-.51l-.003-.06c-.104-1.628-.23-3.654.299-4.847C7.447 1.069 10.804.793 11.794.793h.412z" />
                   </svg>
                 </div>
-                <span className="text-xs text-zinc-400 mt-1.5">Snapchat</span>
+                <span className="text-xs text-slate-500 mt-1.5">Snapchat</span>
               </button>
 
               <button onClick={handleShareX} className="share-option">
-                <div className="share-icon-wrap bg-white">
+                <div className="share-icon-wrap bg-white border border-slate-200">
                   <svg className="w-4 h-4 text-black" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
                 </div>
-                <span className="text-xs text-zinc-400 mt-1.5">X</span>
+                <span className="text-xs text-slate-500 mt-1.5">X</span>
               </button>
 
               <button onClick={handleDownload} className="share-option">
-                <div className="share-icon-wrap bg-surface-3 border border-border-subtle">
-                  <svg className="w-5 h-5 text-denim-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <div className="share-icon-wrap bg-slate-100 border border-slate-200">
+                  <svg className="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                   </svg>
                 </div>
-                <span className="text-xs text-zinc-400 mt-1.5">Save</span>
+                <span className="text-xs text-slate-500 mt-1.5">Save</span>
               </button>
             </div>
 
             {/* Cancel */}
             <button
               onClick={closeShareMenu}
-              className="w-full py-3 text-sm text-zinc-400 hover:text-white transition rounded-xl bg-surface-2 border border-border-subtle"
+              className="w-full py-3 text-sm text-slate-500 hover:text-slate-800 transition rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200"
             >
               Cancel
             </button>

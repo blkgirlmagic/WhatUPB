@@ -63,6 +63,8 @@ export default async function Inbox() {
   const { data } = await query;
   messages = data;
 
+  const messageCount = messages?.length || 0;
+
   return (
     <div
       className="min-h-screen px-4 py-8"
@@ -78,11 +80,16 @@ export default async function Inbox() {
         <div className="flex items-center justify-between mb-8 animate-fade-in-up">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Inbox</h1>
-            <p className="text-zinc-500 text-sm">
-              {isPremium
-                ? `${messages?.length || 0} message${messages?.length !== 1 ? "s" : ""}`
-                : `${messages?.length || 0} of ${totalCount} message${totalCount !== 1 ? "s" : ""}`}
-            </p>
+            {messageCount > 0 ? (
+              <p className="text-slate-500 text-sm mt-0.5">
+                {isPremium
+                  ? `${messageCount} anonymous message${messageCount !== 1 ? "s" : ""}`
+                  : `${messageCount} of ${totalCount} message${totalCount !== 1 ? "s" : ""}`}
+                {messageCount >= 5 && " \uD83D\uDC40"}
+              </p>
+            ) : (
+              <p className="text-slate-500 text-sm mt-0.5">Waiting for messages&hellip;</p>
+            )}
           </div>
           {profile && <AppNav username={profile.username} />}
         </div>
@@ -90,9 +97,9 @@ export default async function Inbox() {
         {/* Content */}
         {!messages || messages.length === 0 ? (
           <div className="text-center py-20 animate-fade-in-up-delay-1">
-            <div className="w-16 h-16 rounded-full bg-surface-2 border border-border-subtle flex items-center justify-center mx-auto mb-5">
+            <div className="w-16 h-16 rounded-full bg-white/60 backdrop-blur-md border border-white/30 flex items-center justify-center mx-auto mb-5 shadow-sm">
               <svg
-                className="w-7 h-7 text-zinc-600"
+                className="w-7 h-7 text-slate-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -105,13 +112,13 @@ export default async function Inbox() {
                 />
               </svg>
             </div>
-            <p className="text-white font-medium mb-2">No messages yet</p>
-            <p className="text-zinc-500 text-sm mb-6 max-w-xs mx-auto">
+            <p className="text-slate-800 font-medium mb-2">No messages yet</p>
+            <p className="text-slate-500 text-sm mb-6 max-w-xs mx-auto">
               Share your link to start receiving anonymous messages.
             </p>
             {profile && (
-              <div className="inline-flex items-center gap-2 bg-surface-1 border border-border-subtle rounded-lg px-4 py-2.5 mb-6">
-                <code className="text-sm font-mono text-denim-200">
+              <div className="inline-flex items-center gap-2 bg-white/60 backdrop-blur-md border border-white/30 rounded-lg px-4 py-2.5 mb-6 shadow-sm">
+                <code className="text-sm font-mono text-purple-600">
                   whatupb.com/{profile.username}
                 </code>
               </div>
