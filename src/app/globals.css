@@ -30,11 +30,15 @@
   transform: translateY(-1px);
 }
 .home-btn-primary {
-  background: linear-gradient(135deg, #7c6aac, #9b7fd4);
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
   color: white;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
+}
+.home-btn-primary:hover {
+  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.35);
 }
 .home-btn-dark {
-  background: #2d2840;
+  background: #1a1a2e;
   color: white;
 }
 
@@ -46,7 +50,7 @@
   margin-top: 20px;
   font-size: 13px;
   font-family: 'Cormorant Garamond', serif;
-  color: #7a6e8a;
+  color: #6b7280;
   letter-spacing: 0.2px;
 }
 
@@ -67,31 +71,31 @@
 }
 
 /* ============================================================
-   WhatUPB Design System — "Denim" palette
-   Premium, calm, worn-in texture vibe.
-   Dark base with warm indigo/slate accents.
+   WhatUPB Design System — "Elegant Light" palette
+   Premium, calm, warm neutrals with purple accents.
+   Light base with sophisticated depth.
    ============================================================ */
 
 :root {
-  /* Core palette */
-  --background: #0c0c10;
-  --foreground: #ededed;
+  /* Core palette — light base */
+  --background: #faf8f5;
+  --foreground: #1a1a2e;
 
   /* Brand purple accent spectrum */
-  --denim-50:  #f3eeff;
-  --denim-100: #d4c7f2;
-  --denim-200: #b9a3e0;
-  --denim-300: #9b7fd4;
-  --denim-400: #7c6aac;
-  --denim-500: #6a5a96;
-  --denim-600: #4a3d75;
+  --denim-50:  #f5f3ff;
+  --denim-100: #ede9fe;
+  --denim-200: #c4b5fd;
+  --denim-300: #a78bfa;
+  --denim-400: #8b5cf6;
+  --denim-500: #7c3aed;
+  --denim-600: #6d28d9;
 
-  /* Surface layers */
-  --surface-1: #141418;
-  --surface-2: #1a1a20;
-  --surface-3: #22222a;
-  --border-subtle: #2a2a35;
-  --border-default: #35354a;
+  /* Surface layers — light */
+  --surface-1: #ffffff;
+  --surface-2: #f5f3ef;
+  --surface-3: #edeae5;
+  --border-subtle: #e5e2dc;
+  --border-default: #d4d0c8;
 }
 
 @theme inline {
@@ -117,6 +121,27 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   Glassmorphism utility
+   ============================================================ */
+
+.glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06),
+              0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.glass-subtle {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
 /* ============================================================
@@ -168,12 +193,12 @@ body {
 /* Gentle glow pulse for CTA */
 @keyframes glow-pulse {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(124, 106, 172, 0.15),
-                0 0 40px rgba(124, 106, 172, 0.05);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.12),
+                0 0 40px rgba(139, 92, 246, 0.04);
   }
   50% {
-    box-shadow: 0 0 25px rgba(124, 106, 172, 0.25),
-                0 0 50px rgba(124, 106, 172, 0.1);
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.2),
+                0 0 50px rgba(139, 92, 246, 0.08);
   }
 }
 
@@ -247,15 +272,15 @@ body {
 @keyframes welcome-glow {
   0% {
     opacity: 0;
-    box-shadow: 0 0 0px rgba(124, 106, 172, 0);
+    box-shadow: 0 0 0px rgba(139, 92, 246, 0);
   }
   30% {
     opacity: 1;
-    box-shadow: 0 0 60px rgba(124, 106, 172, 0.15);
+    box-shadow: 0 0 60px rgba(139, 92, 246, 0.12);
   }
   100% {
     opacity: 1;
-    box-shadow: 0 0 0px rgba(124, 106, 172, 0);
+    box-shadow: 0 0 0px rgba(139, 92, 246, 0);
   }
 }
 
@@ -283,7 +308,7 @@ body {
 .age-select {
   appearance: none;
   -webkit-appearance: none;
-  background: var(--surface-2);
+  background: var(--surface-1);
   border: 1px solid var(--border-default);
   border-radius: 0.75rem;
   padding: 0.625rem 2rem 0.625rem 0.875rem;
@@ -292,7 +317,7 @@ body {
   font-family: inherit;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='%23666' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='%23999' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.625rem center;
   background-size: 16px;
@@ -301,7 +326,7 @@ body {
 .age-select:focus {
   outline: none;
   border-color: var(--denim-400);
-  box-shadow: 0 0 0 3px rgba(124, 106, 172, 0.1);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
 .age-select option {
@@ -325,23 +350,23 @@ body {
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #7c6aac, #9b7fd4);
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
   color: white;
-  border: 1px solid rgba(124, 106, 172, 0.3);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3),
-              0 0 20px rgba(124, 106, 172, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2),
+              0 0 20px rgba(139, 92, 246, 0.08);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4),
-              0 0 30px rgba(124, 106, 172, 0.2);
-  background: linear-gradient(135deg, #9b7fd4, #b394e0);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3),
+              0 0 30px rgba(139, 92, 246, 0.12);
+  background: linear-gradient(135deg, #a78bfa, #c4b5fd);
 }
 
 .btn-primary:active {
   transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 4px rgba(139, 92, 246, 0.15);
 }
 
 .btn-primary:disabled {
@@ -361,13 +386,13 @@ body {
   padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
   transition: all 0.2s ease;
-  background: var(--surface-2);
-  color: var(--denim-100);
+  background: var(--surface-1);
+  color: var(--foreground);
   border: 1px solid var(--border-default);
 }
 
 .btn-secondary:hover {
-  background: var(--surface-3);
+  background: var(--surface-2);
   border-color: var(--denim-400);
   transform: translateY(-1px);
 }
@@ -387,13 +412,14 @@ body {
   font-size: 0.875rem;
   transition: all 0.15s ease;
   background: transparent;
-  color: var(--denim-200);
+  color: var(--denim-500);
   border: 1px solid transparent;
 }
 
 .btn-ghost:hover {
   background: var(--surface-2);
   border-color: var(--border-subtle);
+  color: var(--denim-600);
 }
 
 /* ============================================================
@@ -412,7 +438,7 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: 0.875rem;
   padding: 1.25rem;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* ============================================================
@@ -421,7 +447,7 @@ body {
 
 .input {
   width: 100%;
-  background: var(--surface-2);
+  background: var(--surface-1);
   border: 1px solid var(--border-default);
   border-radius: 0.75rem;
   padding: 0.625rem 1rem;
@@ -431,18 +457,18 @@ body {
 }
 
 .input::placeholder {
-  color: #555;
+  color: #999;
 }
 
 .input:focus {
   outline: none;
   border-color: var(--denim-400);
-  box-shadow: 0 0 0 3px rgba(124, 106, 172, 0.1);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
 /* ============================================================
-   Subtle texture overlay for denim feel
-   Uses a noise pattern via SVG — no image file needed
+   Subtle texture overlay — premium grain
+   Much lighter for the light theme.
    ============================================================ */
 
 .texture-overlay::before {
@@ -453,7 +479,7 @@ body {
   right: 0;
   bottom: 0;
   pointer-events: none;
-  opacity: 0.025;
+  opacity: 0.015;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
@@ -468,8 +494,7 @@ body {
 /* ============================================================
    Profile page theme overrides
    Applied via data-theme attribute on the profile wrapper.
-   Dark/purple/ocean all use light text on dark bg (no text
-   overrides needed). Light theme inverts text colors.
+   Base is now light. Dark theme restores the original dark look.
    ============================================================ */
 
 /* Helper classes used by the profile page */
@@ -480,100 +505,118 @@ body {
   color: var(--color-zinc-600, #52525b);
 }
 
-/* ----- Light theme text & component overrides ----- */
+/* ----- Light theme (matches base — minimal overrides) ----- */
 [data-theme="light"] {
   color-scheme: light;
 }
 
-[data-theme="light"] h1,
-[data-theme="light"] .text-white {
-  color: #1a1a2e;
+/* ----- Dark theme overrides (for profile dark option) ----- */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #0c0c10;
+  --foreground: #ededed;
+  --surface-1: #141418;
+  --surface-2: #1a1a20;
+  --surface-3: #22222a;
+  --border-subtle: #2a2a35;
+  --border-default: #35354a;
+  --denim-50:  #f3eeff;
+  --denim-100: #d4c7f2;
+  --denim-200: #b9a3e0;
+  --denim-300: #9b7fd4;
+  --denim-400: #7c6aac;
+  --denim-500: #6a5a96;
+  --denim-600: #4a3d75;
 }
 
-[data-theme="light"] .text-zinc-300 {
-  color: #3a3a4a;
+[data-theme="dark"] h1,
+[data-theme="dark"] .text-foreground {
+  color: #ededed;
 }
 
-[data-theme="light"] .text-zinc-400 {
-  color: #555568;
+[data-theme="dark"] .text-zinc-300 {
+  color: #d4d4d8;
 }
 
-[data-theme="light"] .text-zinc-500,
-[data-theme="light"] .profile-text-muted {
-  color: #6b6b80;
+[data-theme="dark"] .text-zinc-400 {
+  color: #a1a1aa;
 }
 
-[data-theme="light"] .text-zinc-600,
-[data-theme="light"] .profile-text-faint {
-  color: #8888a0;
+[data-theme="dark"] .text-zinc-500,
+[data-theme="dark"] .profile-text-muted {
+  color: #71717a;
 }
 
-[data-theme="light"] .text-emerald-400 {
-  color: #059669;
+[data-theme="dark"] .text-zinc-600,
+[data-theme="dark"] .profile-text-faint {
+  color: #52525b;
 }
 
-[data-theme="light"] .text-red-300 {
-  color: #dc2626;
+[data-theme="dark"] .text-emerald-400 {
+  color: #34d399;
 }
 
-[data-theme="light"] .text-red-400 {
-  color: #b91c1c;
+[data-theme="dark"] .text-red-300 {
+  color: #fca5a5;
 }
 
-[data-theme="light"] .input {
-  color: #1a1a2e;
+[data-theme="dark"] .text-red-400 {
+  color: #f87171;
 }
 
-[data-theme="light"] .input::placeholder {
-  color: #999;
+[data-theme="dark"] .input {
+  color: #ededed;
+  background: var(--surface-2);
 }
 
-[data-theme="light"] .input:focus {
-  box-shadow: 0 0 0 3px rgba(106, 90, 150, 0.15);
+[data-theme="dark"] .input::placeholder {
+  color: #555;
 }
 
-[data-theme="light"] .btn-primary {
-  background: linear-gradient(135deg, #7a6aa6, #6a5a96);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(106, 90, 150, 0.25);
+[data-theme="dark"] .btn-primary {
+  background: linear-gradient(135deg, #7c6aac, #9b7fd4);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3),
+              0 0 20px rgba(124, 106, 172, 0.1);
 }
 
-[data-theme="light"] .btn-primary:hover {
-  background: linear-gradient(135deg, #8a7ab6, #7a6aa6);
-  box-shadow: 0 4px 12px rgba(106, 90, 150, 0.3);
+[data-theme="dark"] .btn-primary:hover {
+  background: linear-gradient(135deg, #9b7fd4, #b394e0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4),
+              0 0 30px rgba(124, 106, 172, 0.2);
 }
 
-[data-theme="light"] .btn-ghost {
-  color: #4a4a5a;
+[data-theme="dark"] .btn-ghost {
+  color: #b9a3e0;
 }
 
-[data-theme="light"] .btn-ghost:hover {
-  color: #1a1a2e;
+[data-theme="dark"] .btn-ghost:hover {
+  color: #ededed;
+  background: var(--surface-2);
 }
 
-[data-theme="light"] .card-elevated {
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+[data-theme="dark"] .card-elevated {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
 }
 
-[data-theme="light"] .reaction-card {
-  background: rgba(0, 0, 0, 0.03);
-  border-color: rgba(0, 0, 0, 0.08);
-  border-left-color: rgba(106, 90, 150, 0.3);
+[data-theme="dark"] .reaction-card {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.06);
+  border-left-color: rgba(96, 130, 182, 0.3);
 }
 
 /* ----- Purple theme accent glow tweaks ----- */
 [data-theme="purple"] .btn-primary {
   background: linear-gradient(135deg, #c084fc, #a855f7);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3),
-              0 0 16px rgba(192, 132, 252, 0.15);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.2),
+              0 0 16px rgba(192, 132, 252, 0.1);
 }
 
 [data-theme="purple"] .btn-primary:hover {
   background: linear-gradient(135deg, #d8b4fe, #c084fc);
-  border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4),
-              0 0 30px rgba(192, 132, 252, 0.25);
+  border-color: rgba(192, 132, 252, 0.5);
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.3),
+              0 0 30px rgba(192, 132, 252, 0.15);
 }
 
 [data-theme="purple"] .input:focus {
@@ -584,14 +627,14 @@ body {
 /* ----- Ocean theme accent tweaks ----- */
 [data-theme="ocean"] .btn-primary {
   background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.3);
 }
 
 [data-theme="ocean"] .btn-primary:hover {
   background: linear-gradient(135deg, #7dd3fc, #38bdf8);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4),
-              0 0 30px rgba(56, 189, 248, 0.2);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.25),
+              0 0 30px rgba(56, 189, 248, 0.12);
 }
 
 [data-theme="ocean"] .input:focus {
@@ -601,50 +644,47 @@ body {
 
 /* ============================================================
    Crisis banner — universal high-contrast override
-   Uses opaque red so it's readable on dark, light, purple, ocean.
    ============================================================ */
 
 .crisis-banner {
+  background: rgba(220, 38, 38, 0.08) !important;
+  border: 1px solid rgba(220, 38, 38, 0.4) !important;
+  color: #991b1b !important;
+}
+
+.crisis-banner a {
+  color: #dc2626 !important;
+  text-decoration: underline !important;
+}
+
+.crisis-banner a:hover {
+  color: #7f1d1d !important;
+}
+
+.crisis-banner .crisis-icon {
+  color: #dc2626 !important;
+}
+
+[data-theme="dark"] .crisis-banner {
   background: rgba(220, 38, 38, 0.15) !important;
   border: 1px solid rgba(220, 38, 38, 0.5) !important;
   color: #fca5a5 !important;
 }
 
-.crisis-banner a {
+[data-theme="dark"] .crisis-banner a {
   color: #fca5a5 !important;
-  text-decoration: underline !important;
 }
 
-.crisis-banner a:hover {
+[data-theme="dark"] .crisis-banner a:hover {
   color: #fff !important;
 }
 
-.crisis-banner .crisis-icon {
+[data-theme="dark"] .crisis-banner .crisis-icon {
   color: #f87171 !important;
-}
-
-[data-theme="light"] .crisis-banner {
-  background: rgba(220, 38, 38, 0.08) !important;
-  border-color: rgba(220, 38, 38, 0.4) !important;
-  color: #991b1b !important;
-}
-
-[data-theme="light"] .crisis-banner a {
-  color: #dc2626 !important;
-}
-
-[data-theme="light"] .crisis-banner a:hover {
-  color: #7f1d1d !important;
-}
-
-[data-theme="light"] .crisis-banner .crisis-icon {
-  color: #dc2626 !important;
 }
 
 /* ============================================================
    React button — mobile visibility
-   On touch devices, hover states don't work, so we always show
-   the React button. Delete stays hidden until hover/focus.
    ============================================================ */
 
 @media (hover: none) {
@@ -658,9 +698,9 @@ body {
    ============================================================ */
 
 .reaction-card {
-  background: var(--surface-1, rgba(255, 255, 255, 0.04));
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
-  border-left: 2px solid rgba(96, 130, 182, 0.3);
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-left: 2px solid rgba(139, 92, 246, 0.25);
   border-radius: 0.75rem;
   padding: 1rem 1.25rem;
 }
@@ -678,12 +718,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-subtle);
+  background: var(--border-default);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--border-default);
+  background: #b0aca4;
 }
 
 /* ============================================================
@@ -696,6 +736,7 @@ body {
   border-radius: 1.25rem;
   padding: 1.5rem;
   animation: share-sheet-up 0.25s ease-out forwards;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
 }
 
 @keyframes share-sheet-up {

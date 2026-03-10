@@ -11,21 +11,18 @@ export default async function Home() {
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4 relative"
       style={{
-        backgroundImage: "url('/My_WhaUPB_home_page.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        background: "linear-gradient(160deg, #faf8f5 0%, #f0f0f8 50%, #f5f3ff 100%)",
         minHeight: "100vh",
       }}
     >
-      {/* Radial glow behind card */}
+      {/* Subtle radial glow behind card */}
       <div
         className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         style={{
-          width: 700,
-          height: 700,
-          background: "radial-gradient(circle, rgba(255,255,255,0.35), transparent 70%)",
-          filter: "blur(80px)",
+          width: 600,
+          height: 600,
+          background: "radial-gradient(circle, rgba(139,92,246,0.06), transparent 70%)",
+          filter: "blur(60px)",
           zIndex: 0,
         }}
       />
@@ -37,12 +34,12 @@ export default async function Home() {
           width: 680,
           maxWidth: "100%",
           padding: "56px 48px",
-          background: "rgba(255,255,255,0.15)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
+          background: "rgba(255,255,255,0.65)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
           borderRadius: 28,
-          border: "1px solid rgba(255,255,255,0.45)",
-          boxShadow: "0 40px 90px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.5)",
+          border: "1px solid rgba(255,255,255,0.8)",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)",
         }}
       >
         {/* Logo */}
@@ -54,7 +51,7 @@ export default async function Home() {
             fontSize: 52,
             letterSpacing: "-0.5px",
             marginBottom: 10,
-            color: "#2d2840",
+            color: "#1a1a2e",
           }}
         >
           WhatUPB
@@ -67,7 +64,7 @@ export default async function Home() {
             fontFamily: "'Cormorant Garamond', serif",
             fontSize: 20,
             lineHeight: 1.5,
-            color: "#5a5070",
+            color: "#6b7280",
             marginBottom: 36,
           }}
         >
@@ -105,30 +102,30 @@ export default async function Home() {
 
       {/* Footer */}
       <footer className="absolute bottom-6 text-center">
-        <p className="text-xs" style={{ color: "#5a5070" }}>
+        <p className="text-xs" style={{ color: "#9ca3af" }}>
           Built for honest conversations. No human review of messages — ever.
         </p>
-        <nav aria-label="Legal" className="flex items-center justify-center gap-4 mt-2 text-xs" style={{ color: "#5a5070" }}>
+        <nav aria-label="Legal" className="flex items-center justify-center gap-4 mt-2 text-xs" style={{ color: "#9ca3af" }}>
           <Link href="/" className="hover:opacity-70 transition">
             Home
           </Link>
-          <span style={{ color: "#5a5070" }}>·</span>
+          <span>&middot;</span>
           <Link href="/privacy" className="hover:opacity-70 transition">
             Privacy
           </Link>
-          <span style={{ color: "#5a5070" }}>·</span>
+          <span>&middot;</span>
           <Link href="/terms" className="hover:opacity-70 transition">
             Terms
           </Link>
-          <span style={{ color: "#5a5070" }}>·</span>
+          <span>&middot;</span>
           <Link href="/content-policy" className="hover:opacity-70 transition">
             Content Policy
           </Link>
-          <span style={{ color: "#5a5070" }}>·</span>
+          <span>&middot;</span>
           <Link href="/safety" className="hover:opacity-70 transition">
             Safety
           </Link>
-          <span style={{ color: "#5a5070" }}>·</span>
+          <span>&middot;</span>
           <Link href="/support" className="hover:opacity-70 transition">
             Support
           </Link>
