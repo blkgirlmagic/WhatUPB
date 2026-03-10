@@ -27,6 +27,10 @@ export default function MessageForm({
   const [showCrisisModal, setShowCrisisModal] = useState(false);
   const [crisisAcknowledged, setCrisisAcknowledged] = useState(false);
 
+  // Server-side crisis intercept — shown when the API blocks a self-harm message
+  const [showCrisisIntercept, setShowCrisisIntercept] = useState(false);
+  const [crisisInterceptMessage, setCrisisInterceptMessage] = useState("");
+
   async function handleSend() {
     if (!content.trim()) return;
     if (hasTurnstile && !turnstileToken) {
@@ -48,6 +52,17 @@ export default function MessageForm({
       });
 
       const data = await response.json();
+
+      // Handle crisis intercept — server blocked the message and wants
+      // to show crisis resources instead of a generic error
+      if (data.crisis) {
+        setCrisisInterceptMessage(data.message);
+        setShowCrisisIntercept(true);
+        setLoading(false);
+        turnstileRef.current?.reset();
+        setTurnstileToken(null);
+        return;
+      }
 
       if (!response.ok) {
         // Better error messages depending on status
@@ -98,6 +113,13 @@ export default function MessageForm({
     handleSend();
   }
 
+  // Crisis intercept: user dismissed the resource screen
+  function handleCrisisInterceptDismiss() {
+    setShowCrisisIntercept(false);
+    setCrisisInterceptMessage("");
+    setContent("");
+  }
+
   if (sent) {
     return (
       <div className="card-elevated text-center py-8 animate-fade-in-up">
@@ -123,6 +145,55 @@ export default function MessageForm({
         <button onClick={() => setSent(false)} className="btn-ghost text-sm">
           Send another message
         </button>
+      </div>
+    );
+  }
+
+  // Crisis intercept screen — shown when server blocks a self-harm message
+  if (showCrisisIntercept) {
+    return (
+      <div className="card-elevated text-center py-8 px-6 animate-fade-in-up">
+        <div className="w-14 h-14 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-5">
+          <svg
+            className="w-7 h-7 text-blue-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+            />
+          </svg>
+        </div>
+        <p className="text-white/90 text-base leading-relaxed mb-6">
+          {crisisInterceptMessage}
+        </p>
+        <div className="flex flex-col gap-3">
+          <a
+            href="tel:988"
+            className="btn-primary w-full py-3 text-sm text-center"
+          >
+            Call or Text 988
+          </a>
+          <a
+            href="https://988lifeline.org/chat/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-3 text-sm text-blue-300 hover:text-blue-200 transition rounded-xl bg-blue-500/10 border border-blue-500/20 text-center"
+          >
+            Chat Online Now
+          </a>
+          <button
+            type="button"
+            onClick={handleCrisisInterceptDismiss}
+            className="w-full py-3 text-sm text-zinc-500 hover:text-zinc-300 transition rounded-xl"
+          >
+            Go Back
+          </button>
+        </div>
       </div>
     );
   }

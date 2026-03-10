@@ -6,6 +6,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { logModerationBlock } from "@/lib/moderation-log";
 import { checkContentFilter, logBlockedMessage } from "@/lib/content-filter";
 import { checkPoliticalFilter } from "@/lib/political-filter";
+import { checkCrisisIntercept, logCrisisIntercept, CRISIS_MESSAGE } from "@/lib/crisis-interceptor";
 import { sendNewMessageNotification } from "@/lib/email";
 import { getSupabase as getServiceSupabase } from "@/lib/supabase";
 
@@ -34,6 +35,7 @@ type RejectReason =
   | "moderation_blocked"
   | "content_filter"
   | "political_filter"
+  | "crisis_intercept"
   | "rate_limit"
   | "recipient_not_found"
   | "rpc_error"
@@ -186,6 +188,23 @@ export async function POST(request: NextRequest) {
         recipientId,
       }).catch(() => {});
       return NextResponse.json({ error: "Slow down" }, { status: 429 });
+    }
+
+    // ─── 5.2. CRISIS KEYWORD SAFETY NET ───────────────────────────────
+    // Runs BEFORE Perspective API and all other content filters.
+    // Catches self-harm / suicidal ideation that Perspective misses.
+    // Blocks the message and shows crisis resources to the sender.
+    // Logs ONLY timestamp + IP hash — NO message content stored.
+    const crisisCheck = checkCrisisIntercept(content.trim());
+    if (crisisCheck.intercepted) {
+      console.warn("[crisis-intercept] Self-harm language detected — blocking message, showing resources");
+      logRejection("crisis_intercept", clientIP);
+      // Fire-and-forget: log to crisis_intercepts table (timestamp + IP only)
+      logCrisisIntercept(ipHash).catch(() => {});
+      return NextResponse.json(
+        { crisis: true, message: CRISIS_MESSAGE },
+        { status: 200 }
+      );
     }
 
     // 5.4. Political content filter — blocks slogans, calls to action,
