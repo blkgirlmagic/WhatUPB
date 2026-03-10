@@ -53,7 +53,7 @@ export default function MessageForm({
         // Better error messages depending on status
         if (response.status === 403) {
           setError(
-            "Message blocked — threats and abuse aren't allowed. Try rephrasing."
+            data.error || "Message blocked — threats and abuse aren't allowed. Try rephrasing."
           );
         } else if (response.status === 429) {
           setError("Too many messages. Please wait a minute and try again.");

@@ -5,6 +5,7 @@ import { moderateMessage } from "@/lib/moderation";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logModerationBlock } from "@/lib/moderation-log";
 import { checkContentFilter, logBlockedMessage } from "@/lib/content-filter";
+import { checkPoliticalFilter } from "@/lib/political-filter";
 import { sendNewMessageNotification } from "@/lib/email";
 import { getSupabase as getServiceSupabase } from "@/lib/supabase";
 
@@ -32,6 +33,7 @@ type RejectReason =
   | "validation_links"
   | "moderation_blocked"
   | "content_filter"
+  | "political_filter"
   | "rate_limit"
   | "recipient_not_found"
   | "rpc_error"
@@ -184,6 +186,25 @@ export async function POST(request: NextRequest) {
         recipientId,
       }).catch(() => {});
       return NextResponse.json({ error: "Slow down" }, { status: 429 });
+    }
+
+    // 5.4. Political content filter — blocks slogans, calls to action,
+    //      partisan rhetoric, and geopolitical conflict statements.
+    //      Runs BEFORE content filter and Perspective API.
+    const politicalResult = checkPoliticalFilter(content.trim());
+    if (politicalResult.blocked) {
+      console.warn(
+        `[reject] political_filter — reason=${politicalResult.reason}`
+      );
+      logRejection("political_filter", clientIP, {
+        filterReason: politicalResult.reason,
+      });
+      // Fire-and-forget: log to blocked_messages table
+      logBlockedMessage(politicalResult.reason!, ipHash).catch(() => {});
+      return NextResponse.json(
+        { error: "WhatUPB is for personal messages only. Political content isn't allowed here." },
+        { status: 403 }
+      );
     }
 
     // 5.5. Pre-moderation content filter — catches PII, spam, URLs, doxxing
