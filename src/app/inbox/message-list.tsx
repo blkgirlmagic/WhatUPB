@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-browser";
 import { useToast } from "@/components/toast";
@@ -30,8 +30,6 @@ export default function MessageList({
   const [sharingId, setSharingId] = useState<string | null>(null);
   const [shareMenuId, setShareMenuId] = useState<string | null>(null);
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
-  const [visibleIds, setVisibleIds] = useState<Set<string>>(new Set());
-  const observerRef = useRef<IntersectionObserver | null>(null);
   const supabase = createClient();
   const { toast } = useToast();
 
@@ -39,36 +37,6 @@ export default function MessageList({
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // Progressive reveal: intersection observer for scroll animations
-  useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.getAttribute("data-msg-id");
-            if (id) {
-              setVisibleIds((prev) => new Set(prev).add(id));
-              observerRef.current?.unobserve(entry.target);
-            }
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
-    );
-
-    return () => observerRef.current?.disconnect();
-  }, []);
-
-  // Observe new message cards
-  const cardRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (node && observerRef.current) {
-        observerRef.current.observe(node);
-      }
-    },
-    []
-  );
 
   async function handleDelete(id: string) {
     setDeletingId(id);
@@ -419,10 +387,10 @@ export default function MessageList({
 
   return (
     <>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col space-y-4">
         {/* Upgrade banner when free tier is capped */}
         {isCapped && (
-          <div className="bg-white/75 backdrop-blur-md rounded-xl border border-purple-200/50 text-center py-6 px-5 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
+          <div className="bg-white/80 backdrop-blur-md rounded-xl border border-purple-200/50 text-center py-6 px-5 shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
             <p className="text-slate-800 font-medium text-base mb-1">
               You have {totalCount - messages.length} more message{totalCount - messages.length !== 1 ? "s" : ""} waiting.
             </p>
@@ -438,24 +406,16 @@ export default function MessageList({
           </div>
         )}
 
-        {messages.map((msg, index) => {
-          const isVisible = visibleIds.has(msg.id);
+        {messages.map((msg) => {
           const isCrisis = detectCrisis(msg.content);
 
           return (
             <div
               key={msg.id}
-              ref={cardRef}
-              data-msg-id={msg.id}
               className="group"
-              style={{
-                opacity: isVisible ? 1 : 0,
-                transform: isVisible ? "translateY(0)" : "translateY(12px)",
-                transition: `opacity 0.3s ease ${index * 0.03}s, transform 0.3s ease ${index * 0.03}s`,
-              }}
             >
               <div
-                className="bg-white/75 backdrop-blur-md rounded-xl p-5 border border-white/30 hover:bg-white/90 hover:shadow-md transition-all duration-200"
+                className="bg-white/80 backdrop-blur-md rounded-xl p-4 border border-white/30 hover:bg-white/90 hover:shadow-md transition-all duration-200"
                 style={{
                   boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
                 }}
