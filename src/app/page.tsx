@@ -80,8 +80,8 @@ export default async function Home() {
             <Link href="/inbox" className="home-btn home-btn-primary">
               Go to Inbox
             </Link>
-            <Link href="/settings" className="home-btn home-btn-dark">
-              Settings
+            <Link href="/login" className="home-btn home-btn-dark">
+              Log In
             </Link>
           </div>
         ) : (
