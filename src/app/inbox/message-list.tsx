@@ -12,6 +12,14 @@ type Message = {
   created_at: string;
 };
 
+const REPORT_REASONS = [
+  { value: "threatening", label: "Threatening / Violence" },
+  { value: "harassment", label: "Harassment / Bullying" },
+  { value: "spam", label: "Spam" },
+  { value: "inappropriate", label: "Inappropriate Content" },
+  { value: "other", label: "Other" },
+] as const;
+
 export default function MessageList({
   initialMessages,
   isPremium,
@@ -30,6 +38,11 @@ export default function MessageList({
   const [sharingId, setSharingId] = useState<string | null>(null);
   const [shareMenuId, setShareMenuId] = useState<string | null>(null);
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportMessageId, setReportMessageId] = useState<string | null>(null);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDetails, setReportDetails] = useState("");
+  const [submittingReport, setSubmittingReport] = useState(false);
   const supabase = createClient();
   const { toast } = useToast();
 
@@ -46,6 +59,71 @@ export default function MessageList({
     }
     setDeletingId(null);
   }
+
+  // ── Report message flow ───────────────────────────────────────────────────
+
+  function handleReport(messageId: string) {
+    setReportMessageId(messageId);
+    setReportReason("");
+    setReportDetails("");
+    setShowReportModal(true);
+  }
+
+  async function handleReportSubmit() {
+    if (!reportMessageId || !reportReason || submittingReport) return;
+
+    setSubmittingReport(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast("You must be logged in to report.", "error");
+        return;
+      }
+
+      const { error } = await supabase.from("message_reports").insert({
+        message_id: reportMessageId,
+        reporter_id: user.id,
+        reason: reportReason,
+        details: reportDetails.trim() || null,
+      });
+
+      if (error) {
+        if (error.code === "23505") {
+          toast("You\u2019ve already reported this message.");
+        } else {
+          toast("Failed to submit report. Try again.", "error");
+          console.error("[report] Insert error:", error.message);
+        }
+        return;
+      }
+
+      // Delete the message from the user's inbox (same as Delete button)
+      const { error: deleteError } = await supabase
+        .from("messages")
+        .delete()
+        .eq("id", reportMessageId);
+
+      if (deleteError) {
+        console.error("[report] Delete error:", deleteError.message);
+      }
+
+      // Remove from local state
+      setMessages((prev) => prev.filter((m) => m.id !== reportMessageId));
+
+      toast("Message reported. Thanks for keeping WhatUPB safe \uD83D\uDC99");
+      setShowReportModal(false);
+      setReportMessageId(null);
+      setReportReason("");
+      setReportDetails("");
+    } catch {
+      toast("Failed to submit report. Try again.", "error");
+    } finally {
+      setSubmittingReport(false);
+    }
+  }
+
+  // ── Reactions ─────────────────────────────────────────────────────────────
 
   async function handleReactionSend() {
     const content = reactionText.trim();
@@ -64,14 +142,14 @@ export default function MessageList({
         const data = await res.json().catch(() => ({}));
 
         if (res.status === 403) {
-          toast("Reaction blocked — keep it respectful.", "error");
+          toast("Reaction blocked \u2014 keep it respectful.", "error");
         } else {
           toast(data.error || "Failed to post reaction.", "error");
         }
         return;
       }
 
-      toast("Reaction posted! It's now on your profile.");
+      toast("Reaction posted! It\u2019s now on your profile.");
       setReactionText("");
       setShowReactionModal(false);
     } catch {
@@ -525,6 +603,19 @@ export default function MessageList({
                       React
                     </button>
 
+                    {/* Report button */}
+                    <button
+                      onClick={() => handleReport(msg.id)}
+                      className="text-xs text-slate-400 hover:text-amber-600 transition opacity-0 group-hover:opacity-100 focus:opacity-100 flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-amber-50"
+                      type="button"
+                      aria-label="Report message"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" />
+                      </svg>
+                      Report
+                    </button>
+
                     {/* Delete button */}
                     <button
                       onClick={() => handleDelete(msg.id)}
@@ -680,6 +771,94 @@ export default function MessageList({
             >
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Report modal overlay */}
+      {showReportModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          onClick={() => {
+            setShowReportModal(false);
+            setReportReason("");
+            setReportDetails("");
+          }}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+
+          {/* Modal card */}
+          <div
+            className="relative z-10 w-full max-w-md mx-4 bg-white/90 backdrop-blur-xl border border-white/40 rounded-2xl p-6 animate-fade-in-up shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-slate-800 text-lg font-semibold mb-1">Report message</h2>
+            <p className="text-slate-500 text-sm mb-4">
+              This message will be removed from your inbox and flagged for review.
+            </p>
+
+            {/* Reason selection */}
+            <div className="space-y-2 mb-4">
+              {REPORT_REASONS.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setReportReason(option.value)}
+                  className={`w-full text-left px-4 py-2.5 rounded-xl text-sm transition border ${
+                    reportReason === option.value
+                      ? "bg-amber-50 border-amber-300 text-amber-800 font-medium"
+                      : "bg-white/60 border-white/40 text-slate-700 hover:bg-slate-50"
+                  }`}
+                  type="button"
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Optional details */}
+            <textarea
+              value={reportDetails}
+              onChange={(e) => setReportDetails(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  setShowReportModal(false);
+                  setReportReason("");
+                  setReportDetails("");
+                }
+              }}
+              placeholder="Additional details (optional)"
+              maxLength={200}
+              rows={2}
+              className="input text-sm resize-none mb-2 w-full"
+              disabled={submittingReport}
+            />
+            <span className="text-xs text-slate-400 block mb-4">
+              {reportDetails.length}/200
+            </span>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-2">
+              <button
+                onClick={() => {
+                  setShowReportModal(false);
+                  setReportReason("");
+                  setReportDetails("");
+                }}
+                className="text-xs text-slate-500 hover:text-slate-700 transition px-3 py-1.5"
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReportSubmit}
+                disabled={submittingReport || !reportReason}
+                className="bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-1.5 px-4 text-xs rounded-lg font-medium transition"
+                type="button"
+              >
+                {submittingReport ? "Reporting\u2026" : "Report & Remove"}
+              </button>
+            </div>
           </div>
         </div>
       )}
