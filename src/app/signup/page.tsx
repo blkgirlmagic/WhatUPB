@@ -12,13 +12,13 @@ const ageGateStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
 
   :root {
-    --gate-bg: #0a0a0f;
-    --gate-surface: rgba(255,255,255,0.04);
-    --gate-border: rgba(255,255,255,0.08);
+    --gate-bg: #0f0f18;
+    --gate-surface: rgba(255,255,255,0.05);
+    --gate-border: rgba(255,255,255,0.09);
     --gate-accent: #7c6aff;
     --gate-accent2: #ff6a9b;
     --gate-text: #f0eeff;
-    --gate-muted: rgba(240,238,255,0.45);
+    --gate-muted: rgba(240,238,255,0.5);
   }
 
   .gate-wrap {
@@ -37,9 +37,9 @@ const ageGateStyles = `
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(ellipse 60% 50% at 20% 50%, rgba(124,106,255,0.12) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 60% at 80% 30%, rgba(255,106,155,0.08) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 40% at 50% 90%, rgba(124,106,255,0.06) 0%, transparent 70%);
+      radial-gradient(ellipse 70% 55% at 20% 50%, rgba(124,106,255,0.15) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 65% at 80% 30%, rgba(255,106,155,0.11) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 50% 90%, rgba(100,140,255,0.09) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
   }
@@ -51,7 +51,7 @@ const ageGateStyles = `
     width: 200%;
     height: 200%;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-    opacity: 0.4;
+    opacity: 0.35;
     pointer-events: none;
     z-index: 0;
     animation: grain 0.5s steps(1) infinite;
@@ -72,18 +72,18 @@ const ageGateStyles = `
 
   .msg-float {
     position: fixed;
-    border: 1px solid var(--gate-border);
-    background: rgba(255,255,255,0.025);
-    backdrop-filter: blur(8px);
-    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(6px);
+    border-radius: 14px;
     padding: 10px 14px;
     font-size: 12px;
-    color: var(--gate-muted);
+    color: rgba(240,238,255,0.35);
     max-width: 200px;
     line-height: 1.4;
     pointer-events: none;
     z-index: 1;
-    filter: blur(2px);
+    filter: blur(1px);
     opacity: 0;
     animation: floatIn 8s ease-in-out infinite;
   }
@@ -116,13 +116,13 @@ const ageGateStyles = `
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(124,106,255,0.15);
-    border: 1px solid rgba(124,106,255,0.3);
+    background: rgba(124,106,255,0.12);
+    border: 1px solid rgba(124,106,255,0.25);
     border-radius: 100px;
     padding: 5px 12px;
     font-size: 11px;
     font-weight: 500;
-    color: #a99dff;
+    color: #b3a8ff;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     margin-bottom: 20px;
@@ -143,16 +143,16 @@ const ageGateStyles = `
 
   .gate-headline {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(52px, 10vw, 72px);
-    line-height: 0.92;
+    font-size: clamp(48px, 9vw, 68px);
+    line-height: 0.95;
     color: var(--gate-text);
     letter-spacing: 0.01em;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     animation: cardUp 0.7s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .gate-headline span {
-    background: linear-gradient(135deg, #7c6aff, #ff6a9b);
+    background: linear-gradient(135deg, #8b7bff, #ff7baa);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -161,8 +161,8 @@ const ageGateStyles = `
   .gate-subtext {
     font-size: 15px;
     color: var(--gate-muted);
-    line-height: 1.6;
-    margin-bottom: 32px;
+    line-height: 1.65;
+    margin-bottom: 28px;
     font-weight: 300;
     animation: cardUp 0.7s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
@@ -171,7 +171,7 @@ const ageGateStyles = `
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
     animation: cardUp 0.7s 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
@@ -187,8 +187,33 @@ const ageGateStyles = `
     gap: 6px;
   }
 
+  .gate-example {
+    background: rgba(124,106,255,0.06);
+    border: 1px solid rgba(124,106,255,0.15);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    animation: cardUp 0.7s 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .gate-example-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(179,168,255,0.6);
+    margin-bottom: 6px;
+  }
+
+  .gate-example-text {
+    font-size: 14px;
+    color: rgba(240,238,255,0.65);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
   .gate-box {
-    background: rgba(255,255,255,0.03);
+    background: rgba(255,255,255,0.035);
     border: 1px solid var(--gate-border);
     border-radius: 20px;
     padding: 28px;
@@ -207,8 +232,8 @@ const ageGateStyles = `
   .tap-btn {
     width: 100%;
     padding: 18px;
-    background: linear-gradient(135deg, rgba(124,106,255,0.2), rgba(255,106,155,0.15));
-    border: 1px solid rgba(124,106,255,0.35);
+    background: linear-gradient(135deg, rgba(124,106,255,0.22), rgba(255,106,155,0.14));
+    border: 1px solid rgba(124,106,255,0.3);
     border-radius: 14px;
     color: var(--gate-text);
     font-family: 'DM Sans', sans-serif;
@@ -323,6 +348,14 @@ const ageGateStyles = `
     text-align: center;
     line-height: 1.5;
     opacity: 0.7;
+  }
+
+  .gate-helper {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 13px;
+    color: rgba(240,238,255,0.4);
+    animation: cardUp 0.7s 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .gate-error-msg {
@@ -613,22 +646,23 @@ export default function SignUp() {
       <>
         <style>{ageGateStyles}</style>
         <div className="gate-wrap">
-          <div className="msg-float">someone in your circle has thoughts about you</div>
-          <div className="msg-float">honestly I think you&apos;re the most creative person I know</div>
+          <div className="msg-float">you&apos;re honestly one of my favorite people</div>
+          <div className="msg-float">I wish I told you this sooner</div>
           <div className="msg-float">can we talk? for real this time</div>
-          <div className="msg-float">no name. no filter. just truth.</div>
+          <div className="msg-float">you made my entire week and didn&apos;t even know it</div>
 
           <div className="gate-card">
             <div className="gate-badge">
               <div className="gate-badge-dot" />
-              Adults only &middot; 18+
+              18+ Community
             </div>
 
-            <h1 className="gate-headline">Say it.<br /><span>Anonymous.</span></h1>
+            <h1 className="gate-headline">Ask anything.<br /><span>Get honest answers.</span></h1>
 
             <p className="gate-subtext">
-              WhatUPB is where real talk happens &mdash; no names, no judgment.
-              Send and receive honest messages from the people in your world.
+              Create your page and let people send anonymous messages
+              they&apos;d never say out loud. Fast to set up, simple to share,
+              and fully anonymous.
             </p>
 
             <div className="gate-features">
@@ -637,13 +671,20 @@ export default function SignUp() {
               <div className="gate-feat">&#10024; Real conversations</div>
             </div>
 
+            <div className="gate-example">
+              <div className="gate-example-label">Example message</div>
+              <div className="gate-example-text">
+                &ldquo;I think you inspire more people than you know.&rdquo;
+              </div>
+            </div>
+
             <div className="gate-box">
-              <div className="gate-label">Confirm your age to enter</div>
+              <div className="gate-label">Enter WhatUPB</div>
 
               <button className="tap-btn" onClick={handleTap} type="button">
                 <div className="tap-btn-text">
-                  <span>&#10003;</span>
-                  <span>I am 18 or older &mdash; Let me in</span>
+                  <span>&#10148;</span>
+                  <span>Start my page</span>
                 </div>
               </button>
 
@@ -667,13 +708,15 @@ export default function SignUp() {
               {ageError && <div className="gate-error-msg">{ageError}</div>}
 
               <button className="verify-btn" onClick={handleDobVerify} disabled={!canSubmitDob} type="button">
-                Verify &amp; Enter
+                Verify &amp; Continue
               </button>
 
               <p className="gate-fine-print">
-                By entering, you confirm you are 18+ and agree to our Terms of Service.
+                By continuing, you confirm you are 18+ and agree to our Terms of Service.
               </p>
             </div>
+
+            <p className="gate-helper">Takes less than 10 seconds to get started.</p>
           </div>
         </div>
       </>
