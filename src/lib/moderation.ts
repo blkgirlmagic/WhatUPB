@@ -1,9 +1,9 @@
 // ---------------------------------------------------------------------------
 //  Server-side content moderation for WhatUPB anonymous messages.
 //
-//  Primary: HIVE TEXT MODERATION API
-//    POST https://api.thehive.ai/v3/hive/text-moderation
-//    Bearer token auth with HIVE_API_KEY
+//  Primary: HIVE TEXT MODERATION API (V2 production)
+//    POST https://api.thehive.ai/api/v2/task/sync
+//    Token auth with HIVE_API_KEY
 //
 //  Score thresholds (any score ≥ threshold → block):
 //    self_harm ≥ 0.7   → crisis response (988 Lifeline resources)
@@ -11,8 +11,11 @@
 //    harassment ≥ 0.5  → abuse response (community guidelines violation)
 //    violence ≥ 0.5    → abuse response (community guidelines violation)
 //
-//  IMPORTANT: Hive returns multiple output entries — one per classification
+//  IMPORTANT: Hive V2 returns multiple output entries — one per classification
 //  model (sexual, hate, violence, etc.).  We must iterate ALL of them.
+//
+//  V2 response structure: response[0].output[0].classes[]
+//  Each class has { class: string, score: number }
 //
 //  Fallback: If the Hive API is unreachable the API route falls back to
 //  hardcoded keyword patterns in crisis-interceptor.ts.
@@ -29,7 +32,7 @@ export interface HiveModerationResult {
   triggerScore?: number;
 }
 
-const HIVE_URL = "https://api.thehive.ai/v3/hive/text-moderation";
+const HIVE_URL = "https://api.thehive.ai/api/v2/task/sync";
 
 // Score thresholds — self_harm is checked FIRST so crisis always takes
 // priority over abuse when both categories fire simultaneously.
@@ -43,7 +46,7 @@ const THRESHOLDS: [string, number, ModerationAction][] = [
 ];
 
 /**
- * Moderate message text using the Hive Text Moderation API.
+ * Moderate message text using the Hive Text Moderation API (V2 production).
  *
  * Returns `{ available: false }` if the API is unreachable — the caller
  * should fall back to hardcoded keyword patterns.
@@ -62,7 +65,7 @@ export async function moderateWithHive(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Token ${apiKey}`,
       },
       body: JSON.stringify({ text_data: text }),
       signal: AbortSignal.timeout(8_000),
@@ -81,23 +84,21 @@ export async function moderateWithHive(
     // ── FULL RAW RESPONSE LOG — see exact Hive output in Vercel logs ──
     console.log("[moderation] Hive FULL response:", JSON.stringify(data, null, 2));
 
-    // Hive returns: status[0].response.output[] — an ARRAY of output entries,
-    // one per classification model (sexual, hate, violence, self_harm, etc.).
-    // Each entry has its own classes[] array.  We must iterate ALL entries.
-    const output = data?.status?.[0]?.response?.output;
+    // V2 response structure: response[0].output[0].classes[]
+    // Multiple output entries — one per classification model.
+    const output = data?.response?.[0]?.output;
     if (!output || !Array.isArray(output) || output.length === 0) {
       console.error(
         "[moderation] Hive response has unexpected shape — no output array.",
-        "Keys:", JSON.stringify(Object.keys(data || {})),
-        "status[0] keys:", JSON.stringify(Object.keys(data?.status?.[0] || {}))
+        "Top keys:", JSON.stringify(Object.keys(data || {})),
+        "response[0] keys:", JSON.stringify(Object.keys(data?.response?.[0] || {}))
       );
       return { available: false, blocked: false, action: null, scores: null };
     }
 
     // ── Collect classes from ALL output entries ──────────────────────────
-    // BUG FIX: Previously only read output[0].classes, which was just the
-    // first classification model.  Violence, hate, etc. live in separate
-    // output entries and were being silently skipped.
+    // Each output entry covers a different classification model (sexual,
+    // hate, violence, self_harm, etc.) with its own classes[] array.
     const scores: Record<string, number> = {};
     let totalClasses = 0;
 

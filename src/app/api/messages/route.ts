@@ -226,7 +226,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ─── 6. HIVE TEXT MODERATION — primary content moderator ────────────
-    // POST to https://api.thehive.ai/v3/hive/text-moderation
+    // POST to https://api.thehive.ai/api/v2/task/sync
     // Score thresholds:
     //   self_harm ≥ 0.7  → crisis (988 Lifeline resources)
     //   hate ≥ 0.5       → abuse (community guidelines)
