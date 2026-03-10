@@ -5,9 +5,6 @@ import MessageForm from "./message-form";
 import ReactionsFeed from "./reactions-feed";
 import OwnerToolbar from "./owner-toolbar";
 
-// Never cache this page — auth-dependent owner controls must be fresh
-export const dynamic = "force-dynamic";
-
 export default async function PublicProfile({
   params,
 }: {
@@ -34,22 +31,11 @@ export default async function PublicProfile({
     .order("created_at", { ascending: false })
     .limit(50);
 
-  // Ownership gate — delegates the check to the database.
-  // Ask: "does a profile exist where id = MY auth uid AND username = THIS slug?"
-  // This can only return a row when the visitor literally owns this profile.
+  // Check if the current visitor is the profile owner
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  let isOwner = false;
-  if (user) {
-    const { data: ownerCheck } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("id", user.id)
-      .eq("username", username.toLowerCase())
-      .maybeSingle();
-    isOwner = !!ownerCheck;
-  }
+  const isOwner = user?.id === profile.id;
 
   const prof = profile as Record<string, unknown>;
   const { name: theme, vars: themeVars } = resolveTheme(prof.link_theme as string);

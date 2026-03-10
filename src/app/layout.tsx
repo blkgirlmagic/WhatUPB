@@ -1,8 +1,7 @@
-import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Syne, DM_Sans } from "next/font/google";
 import { ToastProvider } from "@/components/toast";
-import AgeGate from "@/components/AgeGate";
-import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,61 +14,36 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const syne = Syne({
+  variable: "--font-syne",
   subsets: ["latin"],
-  weight: ["800"],
+  weight: ["400", "700", "800"],
 });
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  themeColor: "#faf8f5",
-  colorScheme: "light",
-};
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
+});
 
 export const metadata: Metadata = {
-  title: "WhatUPB - Anonymous Honest Feedback",
+  title: "WhatUPB — Say What You Really Think",
   description:
-    "Send and receive anonymous messages honestly. WhatUPB lets anyone share real thoughts without revealing their identity—with built-in abuse blocking.",
-  manifest: "/manifest.webmanifest",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "WhatUPB",
-  },
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "32x32", type: "image/x-icon" },
-      { url: "/favicon.png?v=8", sizes: "32x32", type: "image/png" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "512x512" }],
-  },
-  other: {
-    "mobile-web-app-capable": "yes",
-  },
-  keywords: [
-    "anonymous messaging app",
-    "anonymous feedback",
-    "honest feedback",
-    "send anonymous messages",
-  ],
+    "Get honest, anonymous messages from friends and followers. Share your link, get real talk. Abuse automatically blocked.",
   openGraph: {
-    title: "WhatUPB - Anonymous Honest Feedback",
+    title: "WhatUPB — Anonymous Messages",
     description:
-      "Send and receive anonymous messages honestly. WhatUPB lets anyone share real thoughts without revealing their identity—with built-in abuse blocking.",
+      "Send and receive anonymous messages. Safe, private, and abuse-free.",
     url: "https://whatupb.com",
     siteName: "WhatUPB",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "WhatUPB - Anonymous Honest Feedback",
+    title: "WhatUPB — Anonymous Messages",
     description:
-      "Send and receive anonymous messages honestly. WhatUPB lets anyone share real thoughts without revealing their identity—with built-in abuse blocking.",
+      "Send and receive anonymous messages. Safe, private, and abuse-free.",
   },
 };
 
@@ -80,21 +54,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased texture-overlay`}
+        className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} ${dmSans.variable} antialiased texture-overlay`}
       >
-        <ServiceWorkerRegistrar />
-        <AgeGate>
-          <ToastProvider>
-            <main>{children}</main>
-          </ToastProvider>
-        </AgeGate>
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

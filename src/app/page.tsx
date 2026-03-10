@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
+import { CloudLogo } from "@/components/cloud-logo";
+import { DiagonalLines } from "@/components/diagonal-lines";
+import { ChatParallax } from "@/components/chat-parallax";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -8,131 +11,237 @@ export default async function Home() {
   } = await supabase.auth.getUser();
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center px-4 relative"
-      style={{
-        backgroundImage: "url('/My_WhaUPB_home_page.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        minHeight: "100vh",
-      }}
-    >
-      {/* Radial glow behind card */}
-      <div
-        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{
-          width: 700,
-          height: 700,
-          background: "radial-gradient(circle, rgba(255,255,255,0.35), transparent 70%)",
-          filter: "blur(80px)",
-          zIndex: 0,
-        }}
-      />
+    <div className="landing-page">
+      <div className="bloom" />
+      <DiagonalLines />
+      <ChatParallax />
 
-      <div
-        className="glass-card text-center relative"
-        style={{
-          zIndex: 1,
-          width: 680,
-          maxWidth: "100%",
-          padding: "56px 48px",
-          background: "rgba(255,255,255,0.15)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          borderRadius: 28,
-          border: "1px solid rgba(255,255,255,0.45)",
-          boxShadow: "0 40px 90px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.5)",
-        }}
-      >
-        {/* Logo */}
-        <h1
-          className="animate-fade-in-up"
-          style={{
-            fontFamily: "'Playfair Display', 'Cormorant Garamond', serif",
-            fontWeight: 800,
-            fontSize: 52,
-            letterSpacing: "-0.5px",
-            marginBottom: 10,
-            color: "#2d2840",
-          }}
-        >
+      {/* Floating chat messages */}
+      <div className="chat-float cf1">
+        <div className="msg">💬 &ldquo;ok honestly&hellip; your fits ARE fire&rdquo;</div>
+      </div>
+      <div className="chat-float cf2">
+        <div className="msg">🔥 &ldquo;that meeting could&rsquo;ve been an email&rdquo;</div>
+      </div>
+      <div className="chat-float cf3">
+        <div className="msg">💜 &ldquo;you deserve that promotion fr&rdquo;</div>
+      </div>
+      <div className="chat-float cf4">
+        <div className="msg">👀 &ldquo;someone out here misses you ngl&rdquo;</div>
+      </div>
+      <div className="chat-float cf5">
+        <div className="msg">✨ &ldquo;your energy today was IT&rdquo;</div>
+      </div>
+
+      {/* Nav */}
+      <nav className="landing-nav">
+        <Link href="/" className="nav-logo">
+          <div className="logo-mark">
+            <CloudLogo />
+          </div>
           WhatUPB
-        </h1>
+        </Link>
+        <div className="nav-links">
+          <a href="#how-it-works">How it works</a>
+          <a href="#safety">Safety</a>
+          <a href="#">Blog</a>
+          {user ? (
+            <Link href="/inbox" className="nav-cta">
+              Go to Inbox
+            </Link>
+          ) : (
+            <Link href="/signup" className="nav-cta">
+              Create Account
+            </Link>
+          )}
+        </div>
+      </nav>
 
-        {/* Subtitle */}
-        <p
-          className="animate-fade-in-up-delay-1"
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: 20,
-            lineHeight: 1.5,
-            color: "#5a5070",
-            marginBottom: 36,
-          }}
-        >
-          Say what people really think — anonymously.
+      {/* Hero */}
+      <section className="hero">
+        <div className="mascot-wrap">
+          <CloudLogo
+            width={90}
+            height={74}
+            className="mascot-svg"
+            showShadow
+            showExtraHighlights
+          />
+        </div>
+
+        <div className="hero-wordmark">WhatUPB</div>
+        <p className="hero-sub">
+          Say what people <em>really</em> think — anonymously.
+          <br />
+          No handles. No trace. Just honest vibes.
         </p>
 
-        {/* CTA buttons */}
-        {user ? (
-          <div className="animate-fade-in-up-delay-2">
-            <Link href="/signup" className="home-btn home-btn-primary">
-              Create Your Link
-            </Link>
-            <Link href="/login" className="home-btn home-btn-dark">
-              Log In
-            </Link>
-          </div>
-        ) : (
-          <div className="animate-fade-in-up-delay-2">
-            <Link href="/signup" className="home-btn home-btn-primary">
-              Create Your Link
-            </Link>
-            <Link href="/login" className="home-btn home-btn-dark">
-              Log In
-            </Link>
-          </div>
-        )}
+        <div className="cta-row">
+          {user ? (
+            <>
+              <Link href="/inbox" className="btn-ghost">
+                Go to Inbox <span className="arrow">↗</span>
+              </Link>
+              <Link href="/settings" className="btn-filled">
+                Settings <span className="arrow">↗</span>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="btn-ghost">
+                Log In <span className="arrow">↗</span>
+              </Link>
+              <Link href="/signup" className="btn-filled">
+                Get Your Link — Free <span className="arrow">↗</span>
+              </Link>
+            </>
+          )}
+        </div>
 
-        {/* Trust badges */}
-        <div className="home-meta animate-fade-in-up-delay-3">
-          <span>&#10004; Abuse auto-blocked</span>
-          <span>&#10004; Fully anonymous</span>
-          <span>&#10004; Takes 30 seconds</span>
+        {/* Glass card */}
+        <div className="glass-card">
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <div className="card-label">Your anonymous link</div>
+            <div className="card-headline">
+              Hear the truth people
+              <br />
+              never say out loud.
+            </div>
+            <p className="card-body">
+              Share your link anywhere. Friends send honest thoughts — zero
+              fear, zero trace. AI blocks every abusive message before you ever
+              see it.
+            </p>
+            <Link href="/signup">
+              <button className="card-btn-primary">
+                ✦ Get Your Link — Free
+              </button>
+            </Link>
+            <Link href="/login">
+              <button className="card-btn-secondary">Log In</button>
+            </Link>
+            <div className="trust-row">
+              <div className="trust-item">
+                <div className="t-check">✓</div>
+                <span>Abuse auto-blocked</span>
+              </div>
+              <div className="trust-item">
+                <div className="t-check">✓</div>
+                <span>Fully anonymous</span>
+              </div>
+              <div className="trust-item">
+                <div className="t-check">✓</div>
+                <span>30 seconds</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="scroll-hint">
+          <div className="scroll-line" />
+        </div>
+      </section>
+
+      {/* Stats */}
+      <div className="stats-strip">
+        <div className="stat">
+          <div className="stat-num">50K+</div>
+          <div className="stat-label">Messages sent</div>
+        </div>
+        <div className="stat-sep" />
+        <div className="stat">
+          <div className="stat-num">12K+</div>
+          <div className="stat-label">Links created</div>
+        </div>
+        <div className="stat-sep" />
+        <div className="stat">
+          <div className="stat-num">99%</div>
+          <div className="stat-label">Abuse blocked</div>
+        </div>
+        <div className="stat-sep" />
+        <div className="stat">
+          <div className="stat-num">Zero</div>
+          <div className="stat-label">Identity leaks</div>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="absolute bottom-6 text-center">
-        <p className="text-xs" style={{ color: "#5a5070" }}>
-          Built for honest conversations. No human review of messages — ever.
+      {/* How it works */}
+      <div id="how-it-works" className="section">
+        <div className="s-eyebrow">How It Works</div>
+        <div className="s-title">Three steps to real talk.</div>
+        <div className="steps-grid">
+          <div className="step-card">
+            <div className="step-num">01</div>
+            <div className="step-title">Create Your Link</div>
+            <p className="step-body">
+              Get your unique WhatUPB link in under 30 seconds. No card, no
+              setup.
+            </p>
+          </div>
+          <div className="step-card">
+            <div className="step-num">02</div>
+            <div className="step-title">Share Everywhere</div>
+            <p className="step-body">
+              Drop it in your bio, story, WhatsApp. Let people know the door
+              is open.
+            </p>
+          </div>
+          <div className="step-card">
+            <div className="step-num">03</div>
+            <div className="step-title">Read the Truth</div>
+            <p className="step-body">
+              Messages come in moderated by AI in real time. No hate — just
+              honest feedback.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom CTA */}
+      <div className="bottom-cta">
+        <div className="bc-title">
+          Ready for honest
+          <br />
+          conversations?
+        </div>
+        <p className="bc-sub">
+          Join thousands already hearing what people really think.
         </p>
-        <nav aria-label="Legal" className="flex items-center justify-center gap-4 mt-2 text-xs" style={{ color: "#5a5070" }}>
-          <Link href="/" className="hover:opacity-70 transition">
-            Home
-          </Link>
-          <span style={{ color: "#5a5070" }}>·</span>
-          <Link href="/privacy" className="hover:opacity-70 transition">
-            Privacy
-          </Link>
-          <span style={{ color: "#5a5070" }}>·</span>
-          <Link href="/terms" className="hover:opacity-70 transition">
-            Terms
-          </Link>
-          <span style={{ color: "#5a5070" }}>·</span>
-          <Link href="/content-policy" className="hover:opacity-70 transition">
-            Content Policy
-          </Link>
-          <span style={{ color: "#5a5070" }}>·</span>
-          <Link href="/safety" className="hover:opacity-70 transition">
-            Safety
-          </Link>
-          <span style={{ color: "#5a5070" }}>·</span>
-          <Link href="/support" className="hover:opacity-70 transition">
-            Support
-          </Link>
-        </nav>
+        <Link href="/signup" className="bc-btn">
+          Create Your Free Link <span className="arrow">↗</span>
+        </Link>
+      </div>
+
+      {/* Footer */}
+      <footer className="landing-footer">
+        <div className="footer-top">
+          <div className="footer-brand">
+            <div className="footer-logo-row">
+              <CloudLogo width={32} height={28} />
+              <span className="footer-wordmark">WhatUPB</span>
+            </div>
+            <p className="footer-tagline">
+              Built for honest conversations.
+              <br />
+              No human review of messages — ever.
+            </p>
+          </div>
+          <div className="footer-links-col">
+            <div className="footer-col-label">Links</div>
+            <div className="footer-links-row">
+              <Link href="/">Home</Link>
+              <Link href="/privacy">Privacy</Link>
+              <Link href="/terms">Terms</Link>
+              <Link href="/content-policy">Content Policy</Link>
+              <a href="#safety">Safety</a>
+              <a href="#">Support</a>
+            </div>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <span>© 2025 WhatUPB. All rights reserved.</span>
+          <span>whatupb.com</span>
+        </div>
       </footer>
     </div>
   );
