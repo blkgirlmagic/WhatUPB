@@ -1,18 +1,21 @@
 // ---------------------------------------------------------------------------
-//  Server-side crisis keyword interceptor for WhatUPB.
+//  Server-side keyword interceptor for WhatUPB.
 //
-//  TWO-LAYER approach:
+//  Handles TWO categories of dangerous content:
+//
+//    'crisis' — Self-harm / suicidal ideation (directed at SELF)
+//               → Block message, show 988 Lifeline resources
+//               → Log to crisis_intercepts table
+//
+//    'abuse'  — Harassment / death wishes (directed at RECIPIENT)
+//               → Block message, show community guidelines violation
+//               → Log to blocked_messages table
+//
+//  TWO-LAYER approach for each category:
 //    Layer 1 — Database: queries the crisis_keywords table (cached 5 min)
 //    Layer 2 — Hardcoded: regex fallback if DB is unreachable
 //
 //  Runs BEFORE the Perspective API and all other content filters.
-//  When a message contains self-harm / suicidal ideation phrases, it:
-//    1. Blocks the message from being sent
-//    2. Returns a crisis resource response to the sender
-//    3. Logs the intercept (timestamp + IP hash ONLY — no message content)
-//
-//  This is a safety net because the Perspective API does NOT reliably
-//  catch self-harm language.
 // ---------------------------------------------------------------------------
 
 import { createClient } from "@supabase/supabase-js";
@@ -38,6 +41,7 @@ function normalizeText(raw: string): string {
   t = t.replace(/\bdidn'?t\b/g, "did not");
   t = t.replace(/\bisn'?t\b/g, "is not");
   t = t.replace(/\bwasn'?t\b/g, "was not");
+  t = t.replace(/\bweren'?t\b/g, "were not");
   t = t.replace(/\bwouldn'?t\b/g, "would not");
   t = t.replace(/\bcouldn'?t\b/g, "could not");
   t = t.replace(/\bshouldn'?t\b/g, "should not");
@@ -60,9 +64,9 @@ function normalizeText(raw: string): string {
   return t;
 }
 
-// ── Layer 2: Hardcoded crisis phrases (fallback if DB is unreachable) ────────
-// These are regex patterns for more flexible matching.
+// ── Layer 2: Hardcoded patterns (fallback if DB is unreachable) ──────────────
 
+// Self-harm / suicidal ideation (directed at SELF → 988 resources)
 const HARDCODED_CRISIS_PATTERNS: RegExp[] = [
   /\bi wish i was not alive\b/,
   /\bi wish i wasnt alive\b/,
@@ -128,11 +132,59 @@ const HARDCODED_CRISIS_PATTERNS: RegExp[] = [
   /\bwanna end my life\b/,
 ];
 
-// ── Layer 1: Database keyword cache ─────────────────────────────────────────
-// Fetches keywords from crisis_keywords table, caches for 5 minutes.
-// If the DB query fails, falls through to hardcoded patterns.
+// Harassment / death wishes (directed at RECIPIENT → community guidelines block)
+const HARDCODED_ABUSE_PATTERNS: RegExp[] = [
+  /\bi wish you were dead\b/,
+  /\bi wish you wasnt alive\b/,
+  /\bi wish you was not alive\b/,
+  /\bi wish you were not alive\b/,
+  /\bi wish you werent alive\b/,
+  /\bi wish you wasnt here\b/,
+  /\byou should die\b/,
+  /\bu should die\b/,
+  /\bgo kill yourself\b/,
+  /\bgo kil yourself\b/,
+  /\bgo kill urself\b/,
+  /\bkys\b/,
+  /\bnobody wants you here\b/,
+  /\byou should end it\b/,
+  /\bthe world is better without you\b/,
+  /\bworld is better without you\b/,
+  /\bworld be better without you\b/,
+  /\beveryone is better without you\b/,
+  /\bgo die\b/,
+  /\bkill yourself\b/,
+  /\bkil yourself\b/,
+  /\bkill urself\b/,
+  /\bend yourself\b/,
+  /\byou should kill yourself\b/,
+  /\bu should kill yourself\b/,
+  /\bnobody would miss you\b/,
+  /\bno one would miss you\b/,
+  /\bnoone would miss you\b/,
+  /\byou do not deserve to live\b/,
+  /\byou dont deserve to live\b/,
+  /\byou do not deserve to be alive\b/,
+  /\byou should not be alive\b/,
+  /\byou shouldnt be alive\b/,
+  /\bhope you die\b/,
+  /\bi hope you die\b/,
+  /\bdrink bleach\b/,
+  /\bgo hang yourself\b/,
+  /\bhang yourself\b/,
+  /\bneck yourself\b/,
+  /\boff yourself\b/,
+];
 
-let cachedDbKeywords: string[] | null = null;
+// ── Layer 1: Database keyword cache ─────────────────────────────────────────
+// Fetches keywords from crisis_keywords table (both types), caches for 5 min.
+
+interface DbKeyword {
+  keyword: string;
+  type: string;
+}
+
+let cachedDbKeywords: DbKeyword[] | null = null;
 let cacheTimestamp = 0;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -143,7 +195,7 @@ function getAnonSupabase() {
   );
 }
 
-async function fetchCrisisKeywords(): Promise<string[]> {
+async function fetchAllKeywords(): Promise<DbKeyword[]> {
   const now = Date.now();
 
   // Return cached keywords if still fresh
@@ -155,87 +207,107 @@ async function fetchCrisisKeywords(): Promise<string[]> {
     const supabase = getAnonSupabase();
     const { data, error } = await supabase
       .from("crisis_keywords")
-      .select("keyword")
+      .select("keyword, type")
       .eq("active", true);
 
     if (error) {
-      console.error("[crisis-interceptor] DB fetch failed:", error.message);
-      return cachedDbKeywords ?? []; // stale cache or empty
+      console.error("[keyword-interceptor] DB fetch failed:", error.message);
+      return cachedDbKeywords ?? [];
     }
 
-    const keywords = (data ?? []).map(
-      (row: { keyword: string }) => row.keyword
-    );
+    const keywords = (data ?? []) as DbKeyword[];
     cachedDbKeywords = keywords;
     cacheTimestamp = now;
 
+    const crisisCount = keywords.filter((k) => k.type === "crisis").length;
+    const abuseCount = keywords.filter((k) => k.type === "abuse").length;
     console.log(
-      `[crisis-interceptor] Loaded ${keywords.length} keywords from DB`
+      `[keyword-interceptor] Loaded ${keywords.length} keywords from DB (${crisisCount} crisis, ${abuseCount} abuse)`
     );
     return keywords;
   } catch (err) {
     console.error(
-      "[crisis-interceptor] DB fetch error:",
+      "[keyword-interceptor] DB fetch error:",
       err instanceof Error ? err.message : String(err)
     );
-    return cachedDbKeywords ?? []; // stale cache or empty
+    return cachedDbKeywords ?? [];
   }
 }
 
-// ── Crisis resource message ─────────────────────────────────────────────────
+// ── Response messages ───────────────────────────────────────────────────────
 
 export const CRISIS_MESSAGE =
   "It sounds like you might be going through something heavy. You\u2019re not alone. " +
   "Call or text 988 (Suicide & Crisis Lifeline) \u2014 free and confidential \uD83D\uDC99";
 
+export const ABUSE_MESSAGE =
+  "This message was blocked. WhatUPB is for honest, uplifting anonymous messages \u2014 not harm.";
+
 // ── Public API ──────────────────────────────────────────────────────────────
 
-export interface CrisisInterceptResult {
+export type InterceptType = "crisis" | "abuse";
+
+export interface InterceptResult {
   intercepted: boolean;
+  type: InterceptType | null;
   source: "database" | "hardcoded" | null;
 }
 
 /**
- * Check message text against crisis keyword safety net.
+ * Check message text against crisis AND abuse keyword safety nets.
  * Runs BEFORE Perspective API and all other content filters.
  *
- * Two-layer approach:
+ * Two-layer approach for each category:
  *   1. Query crisis_keywords DB table (cached 5 min)
  *   2. Hardcoded regex fallback if DB fails or misses
  *
- * Returns { intercepted: true, source } if the message matches.
+ * Abuse patterns are checked FIRST because they target the recipient
+ * and should be blocked immediately without showing crisis resources.
  */
 export async function checkCrisisIntercept(
   text: string
-): Promise<CrisisInterceptResult> {
+): Promise<InterceptResult> {
   const normalized = normalizeText(text);
 
   // ── Layer 1: Database keywords ──────────────────────────────────────
-  // Simple substring match against the normalized text.
-  const dbKeywords = await fetchCrisisKeywords();
+  const dbKeywords = await fetchAllKeywords();
+
   if (dbKeywords.length > 0) {
-    for (const keyword of dbKeywords) {
+    // Check ABUSE first (directed at recipient — block immediately)
+    const abuseKeywords = dbKeywords.filter((k) => k.type === "abuse");
+    for (const { keyword } of abuseKeywords) {
       if (normalized.includes(keyword)) {
-        return { intercepted: true, source: "database" };
+        return { intercepted: true, type: "abuse", source: "database" };
+      }
+    }
+
+    // Then check CRISIS (self-harm — show 988 resources)
+    const crisisKeywords = dbKeywords.filter((k) => k.type === "crisis");
+    for (const { keyword } of crisisKeywords) {
+      if (normalized.includes(keyword)) {
+        return { intercepted: true, type: "crisis", source: "database" };
       }
     }
   }
 
   // ── Layer 2: Hardcoded regex fallback ───────────────────────────────
-  // Catches patterns the DB might miss (regex flexibility) and provides
-  // protection even if the database is completely unreachable.
-  const hardcodedMatch = HARDCODED_CRISIS_PATTERNS.some((pattern) =>
-    pattern.test(normalized)
-  );
-  if (hardcodedMatch) {
-    return { intercepted: true, source: "hardcoded" };
+
+  // Check ABUSE first
+  const abuseMatch = HARDCODED_ABUSE_PATTERNS.some((p) => p.test(normalized));
+  if (abuseMatch) {
+    return { intercepted: true, type: "abuse", source: "hardcoded" };
   }
 
-  return { intercepted: false, source: null };
+  // Then CRISIS
+  const crisisMatch = HARDCODED_CRISIS_PATTERNS.some((p) => p.test(normalized));
+  if (crisisMatch) {
+    return { intercepted: true, type: "crisis", source: "hardcoded" };
+  }
+
+  return { intercepted: false, type: null, source: null };
 }
 
-// ── Logging to crisis_intercepts table ──────────────────────────────────────
-// Stores ONLY timestamp and IP hash — NO message content is ever stored.
+// ── Logging ─────────────────────────────────────────────────────────────────
 
 /**
  * Fire-and-forget log of a crisis intercept.
@@ -252,13 +324,13 @@ export async function logCrisisIntercept(
 
     if (error) {
       console.error(
-        "[crisis-interceptor] Failed to log intercept:",
+        "[keyword-interceptor] Failed to log crisis intercept:",
         error.message
       );
     }
   } catch (err) {
     console.error(
-      "[crisis-interceptor] Unexpected logging error:",
+      "[keyword-interceptor] Unexpected logging error:",
       err instanceof Error ? err.message : String(err)
     );
   }
