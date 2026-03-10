@@ -34,18 +34,22 @@ export default async function PublicProfile({
     .order("created_at", { ascending: false })
     .limit(50);
 
-  // Ownership gate: toolbar only renders for the actual profile owner.
-  // Two independent checks must BOTH pass:
-  //   1. Auth user ID matches the profile row's owner ID
-  //   2. The profile's stored username matches the URL slug
-  // This prevents any logged-in user from seeing another user's controls.
+  // Ownership gate — delegates the check to the database.
+  // Ask: "does a profile exist where id = MY auth uid AND username = THIS slug?"
+  // This can only return a row when the visitor literally owns this profile.
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const isOwner =
-    !!user &&
-    user.id === profile.id &&
-    profile.username.toLowerCase() === username.toLowerCase();
+  let isOwner = false;
+  if (user) {
+    const { data: ownerCheck } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", user.id)
+      .eq("username", username.toLowerCase())
+      .maybeSingle();
+    isOwner = !!ownerCheck;
+  }
 
   const prof = profile as Record<string, unknown>;
   const { name: theme, vars: themeVars } = resolveTheme(prof.link_theme as string);
