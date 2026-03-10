@@ -200,6 +200,18 @@ const HARDCODED_ABUSE_PATTERNS: RegExp[] = [
   /\bgonna get (u|yo)\b/,
   /\bi will get you\b/,
   /\bi will get (u|yo)\b/,
+
+  // ── Violent threats ──
+  /\bchop (your|yo|ur) head\b/,
+  /\bchop you\b/,
+  /\bchop (u|yo)\b/,
+  /\bcut (your|yo|ur) head\b/,
+  /\bslit (your|yo|ur)\b/,
+  /\bstab you\b/,
+  /\bstab (u|yo)\b/,
+  /\bstab (your|yo|ur)\b/,
+  /\bchoke you\b/,
+  /\bchoke (u|yo)\b/,
 ];
 
 // ── Response messages ───────────────────────────────────────────────────────
