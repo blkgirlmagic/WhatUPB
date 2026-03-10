@@ -49,7 +49,7 @@ export default async function Home() {
         <h1
           className="animate-fade-in-up"
           style={{
-            fontFamily: "var(--font-inter), 'Inter', sans-serif",
+            fontFamily: "'Playfair Display', 'Cormorant Garamond', serif",
             fontWeight: 800,
             fontSize: 52,
             letterSpacing: "-0.5px",
