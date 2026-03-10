@@ -30,15 +30,11 @@
   transform: translateY(-1px);
 }
 .home-btn-primary {
-  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  background: linear-gradient(135deg, #7c6aac, #9b7fd4);
   color: white;
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
-}
-.home-btn-primary:hover {
-  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.35);
 }
 .home-btn-dark {
-  background: #1a1a2e;
+  background: #2d2840;
   color: white;
 }
 
@@ -50,7 +46,7 @@
   margin-top: 20px;
   font-size: 13px;
   font-family: 'Cormorant Garamond', serif;
-  color: #6b7280;
+  color: #7a6e8a;
   letter-spacing: 0.2px;
 }
 
