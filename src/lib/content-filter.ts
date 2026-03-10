@@ -96,7 +96,7 @@ export interface ContentFilterResult {
 
 /**
  * Run pre-moderation regex filter on raw message text.
- * Call this BEFORE moderateMessage() to save Perspective API quota.
+ * Call this BEFORE Hive Text Moderation to save API quota.
  * Returns immediately if any pattern matches.
  */
 export function checkContentFilter(text: string): ContentFilterResult {

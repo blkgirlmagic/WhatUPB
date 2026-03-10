@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import crypto from "crypto";
-import { moderateMessage } from "@/lib/moderation";
+import { moderateWithHive } from "@/lib/moderation";
 import { requireCsrfHeader } from "@/lib/csrf";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { checkContentFilter, logBlockedMessage } from "@/lib/content-filter";
+import { checkKeywordFallback } from "@/lib/crisis-interceptor";
 
 const GENERIC_ERROR = {
   error: "Reaction could not be posted. Please try again.",
@@ -113,13 +114,23 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 4. Moderation
-  const moderation = await moderateMessage(content);
-  if (!moderation.allowed) {
+  // 4. Hive Text Moderation (with keyword fallback)
+  const hive = await moderateWithHive(content);
+  if (hive.available && hive.blocked) {
     return NextResponse.json(
       { error: "Reaction blocked for safety." },
       { status: 403 }
     );
+  }
+  if (!hive.available) {
+    // Hive down — use keyword fallback
+    const fallback = checkKeywordFallback(content);
+    if (fallback.intercepted) {
+      return NextResponse.json(
+        { error: "Reaction blocked for safety." },
+        { status: 403 }
+      );
+    }
   }
 
   // 5. Insert reaction

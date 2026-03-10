@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
-import { moderateMessage } from "@/lib/moderation";
+import { moderateWithHive } from "@/lib/moderation";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logModerationBlock } from "@/lib/moderation-log";
 import { checkContentFilter, logBlockedMessage } from "@/lib/content-filter";
 import { checkPoliticalFilter } from "@/lib/political-filter";
-import { checkCrisisIntercept, logCrisisIntercept, CRISIS_MESSAGE, ABUSE_MESSAGE } from "@/lib/crisis-interceptor";
+import { checkKeywordFallback, logCrisisIntercept, CRISIS_MESSAGE, ABUSE_MESSAGE } from "@/lib/crisis-interceptor";
 import { sendNewMessageNotification } from "@/lib/email";
 import { getSupabase as getServiceSupabase } from "@/lib/supabase";
 
@@ -32,11 +32,10 @@ type RejectReason =
   | "validation_empty"
   | "validation_length"
   | "validation_links"
-  | "moderation_blocked"
-  | "content_filter"
-  | "political_filter"
   | "crisis_intercept"
   | "abuse_intercept"
+  | "content_filter"
+  | "political_filter"
   | "rate_limit"
   | "recipient_not_found"
   | "rpc_error"
@@ -191,44 +190,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Slow down" }, { status: 429 });
     }
 
-    // ─── 5.2. KEYWORD SAFETY NET (crisis + abuse) ─────────────────────
-    // Two-layer check: queries crisis_keywords DB table first (cached 5 min),
-    // then falls back to hardcoded regex patterns if DB is unreachable.
-    // Runs BEFORE Perspective API and all other content filters.
-    //
-    // Two response paths:
-    //   'crisis' — self-harm → 200 + crisis resources (988 Lifeline)
-    //   'abuse'  — harassment → 403 + community guidelines violation
-    const interceptCheck = await checkCrisisIntercept(content.trim());
-    if (interceptCheck.intercepted) {
-      if (interceptCheck.type === "abuse") {
-        // ── ABUSE: harassment directed at recipient ──────────────────
-        console.warn(`[abuse-intercept] Harassment detected (source: ${interceptCheck.source}) — blocking message`);
-        logRejection("abuse_intercept", clientIP, { source: interceptCheck.source });
-        // Log to blocked_messages table
-        logBlockedMessage("abuse_intercept", ipHash).catch(() => {});
-        return NextResponse.json(
-          { error: ABUSE_MESSAGE },
-          { status: 403 }
-        );
-      } else {
-        // ── CRISIS: self-harm / suicidal ideation ────────────────────
-        console.warn(`[crisis-intercept] Self-harm language detected (source: ${interceptCheck.source}) — showing resources`);
-        logRejection("crisis_intercept", clientIP, { source: interceptCheck.source });
-        // Log to crisis_intercepts table (timestamp + IP only)
-        logCrisisIntercept(ipHash).catch(() => {});
-        // Also log to blocked_messages for admin dashboard visibility
-        logBlockedMessage("crisis_intercept", ipHash).catch(() => {});
-        return NextResponse.json(
-          { crisis: true, message: CRISIS_MESSAGE },
-          { status: 200 }
-        );
-      }
-    }
-
     // 5.4. Political content filter — blocks slogans, calls to action,
     //      partisan rhetoric, and geopolitical conflict statements.
-    //      Runs BEFORE content filter and Perspective API.
     const politicalResult = checkPoliticalFilter(content.trim());
     if (politicalResult.blocked) {
       console.warn(
@@ -246,7 +209,6 @@ export async function POST(request: NextRequest) {
     }
 
     // 5.5. Pre-moderation content filter — catches PII, spam, URLs, doxxing
-    //      Runs BEFORE Perspective API to save quota on obvious violations.
     const filterResult = checkContentFilter(content.trim());
     if (filterResult.blocked) {
       console.warn(
@@ -263,25 +225,89 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 6. Content moderation — HARD GUARD
-    // Flow: moderate → allowed? → save.  NEVER save → moderate.
-    // If moderation says no, return 403 immediately.  No DB write happens.
-    const moderation = await moderateMessage(content.trim());
-    if (!moderation.allowed) {
-      console.warn(`[reject] moderation_blocked — blockedBy=${moderation.blockedBy}`, moderation.scores ?? {});
-      logRejection("moderation_blocked", clientIP, {
-        blockedBy: moderation.blockedBy,
-        scores: moderation.scores,
-      });
-      // Fire-and-forget: log moderation block to Supabase
-      logModerationBlock({
-        blockedBy: moderation.blockedBy || "local",
-        reason: "moderation_blocked",
-        scores: moderation.scores || null,
-        ipHash,
-        recipientId,
-      }).catch(() => {});
-      return NextResponse.json(GENERIC_ERROR, { status: 403 });
+    // ─── 6. HIVE TEXT MODERATION — primary content moderator ────────────
+    // POST to https://api.thehive.ai/v3/hive/text-moderation
+    // Score thresholds:
+    //   self_harm ≥ 0.7  → crisis (988 Lifeline resources)
+    //   hate ≥ 0.7       → abuse (community guidelines)
+    //   harassment ≥ 0.7 → abuse (community guidelines)
+    //   violence ≥ 0.7   → abuse (community guidelines)
+    //
+    // Fallback: hardcoded keyword patterns if Hive is unreachable.
+    const hive = await moderateWithHive(content.trim());
+
+    if (hive.available && hive.blocked) {
+      // ── Hive flagged the message ──────────────────────────────────────
+      if (hive.action === "crisis") {
+        // Self-harm → show 988 resources
+        console.warn(`[reject] crisis — Hive self_harm=${hive.triggerScore?.toFixed(4)}`);
+        logRejection("crisis_intercept", clientIP, {
+          source: "hive",
+          category: hive.triggerCategory,
+          score: hive.triggerScore,
+        });
+        logCrisisIntercept(ipHash).catch(() => {});
+        logBlockedMessage("crisis_intercept", ipHash).catch(() => {});
+        logModerationBlock({
+          blockedBy: "hive",
+          reason: "crisis_intercept",
+          scores: hive.scores,
+          ipHash,
+          recipientId,
+        }).catch(() => {});
+        return NextResponse.json(
+          { crisis: true, message: CRISIS_MESSAGE },
+          { status: 200 }
+        );
+      } else {
+        // Hate / harassment / violence → community guidelines
+        console.warn(`[reject] abuse — Hive ${hive.triggerCategory}=${hive.triggerScore?.toFixed(4)}`);
+        logRejection("abuse_intercept", clientIP, {
+          source: "hive",
+          category: hive.triggerCategory,
+          score: hive.triggerScore,
+        });
+        logBlockedMessage("abuse_intercept", ipHash).catch(() => {});
+        logModerationBlock({
+          blockedBy: "hive",
+          reason: "abuse_intercept",
+          scores: hive.scores,
+          ipHash,
+          recipientId,
+        }).catch(() => {});
+        return NextResponse.json(
+          { error: ABUSE_MESSAGE },
+          { status: 403 }
+        );
+      }
+    }
+
+    if (!hive.available) {
+      // ── Hive unreachable — fall back to hardcoded keyword patterns ────
+      console.warn("[moderation] Hive unavailable — using keyword fallback");
+      const fallback = checkKeywordFallback(content.trim());
+      if (fallback.intercepted) {
+        if (fallback.type === "crisis") {
+          console.warn("[reject] crisis — keyword fallback matched self-harm pattern");
+          logRejection("crisis_intercept", clientIP, { source: "keyword_fallback" });
+          logCrisisIntercept(ipHash).catch(() => {});
+          logBlockedMessage("crisis_intercept", ipHash).catch(() => {});
+          return NextResponse.json(
+            { crisis: true, message: CRISIS_MESSAGE },
+            { status: 200 }
+          );
+        } else {
+          console.warn("[reject] abuse — keyword fallback matched abuse pattern");
+          logRejection("abuse_intercept", clientIP, { source: "keyword_fallback" });
+          logBlockedMessage("abuse_intercept", ipHash).catch(() => {});
+          return NextResponse.json(
+            { error: ABUSE_MESSAGE },
+            { status: 403 }
+          );
+        }
+      }
+      // Fallback didn't catch anything — allow through with warning
+      console.warn("[moderation] Hive unavailable, keyword fallback clear — allowing message");
     }
 
     // 7. Call the SECURITY DEFINER function

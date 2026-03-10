@@ -2,7 +2,7 @@
 //  Structured moderation logging — writes block metadata to Supabase.
 //
 //  Privacy: NO raw message content is ever stored or logged.
-//  Only the verdict, Perspective scores, hashed IP, and recipient are recorded.
+//  Only the verdict, Hive scores, hashed IP, and recipient are recorded.
 //
 //  This uses the anon Supabase client + a SECURITY DEFINER RPC function
 //  (log_moderation_block) so the API route doesn't need the service role key.
@@ -18,7 +18,7 @@ function getSupabase() {
 }
 
 export interface ModerationLogEntry {
-  blockedBy: "local" | "perspective" | "rate_limit";
+  blockedBy: "hive" | "keyword_fallback" | "rate_limit";
   reason: string;
   scores?: Record<string, number> | null;
   ipHash: string | null;

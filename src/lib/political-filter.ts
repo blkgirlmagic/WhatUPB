@@ -137,7 +137,7 @@ const PARTISAN_PATTERNS: RegExp[] = [
 
 /**
  * Check whether a message contains targeted political content.
- * Call this BEFORE moderateMessage() and the Perspective API.
+ * Call this BEFORE Hive Text Moderation.
  * Returns immediately on first match.
  */
 export function checkPoliticalFilter(text: string): PoliticalFilterResult {

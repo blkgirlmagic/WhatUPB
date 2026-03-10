@@ -1,26 +1,22 @@
 // ---------------------------------------------------------------------------
-//  Server-side keyword interceptor for WhatUPB.
+//  Hardcoded keyword fallback for WhatUPB content moderation.
 //
-//  Handles TWO categories of dangerous content:
+//  This file provides a FALLBACK safety net when the primary Hive Text
+//  Moderation API is unreachable.  It matches messages against hardcoded
+//  regex patterns for two categories:
 //
 //    'crisis' — Self-harm / suicidal ideation (directed at SELF)
 //               → Block message, show 988 Lifeline resources
-//               → Log to crisis_intercepts table
 //
 //    'abuse'  — Harassment / death wishes (directed at RECIPIENT)
 //               → Block message, show community guidelines violation
-//               → Log to blocked_messages table
 //
-//  TWO-LAYER approach for each category:
-//    Layer 1 — Database: queries the crisis_keywords table (cached 5 min)
-//    Layer 2 — Hardcoded: regex fallback if DB is unreachable
-//
-//  Runs BEFORE the Perspective API and all other content filters.
+//  This file is ONLY called when the Hive API returns { available: false }.
 // ---------------------------------------------------------------------------
 
 import { createClient } from "@supabase/supabase-js";
 
-// ── Text normalization (mirrors crisis-detection.ts client-side logic) ───────
+// ── Text normalization ───────────────────────────────────────────────────────
 
 function normalizeText(raw: string): string {
   let t = raw.toLowerCase().trim();
@@ -64,7 +60,7 @@ function normalizeText(raw: string): string {
   return t;
 }
 
-// ── Layer 2: Hardcoded patterns (fallback if DB is unreachable) ──────────────
+// ── Hardcoded patterns (fallback if Hive API is unreachable) ─────────────────
 
 // Self-harm / suicidal ideation (directed at SELF → 988 resources)
 const HARDCODED_CRISIS_PATTERNS: RegExp[] = [
@@ -176,64 +172,6 @@ const HARDCODED_ABUSE_PATTERNS: RegExp[] = [
   /\boff yourself\b/,
 ];
 
-// ── Layer 1: Database keyword cache ─────────────────────────────────────────
-// Fetches keywords from crisis_keywords table (both types), caches for 5 min.
-
-interface DbKeyword {
-  keyword: string;
-  type: string;
-}
-
-let cachedDbKeywords: DbKeyword[] | null = null;
-let cacheTimestamp = 0;
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-
-function getAnonSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-}
-
-async function fetchAllKeywords(): Promise<DbKeyword[]> {
-  const now = Date.now();
-
-  // Return cached keywords if still fresh
-  if (cachedDbKeywords && now - cacheTimestamp < CACHE_TTL_MS) {
-    return cachedDbKeywords;
-  }
-
-  try {
-    const supabase = getAnonSupabase();
-    const { data, error } = await supabase
-      .from("crisis_keywords")
-      .select("keyword, type")
-      .eq("active", true);
-
-    if (error) {
-      console.error("[keyword-interceptor] DB fetch failed:", error.message);
-      return cachedDbKeywords ?? [];
-    }
-
-    const keywords = (data ?? []) as DbKeyword[];
-    cachedDbKeywords = keywords;
-    cacheTimestamp = now;
-
-    const crisisCount = keywords.filter((k) => k.type === "crisis").length;
-    const abuseCount = keywords.filter((k) => k.type === "abuse").length;
-    console.log(
-      `[keyword-interceptor] Loaded ${keywords.length} keywords from DB (${crisisCount} crisis, ${abuseCount} abuse)`
-    );
-    return keywords;
-  } catch (err) {
-    console.error(
-      "[keyword-interceptor] DB fetch error:",
-      err instanceof Error ? err.message : String(err)
-    );
-    return cachedDbKeywords ?? [];
-  }
-}
-
 // ── Response messages ───────────────────────────────────────────────────────
 
 export const CRISIS_MESSAGE =
@@ -250,64 +188,39 @@ export type InterceptType = "crisis" | "abuse";
 export interface InterceptResult {
   intercepted: boolean;
   type: InterceptType | null;
-  source: "database" | "hardcoded" | null;
 }
 
 /**
- * Check message text against crisis AND abuse keyword safety nets.
- * Runs BEFORE Perspective API and all other content filters.
- *
- * Two-layer approach for each category:
- *   1. Query crisis_keywords DB table (cached 5 min)
- *   2. Hardcoded regex fallback if DB fails or misses
+ * Hardcoded keyword fallback — ONLY called when the Hive Text Moderation
+ * API is unreachable.  Synchronous regex check against normalized text.
  *
  * Abuse patterns are checked FIRST because they target the recipient
  * and should be blocked immediately without showing crisis resources.
  */
-export async function checkCrisisIntercept(
-  text: string
-): Promise<InterceptResult> {
+export function checkKeywordFallback(text: string): InterceptResult {
   const normalized = normalizeText(text);
 
-  // ── Layer 1: Database keywords ──────────────────────────────────────
-  const dbKeywords = await fetchAllKeywords();
-
-  if (dbKeywords.length > 0) {
-    // Check ABUSE first (directed at recipient — block immediately)
-    const abuseKeywords = dbKeywords.filter((k) => k.type === "abuse");
-    for (const { keyword } of abuseKeywords) {
-      if (normalized.includes(keyword)) {
-        return { intercepted: true, type: "abuse", source: "database" };
-      }
-    }
-
-    // Then check CRISIS (self-harm — show 988 resources)
-    const crisisKeywords = dbKeywords.filter((k) => k.type === "crisis");
-    for (const { keyword } of crisisKeywords) {
-      if (normalized.includes(keyword)) {
-        return { intercepted: true, type: "crisis", source: "database" };
-      }
-    }
+  // Check ABUSE first (directed at recipient — block immediately)
+  if (HARDCODED_ABUSE_PATTERNS.some((p) => p.test(normalized))) {
+    return { intercepted: true, type: "abuse" };
   }
 
-  // ── Layer 2: Hardcoded regex fallback ───────────────────────────────
-
-  // Check ABUSE first
-  const abuseMatch = HARDCODED_ABUSE_PATTERNS.some((p) => p.test(normalized));
-  if (abuseMatch) {
-    return { intercepted: true, type: "abuse", source: "hardcoded" };
+  // Then CRISIS (self-harm — show 988 resources)
+  if (HARDCODED_CRISIS_PATTERNS.some((p) => p.test(normalized))) {
+    return { intercepted: true, type: "crisis" };
   }
 
-  // Then CRISIS
-  const crisisMatch = HARDCODED_CRISIS_PATTERNS.some((p) => p.test(normalized));
-  if (crisisMatch) {
-    return { intercepted: true, type: "crisis", source: "hardcoded" };
-  }
-
-  return { intercepted: false, type: null, source: null };
+  return { intercepted: false, type: null };
 }
 
 // ── Logging ─────────────────────────────────────────────────────────────────
+
+function getAnonSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+}
 
 /**
  * Fire-and-forget log of a crisis intercept.
@@ -324,13 +237,13 @@ export async function logCrisisIntercept(
 
     if (error) {
       console.error(
-        "[keyword-interceptor] Failed to log crisis intercept:",
+        "[keyword-fallback] Failed to log crisis intercept:",
         error.message
       );
     }
   } catch (err) {
     console.error(
-      "[keyword-interceptor] Unexpected logging error:",
+      "[keyword-fallback] Unexpected logging error:",
       err instanceof Error ? err.message : String(err)
     );
   }
