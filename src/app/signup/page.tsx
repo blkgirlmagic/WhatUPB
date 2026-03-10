@@ -90,26 +90,45 @@ const ageGateStyles = `
     z-index: 1;
     opacity: 0;
     box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    animation: floatFadeIn 0.8s ease forwards;
+    transition: box-shadow 0.3s ease;
   }
 
   .msg-float:hover {
-    transform: scale(1.05) !important;
     box-shadow: 0 12px 40px rgba(139,92,246,0.15);
   }
 
-  /* Positions: asymmetric layout */
-  .msg-float:nth-child(1) { top: 8%; left: 4%; animation-delay: 0s; }
-  .msg-float:nth-child(2) { top: 10%; right: 4%; animation-delay: 0.3s; }
-  .msg-float:nth-child(3) { top: 38%; left: 2%; animation-delay: 0.6s; }
-  .msg-float:nth-child(4) { top: 42%; right: 2%; animation-delay: 0.9s; }
-  .msg-float:nth-child(5) { bottom: 14%; left: 5%; animation-delay: 1.2s; }
-  .msg-float:nth-child(6) { bottom: 10%; right: 5%; animation-delay: 1.5s; }
+  /* Positions & continuous floating — each card has unique timing */
+  .msg-float:nth-child(1) { top: 8%; left: 4%; animation: floatFadeIn 0.8s ease forwards, floatBob1 5s ease-in-out 0.8s infinite; }
+  .msg-float:nth-child(2) { top: 10%; right: 4%; animation: floatFadeIn 0.8s ease 0.3s forwards, floatBob2 6.5s ease-in-out 1.1s infinite; }
+  .msg-float:nth-child(3) { top: 38%; left: 2%; animation: floatFadeIn 0.8s ease 0.6s forwards, floatBob3 4.5s ease-in-out 1.4s infinite; }
+  .msg-float:nth-child(4) { top: 42%; right: 2%; animation: floatFadeIn 0.8s ease 0.9s forwards, floatBob1 7s ease-in-out 1.7s infinite; }
+  .msg-float:nth-child(5) { bottom: 14%; left: 5%; animation: floatFadeIn 0.8s ease 1.2s forwards, floatBob2 5.5s ease-in-out 2s infinite; }
+  .msg-float:nth-child(6) { bottom: 10%; right: 5%; animation: floatFadeIn 0.8s ease 1.5s forwards, floatBob3 6s ease-in-out 2.3s infinite; }
 
   @keyframes floatFadeIn {
     0% { opacity: 0; transform: translateY(16px); }
     100% { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes floatBob1 {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-10px) translateX(6px); }
+    50% { transform: translateY(-4px) translateX(-3px); }
+    75% { transform: translateY(-12px) translateX(4px); }
+  }
+
+  @keyframes floatBob2 {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-8px) translateX(-5px); }
+    50% { transform: translateY(-14px) translateX(4px); }
+    75% { transform: translateY(-6px) translateX(-7px); }
+  }
+
+  @keyframes floatBob3 {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-14px) translateX(3px); }
+    50% { transform: translateY(-6px) translateX(-5px); }
+    75% { transform: translateY(-10px) translateX(8px); }
   }
 
   /* Hide floating cards on small screens to avoid overlap */

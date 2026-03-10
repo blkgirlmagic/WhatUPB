@@ -119,6 +119,13 @@ body {
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
 
+/* Global heading font — Playfair Display for all pages */
+h1, h2, h3 {
+  font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
 /* ============================================================
    Glassmorphism utility
    ============================================================ */
