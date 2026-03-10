@@ -1,10 +1,9 @@
 import { createClient } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { resolveTheme } from "@/lib/themes";
 import MessageForm from "./message-form";
 import ReactionsFeed from "./reactions-feed";
-import OwnerControls from "./owner-controls";
+import OwnerToolbar from "./owner-toolbar";
 
 export default async function PublicProfile({
   params,
@@ -32,11 +31,21 @@ export default async function PublicProfile({
     .order("created_at", { ascending: false })
     .limit(50);
 
-  // Check if the current visitor is the profile owner
+  // Check if the current visitor is the profile owner.
+  // Compare the logged-in user's ID with this profile's owner ID
+  // so the toolbar only appears for the actual owner — never other users.
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const isOwner = user?.id === profile.id;
+  let isOwner = false;
+  if (user) {
+    const { data: visitorProfile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
+      .single();
+    isOwner = visitorProfile?.username?.toLowerCase() === username.toLowerCase();
+  }
 
   const prof = profile as Record<string, unknown>;
   const { name: theme, vars: themeVars } = resolveTheme(prof.link_theme as string);
@@ -45,7 +54,7 @@ export default async function PublicProfile({
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center px-4 pt-20 pb-24 relative"
+      className="min-h-screen flex flex-col items-center px-4 pt-12 pb-24 relative"
       data-theme={theme}
       style={{
         ...themeVars,
@@ -53,32 +62,6 @@ export default async function PublicProfile({
         color: themeVars["--foreground"] || "var(--foreground)",
       } as React.CSSProperties}
     >
-      {/* Owner navigation — only visible to the logged-in profile owner */}
-      {isOwner && (
-        <nav className="fixed top-0 left-0 right-0 z-40 flex items-center justify-center gap-4 py-3 px-4 bg-black/40 backdrop-blur-md border-b border-white/5">
-          <Link
-            href="/inbox"
-            className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
-            Inbox
-          </Link>
-          <span className="text-zinc-700">|</span>
-          <Link
-            href="/settings"
-            className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Settings
-          </Link>
-        </nav>
-      )}
-
       {/* Subtle glow */}
       <div
         className="pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full opacity-[0.05]"
@@ -88,6 +71,7 @@ export default async function PublicProfile({
         }}
       />
 
+      {/* Public content — identical for all visitors */}
       <div className="w-full max-w-md text-center relative">
         <div className="mb-6 animate-fade-in-up">
           <h1 className="text-3xl font-bold tracking-tight mb-1">
@@ -110,13 +94,6 @@ export default async function PublicProfile({
           username={profile.username}
           prompt={promptOfDay ?? undefined}
         />
-        {isOwner && (
-          <OwnerControls
-            username={profile.username}
-            initialPrompt={promptOfDay ?? ""}
-            initialMood={moodStatus ?? ""}
-          />
-        )}
         <ReactionsFeed reactions={reactions ?? []} isOwner={isOwner} />
       </div>
 
@@ -129,6 +106,15 @@ export default async function PublicProfile({
           whatupb.com
         </a>
       </footer>
+
+      {/* Owner toolbar — discreet floating bar, only for owner on their own page */}
+      {isOwner && (
+        <OwnerToolbar
+          username={profile.username}
+          initialPrompt={promptOfDay ?? ""}
+          initialMood={moodStatus ?? ""}
+        />
+      )}
     </div>
   );
 }
