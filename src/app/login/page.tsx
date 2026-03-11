@@ -242,17 +242,6 @@ function LoginForm() {
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="anim-6" style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-            <div style={{ flex: 1, height: "1px", background: "rgba(26,23,48,0.10)" }} />
-            <span style={{ fontSize: "12px", color: "rgba(26,23,48,0.28)", whiteSpace: "nowrap" }}>or continue with</span>
-            <div style={{ flex: 1, height: "1px", background: "rgba(26,23,48,0.10)" }} />
-          </div>
-
-          {/* Google OAuth */}
-          <button className="anim-7 card-btn-secondary" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", marginBottom: "10px" }}>
-            <span style={{ fontSize: "16px" }}>G</span> Continue with Google
-          </button>
 
           {/* Sign up row */}
           <div className="anim-8" style={{ textAlign: "center", fontSize: "13.5px", color: "rgba(26,23,48,0.42)", marginTop: "20px" }}>
