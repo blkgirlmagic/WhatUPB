@@ -10,8 +10,7 @@ type Filter = { id: string; keyword: string };
 const THEME_OPTIONS: { value: string; label: string; dot: React.CSSProperties }[] = [
   { value: "dark", label: "Dark", dot: { background: "#0D0B1A" } },
   { value: "light", label: "Light", dot: { background: "linear-gradient(135deg, #F4F3F8, #E8E6F4)", border: "1px solid rgba(155,142,232,0.2)" } },
-  { value: "purple", label: "Purple", dot: { background: "linear-gradient(135deg, #C4BBF5, #9B8EE8)" } },
-  { value: "ocean", label: "Ocean", dot: { background: "linear-gradient(135deg, #0a192f, #38bdf8)" } },
+  { value: "purple", label: "Light Purple", dot: { background: "linear-gradient(135deg, #C4BBF5, #9B8EE8)" } },
 ];
 
 type PlanKey = "weekly" | "monthly" | "yearly";
@@ -70,7 +69,6 @@ export default function SettingsClient({
   const [checkingOut, setCheckingOut] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<PlanKey>("yearly");
   const [changingPlan, setChangingPlan] = useState(false);
-  const [openingPortal, setOpeningPortal] = useState(false);
   const [filters, setFilters] = useState<Filter[]>(initialFilters);
   const [filterInput, setFilterInput] = useState("");
   const [savingFilters, setSavingFilters] = useState(false);
@@ -268,25 +266,6 @@ export default function SettingsClient({
       toast("Failed to change plan. Try again.", "error");
     } finally {
       setChangingPlan(false);
-    }
-  }
-
-  async function handleManageSubscription() {
-    setOpeningPortal(true);
-    try {
-      const res = await fetch("/api/create-portal-session", {
-        method: "POST",
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        toast(data.error || "Failed to open billing portal.", "error");
-      }
-    } catch {
-      toast("Failed to open billing portal. Try again.", "error");
-    } finally {
-      setOpeningPortal(false);
     }
   }
 
@@ -552,9 +531,13 @@ export default function SettingsClient({
               </>
             )}
 
-            <button onClick={handleManageSubscription} disabled={openingPortal} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", width: "100%", padding: "12px", borderRadius: "12px", border: "1px solid rgba(180,175,205,0.5)", background: "#fff", cursor: openingPortal ? "default" : "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", fontWeight: 400, color: "rgba(26,23,48,0.42)", transition: "all 0.2s", boxShadow: "0 2px 6px rgba(100,90,160,0.07)", opacity: openingPortal ? 0.6 : 1 }}>
-              {"\u2699\uFE0F"} {openingPortal ? "Opening..." : "Manage Subscription"}
-            </button>
+            <div style={{ padding: "14px 16px", borderRadius: "12px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(155,142,232,0.04)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                <span style={{ fontSize: "13px", color: "rgba(26,23,48,0.55)" }}>Billing cycle</span>
+                <span style={{ fontSize: "13px", fontWeight: 600, color: "#9B8EE8" }}>{currentPlan ? currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1) : "Premium"}</span>
+              </div>
+              <div style={{ fontSize: "12px", color: "rgba(26,23,48,0.35)" }}>To manage your subscription, visit your Stripe billing portal.</div>
+            </div>
           </div>
         ) : (
           <div>
@@ -653,7 +636,7 @@ export default function SettingsClient({
         <div className="anim-6 settings-card">
           <div style={sLabel}>Link Page Theme</div>
           <div style={{ ...sDesc, marginBottom: "18px" }}>Choose how your profile page looks to visitors.</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
             {THEME_OPTIONS.map((t) => (
               <div
                 key={t.value}
