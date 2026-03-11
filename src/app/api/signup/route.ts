@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 8. Create user — DOB is NOT stored, only the boolean
+    // 8. Create user — store DOB + age_verified in user metadata
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: String(email).trim(),
       password,
@@ -174,6 +174,7 @@ export async function POST(request: NextRequest) {
         data: {
           username: trimmedUsername,
           age_verified: true,
+          date_of_birth: `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`,
         },
       },
     });
