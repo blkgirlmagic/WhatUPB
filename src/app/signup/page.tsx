@@ -577,6 +577,42 @@ const ageGateStyles = `
     to { opacity: 1; transform: translateX(-50%) translateY(0); }
   }
 
+  /* -- Age confirmation checkbox ---------------------------------------- */
+
+  .age-confirm-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--gate-text);
+    user-select: none;
+  }
+
+  .age-confirm-checkbox {
+    width: 20px;
+    height: 20px;
+    accent-color: #8b5cf6;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 4px;
+  }
+
+  .tap-btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+  }
+
+  .tap-btn-disabled:hover {
+    transform: none !important;
+    box-shadow: 0 4px 16px rgba(139,92,246,0.25) !important;
+  }
+
+  .tap-btn-disabled::before {
+    display: none;
+  }
+
   /* Confetti */
   .confetti-container {
     position: fixed;
@@ -686,6 +722,8 @@ export default function SignUp() {
   const [ageError, setAgeError] = useState("");
   const [ageSuccess, setAgeSuccess] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
+  const [ageGateError, setAgeGateError] = useState("");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -743,6 +781,10 @@ export default function SignUp() {
   }, []);
 
   async function handleTap(e: React.MouseEvent<HTMLButtonElement>) {
+    if (!ageConfirmed) {
+      setAgeGateError("You must be 18 or older to use WhatUPB.");
+      return;
+    }
     handleRipple(e);
     const today = new Date();
     const dob: AgeData = {
@@ -928,7 +970,19 @@ export default function SignUp() {
             <div className="gate-box">
               <div className="gate-label">Get Started</div>
 
-              <button className="tap-btn" onClick={handleTap} type="button">
+              <label className="age-confirm-label">
+                <input
+                  type="checkbox"
+                  checked={ageConfirmed}
+                  onChange={(e) => { setAgeConfirmed(e.target.checked); setAgeGateError(""); }}
+                  className="age-confirm-checkbox"
+                />
+                <span>I confirm I am 18 years or older</span>
+              </label>
+
+              {ageGateError && <div className="gate-error-msg">{ageGateError}</div>}
+
+              <button className={`tap-btn${!ageConfirmed ? " tap-btn-disabled" : ""}`} onClick={handleTap} type="button" >
                 <div className="tap-btn-text">
                   <span>&#10148;</span>
                   <span>Start my page</span>
