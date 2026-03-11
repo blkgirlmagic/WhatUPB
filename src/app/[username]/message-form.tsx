@@ -26,8 +26,6 @@ export default function MessageForm({
 
   const [showCrisisModal, setShowCrisisModal] = useState(false);
   const [crisisAcknowledged, setCrisisAcknowledged] = useState(false);
-
-  // Server-side crisis intercept — shown when the API blocks a self-harm message
   const [showCrisisIntercept, setShowCrisisIntercept] = useState(false);
   const [crisisInterceptMessage, setCrisisInterceptMessage] = useState("");
 
@@ -53,8 +51,6 @@ export default function MessageForm({
 
       const data = await response.json();
 
-      // Handle crisis intercept — server blocked the message and wants
-      // to show crisis resources instead of a generic error
       if (data.crisis) {
         setCrisisInterceptMessage(data.message);
         setShowCrisisIntercept(true);
@@ -65,10 +61,9 @@ export default function MessageForm({
       }
 
       if (!response.ok) {
-        // Better error messages depending on status
         if (response.status === 403) {
           setError(
-            data.error || "Message blocked — threats and abuse aren't allowed. Try rephrasing."
+            data.error || "Message blocked — threats and abuse aren’t allowed. Try rephrasing."
           );
         } else if (response.status === 429) {
           setError("Too many messages. Please wait a minute and try again.");
@@ -113,7 +108,6 @@ export default function MessageForm({
     handleSend();
   }
 
-  // Crisis intercept: user dismissed the resource screen
   function handleCrisisInterceptDismiss() {
     setShowCrisisIntercept(false);
     setCrisisInterceptMessage("");
@@ -122,75 +116,42 @@ export default function MessageForm({
 
   if (sent) {
     return (
-      <div className="card-elevated text-center py-8 animate-fade-in-up">
-        <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-          <svg
-            className="w-6 h-6 text-emerald-400 animate-check-scale"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2.5}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5 13l4 4L19 7"
-            />
+      <div className="anim-2 profile-main-card" style={{ textAlign: "center", padding: "40px 28px" }}>
+        <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#10b981" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p className="text-white font-semibold text-lg mb-1">Message sent!</p>
-        <p className="text-zinc-500 text-sm mb-6">
+        <p style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontWeight: 700, fontSize: "18px", color: "var(--ink)", marginBottom: "4px" }}>Message sent!</p>
+        <p style={{ fontSize: "14px", color: "var(--muted)", marginBottom: "24px" }}>
           Your anonymous message was delivered to @{username}.
         </p>
-        <button onClick={() => setSent(false)} className="btn-ghost text-sm">
+        <button onClick={() => setSent(false)} style={{ padding: "10px 24px", borderRadius: "50px", border: "1px solid var(--faint)", background: "rgba(255,255,255,0.6)", color: "var(--muted)", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", cursor: "pointer", transition: "all 0.2s" }}>
           Send another message
         </button>
       </div>
     );
   }
 
-  // Crisis intercept screen — shown when server blocks a self-harm message
   if (showCrisisIntercept) {
     return (
-      <div className="card-elevated text-center py-8 px-6 animate-fade-in-up">
-        <div className="w-14 h-14 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-5">
-          <svg
-            className="w-7 h-7 text-blue-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-            />
+      <div className="anim-2 profile-main-card" style={{ textAlign: "center", padding: "40px 24px" }}>
+        <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.25)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+          <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#3b82f6" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
           </svg>
         </div>
-        <p className="text-white/90 text-base leading-relaxed mb-6">
+        <p style={{ color: "var(--ink2)", fontSize: "15px", lineHeight: 1.6, marginBottom: "24px" }}>
           {crisisInterceptMessage}
         </p>
-        <div className="flex flex-col gap-3">
-          <a
-            href="tel:988"
-            className="btn-primary w-full py-3 text-sm text-center"
-          >
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <a href="tel:988" className="card-btn-primary" style={{ textAlign: "center", textDecoration: "none" }}>
             Call or Text 988
           </a>
-          <a
-            href="https://988lifeline.org/chat/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full py-3 text-sm text-blue-300 hover:text-blue-200 transition rounded-xl bg-blue-500/10 border border-blue-500/20 text-center"
-          >
+          <a href="https://988lifeline.org/chat/" target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", padding: "13px", borderRadius: "12px", border: "1px solid rgba(59,130,246,0.25)", background: "rgba(59,130,246,0.08)", color: "#2563eb", fontSize: "14px", textAlign: "center", textDecoration: "none", transition: "all 0.2s" }}>
             Chat Online Now
           </a>
-          <button
-            type="button"
-            onClick={handleCrisisInterceptDismiss}
-            className="w-full py-3 text-sm text-zinc-500 hover:text-zinc-300 transition rounded-xl"
-          >
+          <button type="button" onClick={handleCrisisInterceptDismiss} style={{ width: "100%", padding: "13px", borderRadius: "12px", border: "none", background: "transparent", color: "var(--muted)", fontSize: "14px", cursor: "pointer", transition: "all 0.2s" }}>
             Go Back
           </button>
         </div>
@@ -198,162 +159,98 @@ export default function MessageForm({
     );
   }
 
+  const isOverLimit = content.length > 900;
+
   return (
     <>
-      <form onSubmit={handleSubmitAttempt} className="animate-fade-in-up">
-      {error && (
-        <div className="flex items-start gap-3 bg-red-500/5 border border-red-500/20 text-red-300 px-4 py-3 rounded-xl mb-4 text-sm">
-          <svg
-            className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-400"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-              clipRule="evenodd"
-            />
-          </svg>
-          {error}
-        </div>
-      )}
-      {prompt && (
-        <div className="mb-3 text-left">
-          <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">
-            They want to know:
-          </p>
-          <p className="text-sm text-denim-200 font-medium italic">
-            &ldquo;{prompt}&rdquo;
-          </p>
-        </div>
-      )}
-      <textarea
-        value={content}
-        onChange={(e) => {
+      <form onSubmit={handleSubmitAttempt} className="anim-2 profile-main-card">
+        {error && (
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)", color: "#991b1b", padding: "12px 16px", borderRadius: "12px", marginBottom: "16px", fontSize: "14px" }}>
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" /></svg>
+            {error}
+          </div>
+        )}
+
+        {prompt && (
+          <div style={{ marginBottom: "20px" }}>
+            <div style={{ fontSize: "10.5px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "var(--muted)", fontWeight: 500, marginBottom: "6px" }}>
+              They want to know:
+            </div>
+            <div style={{ fontSize: "16px", fontStyle: "italic", fontWeight: 400, color: "var(--lav)", lineHeight: 1.5 }}>
+              &ldquo;{prompt}&rdquo;
+            </div>
+          </div>
+        )}
+
+        <textarea
+          value={content}
+          onChange={(e) => {
             setContent(e.target.value);
             setCrisisAcknowledged(false);
           }}
-        placeholder="Type your anonymous message..."
-        required
-        maxLength={1000}
-        rows={5}
-        className="input resize-none mb-2 min-h-[120px]"
-      />
-      <p className="text-xs text-zinc-600 mb-3 text-right tabular-nums">
-        {content.length}/1000
-      </p>
-      {hasTurnstile && (
-        <div className="mb-3 flex justify-center">
-          <Turnstile
-            ref={turnstileRef}
-            siteKey={TURNSTILE_SITE_KEY}
-            onSuccess={(token) => setTurnstileToken(token)}
-            onExpire={() => setTurnstileToken(null)}
-            onError={() => setTurnstileToken(null)}
-          />
-        </div>
-      )}
-      <button
-        type="submit"
-        disabled={
-          loading || !content.trim() || (hasTurnstile && !turnstileToken)
-        }
-        className="btn-primary w-full py-3"
-      >
-        {loading ? (
-          <span className="flex items-center gap-2">
-            <svg
-              className="w-4 h-4 animate-spin"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-              />
-            </svg>
-            Sending...
-          </span>
-        ) : (
-          "Send Message"
-        )}
-      </button>
-      <div className="flex items-center justify-center gap-1.5 mt-4">
-        <svg
-          className="w-3 h-3 text-zinc-600"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path
-            fillRule="evenodd"
-            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-            clipRule="evenodd"
-          />
-        </svg>
-        <p className="text-xs text-zinc-600">
-          Completely anonymous. No account needed.
-        </p>
-      </div>
-    </form>
+          placeholder="Type your anonymous message..."
+          required
+          maxLength={1000}
+          rows={5}
+          className="profile-textarea"
+        />
 
-      {/* Crisis resource interstitial */}
+        <div style={{ textAlign: "right", fontSize: "11.5px", color: isOverLimit ? "#E57373" : "rgba(26,23,48,0.25)", marginBottom: "16px", fontVariantNumeric: "tabular-nums" }}>
+          {content.length} / 1000
+        </div>
+
+        {hasTurnstile && (
+          <div style={{ marginBottom: "12px", display: "flex", justifyContent: "center" }}>
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={TURNSTILE_SITE_KEY}
+              onSuccess={(token) => setTurnstileToken(token)}
+              onExpire={() => setTurnstileToken(null)}
+              onError={() => setTurnstileToken(null)}
+            />
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading || !content.trim() || (hasTurnstile && !turnstileToken)}
+          className="card-btn-primary"
+          style={{ marginBottom: "14px" }}
+        >
+          {loading ? "Sending..." : "Send Message"}
+        </button>
+
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontSize: "12.5px", color: "var(--muted)" }}>
+          <span style={{ fontSize: "13px" }}>{"🔒"}</span>
+          Completely anonymous. No account needed.
+        </div>
+      </form>
+
       {showCrisisModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 16px" }}>
           <div
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
             onClick={() => setShowCrisisModal(false)}
           />
-          <div className="relative z-10 w-full max-w-sm bg-surface-1 border border-border-subtle rounded-2xl p-6 animate-fade-in-up">
-            <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-6 h-6 text-amber-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-                />
+          <div style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: "380px", background: "rgba(255,255,255,0.92)", backdropFilter: "blur(40px)", border: "1px solid rgba(255,255,255,0.95)", borderRadius: "22px", padding: "28px 24px" }}>
+            <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.25)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+              <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#f59e0b" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
               </svg>
             </div>
-            <p className="text-white text-center font-medium mb-2">
+            <p style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontWeight: 700, color: "var(--ink)", textAlign: "center", marginBottom: "8px" }}>
               You&apos;re not alone
             </p>
-            <p className="text-zinc-400 text-sm text-center leading-relaxed mb-6">
-              If you&apos;re going through something hard, help is available
-              24/7. Text or call{" "}
-              <a
-                href="tel:988"
-                className="text-amber-300 underline hover:text-amber-200 transition font-medium"
-              >
-                988
-              </a>{" "}
+            <p style={{ color: "var(--muted)", fontSize: "14px", textAlign: "center", lineHeight: 1.6, marginBottom: "24px" }}>
+              If you&apos;re going through something hard, help is available 24/7. Text or call{" "}
+              <a href="tel:988" style={{ color: "var(--lav)", textDecoration: "underline", fontWeight: 500 }}>988</a>{" "}
               anytime.
             </p>
-            <div className="flex flex-col gap-2">
-              <a
-                href="tel:988"
-                className="btn-primary w-full py-3 text-sm text-center"
-              >
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <a href="tel:988" className="card-btn-primary" style={{ textAlign: "center", textDecoration: "none" }}>
                 Call or Text 988
               </a>
-              <button
-                type="button"
-                onClick={handleCrisisContinue}
-                className="w-full py-3 text-sm text-zinc-400 hover:text-white transition rounded-xl bg-surface-2 border border-border-subtle"
-              >
+              <button type="button" onClick={handleCrisisContinue} style={{ width: "100%", padding: "13px", borderRadius: "12px", border: "1px solid var(--faint)", background: "transparent", color: "var(--muted)", fontSize: "14px", cursor: "pointer", transition: "all 0.2s" }}>
                 Continue Sending
               </button>
             </div>

@@ -51,8 +51,6 @@ export default function ReactionsFeed({
 
   async function handleDelete(reactionId: string) {
     setDeletingId(reactionId);
-
-    // Optimistic removal
     setReactions((prev) => prev.filter((r) => r.id !== reactionId));
 
     try {
@@ -66,7 +64,6 @@ export default function ReactionsFeed({
       });
 
       if (!res.ok) {
-        // Rollback
         setReactions(initialReactions);
         toast("Failed to delete reaction.", "error");
       }
@@ -80,15 +77,13 @@ export default function ReactionsFeed({
 
   if (reactions.length === 0) {
     return (
-      <div className="mt-10 w-full animate-fade-in-up">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="flex-1 h-px bg-border-subtle" />
-          <span className="text-xs text-zinc-600 uppercase tracking-widest">
-            Reactions
-          </span>
-          <div className="flex-1 h-px bg-border-subtle" />
+      <div className="anim-3" style={{ width: "min(520px, 100%)", marginTop: "16px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "14px" }}>
+          <div style={{ flex: 1, height: "1px", background: "rgba(155,142,232,0.12)" }} />
+          <div style={{ fontSize: "10.5px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "var(--muted)", fontWeight: 500, whiteSpace: "nowrap" }}>Reactions</div>
+          <div style={{ flex: 1, height: "1px", background: "rgba(155,142,232,0.12)" }} />
         </div>
-        <p className="text-center text-sm text-zinc-600 italic py-6">
+        <p style={{ textAlign: "center", fontSize: "14px", color: "var(--muted)", fontStyle: "italic", padding: "24px 0" }}>
           nothing yet. someone&apos;s being mysterious.
         </p>
       </div>
@@ -96,33 +91,31 @@ export default function ReactionsFeed({
   }
 
   return (
-    <div className="mt-10 w-full animate-fade-in-up">
-      {/* Section divider */}
-      <div className="flex items-center gap-3 mb-5">
-        <div className="flex-1 h-px bg-border-subtle" />
-        <span className="text-xs text-zinc-600 uppercase tracking-widest">
-          Reactions
-        </span>
-        <div className="flex-1 h-px bg-border-subtle" />
+    <div className="anim-3" style={{ width: "min(520px, 100%)", marginTop: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "14px" }}>
+        <div style={{ flex: 1, height: "1px", background: "rgba(155,142,232,0.12)" }} />
+        <div style={{ fontSize: "10.5px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "var(--muted)", fontWeight: 500, whiteSpace: "nowrap" }}>Reactions</div>
+        <div style={{ flex: 1, height: "1px", background: "rgba(155,142,232,0.12)" }} />
       </div>
 
-      {/* Feed */}
-      <div className="flex flex-col gap-3">
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         {reactions.map((reaction) => (
-          <div key={reaction.id} className="reaction-card group">
-            <p className="text-zinc-300 text-sm whitespace-pre-wrap break-words leading-relaxed">
-              {reaction.content}
+          <div key={reaction.id} className="profile-reaction-card">
+            <p style={{ fontSize: "14px", fontStyle: "italic", color: "var(--ink2)", lineHeight: 1.6, marginBottom: "8px", opacity: 0.75, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+              &ldquo;{reaction.content}&rdquo;
             </p>
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-xs text-zinc-600 tabular-nums">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: "11.5px", color: "rgba(26,23,48,0.28)", fontVariantNumeric: "tabular-nums" }}>
                 {formatDate(reaction.created_at)}
               </span>
               {isOwner && (
                 <button
                   onClick={() => handleDelete(reaction.id)}
                   disabled={deletingId === reaction.id}
-                  className="text-xs text-zinc-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100 focus:opacity-100"
                   type="button"
+                  style={{ fontSize: "12px", color: "var(--muted)", background: "none", border: "none", cursor: "pointer", opacity: 0.5, transition: "all 0.2s", padding: "2px 6px" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.color = "#ef4444"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.5"; e.currentTarget.style.color = "var(--muted)"; }}
                 >
                   {deletingId === reaction.id ? "Deleting..." : "Delete"}
                 </button>

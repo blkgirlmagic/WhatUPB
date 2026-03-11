@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
-import { resolveTheme } from "@/lib/themes";
+import Link from "next/link";
+import { CloudLogo } from "@/components/cloud-logo";
+import { DiagonalLines } from "@/components/diagonal-lines";
 import MessageForm from "./message-form";
 import ReactionsFeed from "./reactions-feed";
 import OwnerToolbar from "./owner-toolbar";
@@ -23,7 +25,6 @@ export default async function PublicProfile({
     notFound();
   }
 
-  // Fetch public reactions for this profile
   const { data: reactions } = await supabase
     .from("reactions")
     .select("id, content, created_at")
@@ -31,73 +32,99 @@ export default async function PublicProfile({
     .order("created_at", { ascending: false })
     .limit(50);
 
-  // Check if the current visitor is the profile owner
   const {
     data: { user },
   } = await supabase.auth.getUser();
   const isOwner = user?.id === profile.id;
 
   const prof = profile as Record<string, unknown>;
-  const { name: theme, vars: themeVars } = resolveTheme(prof.link_theme as string);
   const promptOfDay = (prof.prompt_of_day as string) ?? null;
   const moodStatus = (prof.mood_status as string) ?? null;
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center px-4 pt-12 pb-24 relative"
-      data-theme={theme}
-      style={{
-        ...themeVars,
-        background: themeVars["--background"] || "var(--background)",
-        color: themeVars["--foreground"] || "var(--foreground)",
-      } as React.CSSProperties}
-    >
-      {/* Subtle glow */}
-      <div
-        className="pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full opacity-[0.05]"
-        style={{
-          background:
-            `radial-gradient(circle, ${themeVars["--denim-400"] || "var(--denim-400)"} 0%, transparent 70%)`,
-        }}
-      />
+    <div className="landing-page">
+      {/* Bloom */}
+      <div className="bloom" />
+      <DiagonalLines />
 
-      {/* Public content — identical for all visitors */}
-      <div className="w-full max-w-md text-center relative">
-        <div className="mb-6 animate-fade-in-up">
-          <h1 className="text-3xl font-bold tracking-tight mb-1">
-            <span className="text-denim-200">@</span>
-            {profile.username}
-          </h1>
-          {moodStatus && (
-            <p className="text-sm profile-text-muted mt-1 italic">
-              {moodStatus}
-            </p>
-          )}
-          {!moodStatus && (
-            <p className="profile-text-muted text-sm">
-              Send an anonymous message
-            </p>
+      {/* NAV */}
+      <nav className="landing-nav">
+        <Link href="/" className="nav-logo">
+          <div className="logo-mark"><CloudLogo /></div>
+          WhatUPB
+        </Link>
+        <div className="nav-links">
+          <a href="/#how-it-works">How it works</a>
+          <a href="/#safety">Safety</a>
+          <a href="#">Blog</a>
+          {isOwner ? (
+            <Link href="/inbox" className="nav-cta">Go to Inbox</Link>
+          ) : (
+            <Link href="/signup" className="nav-cta">Get Started</Link>
           )}
         </div>
+      </nav>
+
+      {/* PAGE */}
+      <div className="profile-page-wrap">
+
+        {/* Profile Header */}
+        <div className="anim-1" style={{ textAlign: "center", marginBottom: "32px", width: "min(520px, 100%)" }}>
+          <div style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontSize: "28px", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.5px", marginBottom: "6px" }}>
+            <span style={{ color: "var(--lav)" }}>@</span>{profile.username}
+          </div>
+          {moodStatus && (
+            <div style={{ fontSize: "15px", fontStyle: "italic", fontWeight: 300, color: "var(--muted)", lineHeight: 1.5 }}>
+              {moodStatus}
+            </div>
+          )}
+          {!moodStatus && (
+            <div style={{ fontSize: "15px", color: "var(--muted)", lineHeight: 1.5 }}>
+              Send an anonymous message
+            </div>
+          )}
+        </div>
+
+        {/* Main Message Card */}
         <MessageForm
           recipientId={profile.id}
           username={profile.username}
           prompt={promptOfDay ?? undefined}
         />
+
         <ReactionsFeed reactions={reactions ?? []} isOwner={isOwner} />
       </div>
 
-      {/* Branding link */}
-      <footer className="mt-12 mb-6 text-center">
-        <a
-          href="/"
-          className="text-xs profile-text-faint hover:text-denim-300 transition"
-        >
-          whatupb.com
-        </a>
+      {/* FOOTER */}
+      <footer className="landing-footer">
+        <div className="footer-top">
+          <div className="footer-brand">
+            <div className="footer-logo-row">
+              <CloudLogo width={28} height={25} />
+              <span className="footer-wordmark">WhatUPB</span>
+            </div>
+            <p className="footer-tagline">
+              Built for honest conversations.<br />No human review of messages &mdash; ever.
+            </p>
+          </div>
+          <div className="footer-links-col">
+            <div className="footer-col-label">Links</div>
+            <div className="footer-links-row">
+              <Link href="/">Home</Link>
+              <Link href="/privacy">Privacy</Link>
+              <Link href="/terms">Terms</Link>
+              <Link href="/content-policy">Content Policy</Link>
+              <a href="/#safety">Safety</a>
+              <a href="#">Support</a>
+            </div>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <span>&copy; 2025 WhatUPB. All rights reserved.</span>
+          <span>whatupb.com</span>
+        </div>
       </footer>
 
-      {/* Owner toolbar — discreet floating bar, only for owner on their own page */}
       {isOwner && (
         <OwnerToolbar
           username={profile.username}
