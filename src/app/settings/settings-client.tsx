@@ -7,12 +7,12 @@ import { useToast } from "@/components/toast";
 
 type Filter = { id: string; keyword: string };
 
-const THEME_OPTIONS = [
-  { value: "dark", label: "Dark", bg: "#0c0c10", accent: "#7c6aac" },
-  { value: "light", label: "Light", bg: "#f8f8f8", accent: "#6a5a96" },
-  { value: "purple", label: "Purple", bg: "#1a0a2e", accent: "#a855f7" },
-  { value: "ocean", label: "Ocean", bg: "#0a192f", accent: "#38bdf8" },
-] as const;
+const THEME_OPTIONS: { value: string; label: string; dot: React.CSSProperties }[] = [
+  { value: "dark", label: "Dark", dot: { background: "#0D0B1A" } },
+  { value: "light", label: "Light", dot: { background: "linear-gradient(135deg, #F4F3F8, #E8E6F4)", border: "1px solid rgba(155,142,232,0.2)" } },
+  { value: "purple", label: "Purple", dot: { background: "linear-gradient(135deg, #C4BBF5, #9B8EE8)" } },
+  { value: "ocean", label: "Ocean", dot: { background: "linear-gradient(135deg, #0a192f, #38bdf8)" } },
+];
 
 type PlanKey = "weekly" | "monthly" | "yearly";
 
@@ -21,6 +21,31 @@ const PLANS: { key: PlanKey; label: string; price: string; period: string; badge
   { key: "monthly", label: "Monthly", price: "$4.99", period: "/month" },
   { key: "yearly", label: "Yearly", price: "$39.99", period: "/year", badge: "Best value", savings: "Save 33%" },
 ];
+
+function Toggle({ checked, onChange, disabled }: { checked: boolean; onChange: () => void; disabled?: boolean }) {
+  return (
+    <div
+      onClick={disabled ? undefined : onChange}
+      role="switch"
+      aria-checked={checked}
+      style={{
+        position: "relative", width: "44px", height: "26px",
+        borderRadius: "50px", cursor: disabled ? "default" : "pointer", flexShrink: 0,
+        background: checked ? "#9B8EE8" : "rgba(26,23,48,0.15)",
+        transition: "background 0.2s",
+        opacity: disabled ? 0.6 : 1,
+      }}
+    >
+      <div style={{
+        position: "absolute", top: "3px",
+        left: checked ? "21px" : "3px",
+        width: "20px", height: "20px", borderRadius: "50%",
+        background: "#fff", boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
+        transition: "left 0.2s",
+      }} />
+    </div>
+  );
+}
 
 export default function SettingsClient({
   username,
@@ -60,7 +85,6 @@ export default function SettingsClient({
 
   const profileUrl = `https://whatupb.com/${username}`;
 
-  // ---- Copy link ----
   function handleCopy() {
     navigator.clipboard.writeText(profileUrl);
     setCopied(true);
@@ -68,7 +92,6 @@ export default function SettingsClient({
     setTimeout(() => setCopied(false), 2000);
   }
 
-  // ---- Native share ----
   async function handleNativeShare() {
     if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       try {
@@ -80,13 +103,12 @@ export default function SettingsClient({
         toast("Shared!");
         return;
       } catch {
-        // User cancelled or share failed — fall through to copy
+        // User cancelled or share failed
       }
     }
     handleCopy();
   }
 
-  // ---- Platform shares ----
   function handleShareTwitter() {
     const text = encodeURIComponent(
       `Send me an anonymous message! \u{1F440}\n${profileUrl}`
@@ -115,7 +137,6 @@ export default function SettingsClient({
     );
   }
 
-  // ---- Story card ----
   const handleStoryCard = useCallback(async () => {
     setGeneratingCard(true);
     try {
@@ -153,7 +174,7 @@ export default function SettingsClient({
       URL.revokeObjectURL(url);
       await navigator.clipboard.writeText(profileUrl);
       toast(
-        "Story card downloaded! Link copied — open Instagram \u2192 Add to Story \u2192 upload the image.",
+        "Story card downloaded! Link copied \u2014 open Instagram \u2192 Add to Story \u2192 upload the image.",
         "info"
       );
     } catch {
@@ -163,7 +184,6 @@ export default function SettingsClient({
     }
   }, [username, profileUrl, toast]);
 
-  // ---- Snapchat card ----
   const handleSnapCard = useCallback(async () => {
     setGeneratingSnapCard(true);
     try {
@@ -198,7 +218,7 @@ export default function SettingsClient({
       URL.revokeObjectURL(url);
       await navigator.clipboard.writeText(profileUrl);
       toast(
-        "Snapchat card downloaded! Link copied — open Snapchat \u2192 Add to Story \u2192 upload the image.",
+        "Snapchat card downloaded! Link copied \u2014 open Snapchat \u2192 Add to Story \u2192 upload the image.",
         "info"
       );
     } catch {
@@ -208,13 +228,12 @@ export default function SettingsClient({
     }
   }, [username, profileUrl, toast]);
 
-  // ---- Premium checkout ----
   async function handleUpgrade() {
     setCheckingOut(true);
     try {
       const res = await fetch("/api/create-checkout-session", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-csrf-protection": "1" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan: selectedPlan }),
       });
       const data = await res.json();
@@ -230,13 +249,12 @@ export default function SettingsClient({
     }
   }
 
-  // ---- Change plan (for existing subscribers) ----
   async function handleChangePlan(plan: PlanKey) {
     setChangingPlan(true);
     try {
       const res = await fetch("/api/change-plan", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-csrf-protection": "1" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan }),
       });
       const data = await res.json();
@@ -253,13 +271,11 @@ export default function SettingsClient({
     }
   }
 
-  // ---- Manage subscription (Stripe Customer Portal) ----
   async function handleManageSubscription() {
     setOpeningPortal(true);
     try {
       const res = await fetch("/api/create-portal-session", {
         method: "POST",
-        headers: { "x-csrf-protection": "1" },
       });
       const data = await res.json();
       if (data.url) {
@@ -274,7 +290,6 @@ export default function SettingsClient({
     }
   }
 
-  // ---- Keyword filters ----
   async function handleAddFilters() {
     const keywords = filterInput
       .split(",")
@@ -286,7 +301,7 @@ export default function SettingsClient({
     try {
       const res = await fetch("/api/filters", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-csrf-protection": "1" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ keywords }),
       });
       const data = await res.json();
@@ -313,10 +328,9 @@ export default function SettingsClient({
   async function handleRemoveFilter(id: string) {
     setFilters((prev) => prev.filter((f) => f.id !== id));
     try {
-      const res = await fetch(`/api/filters?id=${id}`, { method: "DELETE", headers: { "x-csrf-protection": "1" } });
+      const res = await fetch(`/api/filters?id=${id}`, { method: "DELETE" });
       if (!res.ok) {
         toast("Failed to remove filter.", "error");
-        // Refetch on failure
         const refetch = await fetch("/api/filters");
         if (refetch.ok) {
           const data = await refetch.json();
@@ -328,7 +342,6 @@ export default function SettingsClient({
     }
   }
 
-  // ---- Theme ----
   async function handleThemeChange(theme: string) {
     setSelectedTheme(theme);
     setSavingTheme(true);
@@ -349,7 +362,6 @@ export default function SettingsClient({
     }
   }
 
-  // ---- Email notifications ----
   async function handleToggleEmailNotifs() {
     const newVal = !emailNotifs;
     setEmailNotifs(newVal);
@@ -373,235 +385,140 @@ export default function SettingsClient({
     }
   }
 
-  // ---- Logout ----
   async function handleLogout() {
     await supabase.auth.signOut();
     router.push("/");
     router.refresh();
   }
 
+  const sLabel: React.CSSProperties = { fontSize: "10px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "#9B8EE8", fontWeight: 600, marginBottom: "4px" };
+  const sDesc: React.CSSProperties = { fontSize: "13px", color: "rgba(26,23,48,0.42)", lineHeight: 1.5, marginBottom: "16px" };
+
   return (
-    <div className="flex flex-col gap-5">
-      {/* Your Link — hero prominence */}
-      <div
-        className="animate-fade-in-up rounded-2xl p-6 text-center"
-        style={{
-          background: "var(--surface-1)",
-          border: "1px solid rgba(124, 106, 172, 0.2)",
-          boxShadow:
-            "0 0 40px rgba(124, 106, 172, 0.06), 0 4px 24px rgba(0, 0, 0, 0.3)",
-        }}
-      >
-        <p className="text-xs font-medium uppercase tracking-widest text-zinc-500 mb-3">
-          Your Link
-        </p>
-        <p className="text-2xl sm:text-3xl font-bold font-mono text-white tracking-tight mb-2">
-          whatupb.com/
-          <span className="text-denim-300">{username}</span>
-        </p>
-        <p className="text-xs text-zinc-500 mb-4">
-          This is your personal link — share it anywhere.
-        </p>
-        <button
-          onClick={handleCopy}
-          className="btn-primary py-2.5 px-6 text-sm"
-        >
-          {copied ? (
-            <span className="flex items-center gap-1.5">
-              <svg
-                className="w-4 h-4 animate-check-scale"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              Copied
-            </span>
-          ) : (
-            <span className="flex items-center gap-1.5">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-              Copy Link
-            </span>
-          )}
-        </button>
+    <div>
+      {/* YOUR LINK */}
+      <div className="anim-2 settings-card" style={{ textAlign: "center" }}>
+        <div style={sLabel}>Your Link</div>
+        <div style={{ background: "#EDEAF4", border: "1px solid rgba(190,182,220,0.55)", borderRadius: "14px", padding: "20px 20px 6px", textAlign: "center", boxShadow: "0 2px 8px rgba(100,90,160,0.08), inset 0 1px 0 rgba(255,255,255,0.7)" }}>
+          <div style={{ fontSize: "10px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "rgba(26,23,48,0.35)", marginBottom: "10px" }}>Your personal link</div>
+          <div style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontSize: "20px", fontWeight: 700, letterSpacing: "-0.3px", lineHeight: 1.3, marginBottom: "4px" }}>
+            <span style={{ color: "rgba(26,23,48,0.28)" }}>whatupb.com/</span>
+            <span style={{ color: "#9B8EE8" }}>{username}</span>
+          </div>
+          <div style={{ fontSize: "12px", color: "rgba(26,23,48,0.32)", marginBottom: "18px" }}>This is your personal link &mdash; share it anywhere.</div>
+          <button onClick={handleCopy} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", margin: "0 auto 16px", padding: "11px 26px", borderRadius: "50px", border: "none", cursor: "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", fontWeight: 600, color: "#fff", background: copied ? "#6EBD9A" : "#9B8EE8", boxShadow: "0 4px 14px rgba(155,142,232,0.4)", transition: "all 0.2s" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+            {copied ? "\u2713 Copied!" : "Copy Link"}
+          </button>
+        </div>
       </div>
 
-      {/* Share — primary action */}
-      <div className="card animate-fade-in-up-delay-1">
-        <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">
-          Share Your Link
-        </h2>
-        <p className="text-sm text-zinc-400 mb-3 font-mono">
-          whatupb.com/<span className="text-denim-300">{username}</span>
-        </p>
-        <button
-          onClick={handleNativeShare}
-          className="btn-primary w-full py-3.5 text-base mb-4"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-            />
-          </svg>
+      {/* SHARE YOUR LINK */}
+      <div className="anim-3 settings-card">
+        <div style={sLabel}>Share Your Link</div>
+        <div style={sDesc}>whatupb.com/{username}</div>
+        <button onClick={handleNativeShare} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "9px", width: "100%", padding: "14px", borderRadius: "12px", border: "none", cursor: "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "15px", fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #9B8EE8 0%, #7C6FCC 100%)", boxShadow: "0 4px 16px rgba(124,111,204,0.4), inset 0 1px 0 rgba(255,255,255,0.2)", transition: "all 0.2s", marginBottom: "10px" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" /></svg>
           Share My Link
         </button>
-        <div className="grid grid-cols-5 gap-2">
-          <button onClick={handleShareTwitter} className="btn-secondary flex-col py-3 px-2 text-xs gap-1.5" title="Share on X">
-            <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <button onClick={handleShareTwitter} className="settings-platform-btn" type="button">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
             X
           </button>
-          <button onClick={handleShareWhatsApp} className="btn-secondary flex-col py-3 px-2 text-xs gap-1.5" title="Share on WhatsApp">
-            <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
+          <button onClick={handleShareWhatsApp} className="settings-platform-btn" type="button">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
             WhatsApp
           </button>
-          <button onClick={handleShareInstagram} className="btn-secondary flex-col py-3 px-2 text-xs gap-1.5" title="Copy for Instagram">
-            <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" /></svg>
+          <button onClick={handleShareInstagram} className="settings-platform-btn" type="button">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" /></svg>
             Instagram
           </button>
-          <button onClick={handleShareSnapchat} className="flex-col py-3 px-2 text-xs gap-1.5 flex items-center justify-center rounded-xl font-medium transition-all duration-200 text-white" style={{ backgroundColor: "#00AEF3" }} title="Share on Snapchat">
-            <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12.998-.263.103-.043.199-.077.291-.077.15 0 .291.057.402.156.168.148.237.375.18.59-.078.321-.446.551-.72.636-.122.04-.24.074-.36.107-.228.065-.44.132-.596.244-.18.134-.255.3-.264.493-.009.156.061.312.14.468.102.208.211.425.294.66.158.464.138.888-.064 1.26-.316.58-1.01.9-2.07.95-.15.007-.308.014-.497.018l-.076.001c-.163.004-.297.042-.397.128-.138.119-.25.314-.34.583-.013.039-.025.076-.037.112-.116.346-.24.706-.512.939-.31.265-.688.283-1.033.33-.29.04-.578.08-.85.166-.39.124-.727.372-1.1.65-.476.356-.994.738-1.66.914-.077.02-.153.035-.23.035-.093 0-.181-.022-.27-.064-.089.042-.177.064-.27.064-.077 0-.153-.015-.23-.035-.666-.176-1.183-.558-1.66-.914-.372-.278-.71-.526-1.1-.65-.272-.086-.56-.126-.85-.166-.345-.047-.723-.065-1.033-.33-.272-.233-.396-.593-.512-.939-.012-.036-.024-.073-.037-.112-.09-.269-.202-.464-.34-.583-.1-.086-.234-.124-.397-.128l-.076-.001c-.189-.004-.347-.011-.497-.018-1.06-.05-1.754-.37-2.07-.95-.202-.372-.222-.796-.064-1.26.083-.235.192-.452.294-.66.079-.156.149-.312.14-.468-.01-.193-.084-.359-.264-.493-.156-.112-.368-.18-.596-.244-.12-.033-.238-.067-.36-.107-.274-.085-.642-.315-.72-.636-.057-.215.012-.442.18-.59.111-.099.252-.156.402-.156.092 0 .188.034.291.077.339.143.698.247.998.263.198 0 .326-.045.401-.09a8.254 8.254 0 01-.033-.57c-.104-1.628-.23-3.654.3-4.848C5.447 1.069 8.806.793 9.795.793h2.41z" /></svg>
+          <button onClick={handleShareSnapchat} className="settings-platform-btn" type="button" style={{ background: "#00C4F4", borderColor: "#00A8D4", color: "#fff", boxShadow: "0 2px 0 #0098C0, 0 3px 8px rgba(0,180,230,0.25)" }}>
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12.998-.263.103-.043.199-.077.291-.077.15 0 .291.057.402.156.168.148.237.375.18.59-.078.321-.446.551-.72.636-.122.04-.24.074-.36.107-.228.065-.44.132-.596.244-.18.134-.255.3-.264.493-.009.156.061.312.14.468.102.208.211.425.294.66.158.464.138.888-.064 1.26-.316.58-1.01.9-2.07.95-.15.007-.308.014-.497.018l-.076.001c-.163.004-.297.042-.397.128-.138.119-.25.314-.34.583-.013.039-.025.076-.037.112-.116.346-.24.706-.512.939-.31.265-.688.283-1.033.33-.29.04-.578.08-.85.166-.39.124-.727.372-1.1.65-.476.356-.994.738-1.66.914-.077.02-.153.035-.23.035-.093 0-.181-.022-.27-.064-.089.042-.177.064-.27.064-.077 0-.153-.015-.23-.035-.666-.176-1.183-.558-1.66-.914-.372-.278-.71-.526-1.1-.65-.272-.086-.56-.126-.85-.166-.345-.047-.723-.065-1.033-.33-.272-.233-.396-.593-.512-.939-.012-.036-.024-.073-.037-.112-.09-.269-.202-.464-.34-.583-.1-.086-.234-.124-.397-.128l-.076-.001c-.189-.004-.347-.011-.497-.018-1.06-.05-1.754-.37-2.07-.95-.202-.372-.222-.796-.064-1.26.083-.235.192-.452.294-.66.079-.156.149-.312.14-.468-.01-.193-.084-.359-.264-.493-.156-.112-.368-.18-.596-.244-.12-.033-.238-.067-.36-.107-.274-.085-.642-.315-.72-.636-.057-.215.012-.442.18-.59.111-.099.252-.156.402-.156.092 0 .188.034.291.077.339.143.698.247.998.263.198 0 .326-.045.401-.09a8.254 8.254 0 01-.033-.57c-.104-1.628-.23-3.654.3-4.848C5.447 1.069 8.806.793 9.795.793h2.41z" /></svg>
             Snapchat
           </button>
-          <button onClick={handleCopy} className="btn-secondary flex-col py-3 px-2 text-xs gap-1.5" title="Copy link">
-            <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+          <button onClick={handleCopy} className="settings-platform-btn" type="button">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
             Copy
           </button>
         </div>
       </div>
 
-      {/* Story Card Generators */}
-      <div className="card animate-fade-in-up-delay-2">
-        <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">
-          Instagram Story
-        </h2>
-        <p className="text-xs text-zinc-600 mb-3">
-          Generate a story card image to share on Instagram, Snapchat, or any platform.
-        </p>
-        <button onClick={handleStoryCard} disabled={generatingCard} className="btn-secondary w-full py-3">
+      {/* INSTAGRAM STORY */}
+      <div className="anim-4 settings-card">
+        <div style={sLabel}>Instagram Story</div>
+        <div style={sDesc}>Generate a story card image to share on Instagram, Snapchat, or any platform.</div>
+        <button onClick={handleStoryCard} disabled={generatingCard} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", padding: "13px", borderRadius: "12px", border: "1px solid rgba(180,175,205,0.5)", background: "#fff", cursor: generatingCard ? "default" : "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", fontWeight: 500, color: "#3D3860", transition: "all 0.2s", boxShadow: "0 2px 6px rgba(100,90,160,0.07)", opacity: generatingCard ? 0.6 : 1 }}>
           {generatingCard ? (
-            <span className="flex items-center gap-2">
-              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+            <>
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" className="animate-spin"><circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
               Generating...
-            </span>
+            </>
           ) : (
-            <span className="flex items-center gap-2">
-              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              Generate Story Card
-            </span>
+            <>{"\uD83D\uDCF8"} Generate Story Card</>
           )}
         </button>
       </div>
 
-      <div className="card animate-fade-in-up-delay-2">
-        <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">
-          Snapchat Story
-        </h2>
-        <p className="text-xs text-zinc-600 mb-3">
-          Download a Snapchat-optimized story card with QR code.
-        </p>
-        <button onClick={handleSnapCard} disabled={generatingSnapCard} className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2" style={{ background: "linear-gradient(135deg, #FFFC00 0%, #FF6B00 100%)", color: "#000", opacity: generatingSnapCard ? 0.6 : 1 }}>
+      {/* SNAPCHAT STORY */}
+      <div className="anim-4 settings-card">
+        <div style={sLabel}>Snapchat Story</div>
+        <div style={sDesc}>Download a Snapchat-optimized story card with QR code.</div>
+        <button onClick={handleSnapCard} disabled={generatingSnapCard} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", padding: "14px", borderRadius: "12px", border: "none", cursor: generatingSnapCard ? "default" : "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", fontWeight: 700, color: "#1A1A1A", background: "linear-gradient(135deg, #FFFC00, #FFD700)", boxShadow: "0 4px 16px rgba(255,200,0,0.3)", transition: "all 0.2s", opacity: generatingSnapCard ? 0.6 : 1 }}>
           {generatingSnapCard ? (
-            <span className="flex items-center gap-2">
-              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+            <>
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" className="animate-spin"><circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
               Generating...
-            </span>
+            </>
           ) : (
-            <span className="flex items-center gap-2">
-              <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12.998-.263.103-.043.199-.077.291-.077.15 0 .291.057.402.156.168.148.237.375.18.59-.078.321-.446.551-.72.636-.122.04-.24.074-.36.107-.228.065-.44.132-.596.244-.18.134-.255.3-.264.493-.009.156.061.312.14.468.102.208.211.425.294.66.158.464.138.888-.064 1.26-.316.58-1.01.9-2.07.95-.15.007-.308.014-.497.018l-.076.001c-.163.004-.297.042-.397.128-.138.119-.25.314-.34.583-.013.039-.025.076-.037.112-.116.346-.24.706-.512.939-.31.265-.688.283-1.033.33-.29.04-.578.08-.85.166-.39.124-.727.372-1.1.65-.476.356-.994.738-1.66.914-.077.02-.153.035-.23.035-.093 0-.181-.022-.27-.064-.089.042-.177.064-.27.064-.077 0-.153-.015-.23-.035-.666-.176-1.183-.558-1.66-.914-.372-.278-.71-.526-1.1-.65-.272-.086-.56-.126-.85-.166-.345-.047-.723-.065-1.033-.33-.272-.233-.396-.593-.512-.939-.012-.036-.024-.073-.037-.112-.09-.269-.202-.464-.34-.583-.1-.086-.234-.124-.397-.128l-.076-.001c-.189-.004-.347-.011-.497-.018-1.06-.05-1.754-.37-2.07-.95-.202-.372-.222-.796-.064-1.26.083-.235.192-.452.294-.66.079-.156.149-.312.14-.468-.01-.193-.084-.359-.264-.493-.156-.112-.368-.18-.596-.244-.12-.033-.238-.067-.36-.107-.274-.085-.642-.315-.72-.636-.057-.215.012-.442.18-.59.111-.099.252-.156.402-.156.092 0 .188.034.291.077.339.143.698.247.998.263.198 0 .326-.045.401-.09a8.254 8.254 0 01-.033-.57c-.104-1.628-.23-3.654.3-4.848C5.447 1.069 8.806.793 9.795.793h2.41z" /></svg>
-              Generate Snapchat Card
-            </span>
+            <>{"\uD83D\uDC7B"} Generate Snapchat Card</>
           )}
         </button>
       </div>
 
-      {/* Plan Management */}
-      <div
-        className="card animate-fade-in-up-delay-2"
-        style={
-          isPremium
-            ? {
-                border: "1px solid rgba(168, 85, 247, 0.3)",
-                boxShadow: "0 0 30px rgba(168, 85, 247, 0.08)",
-              }
-            : {}
-        }
-      >
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-            Plan
-          </h2>
-          {isPremium && currentPlan ? (
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30">
-              Premium &middot; {currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)}
-            </span>
-          ) : (
-            <span
-              className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
-                isPremium
-                  ? "bg-purple-500/15 text-purple-300 border border-purple-500/30"
-                  : "bg-zinc-800 text-zinc-400 border border-zinc-700"
-              }`}
-            >
+      {/* PLAN */}
+      <div className="anim-5 settings-card">
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", marginBottom: "4px" }}>
+          <div>
+            <div style={sLabel}>Plan</div>
+            <div style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontSize: "16px", fontWeight: 700, color: "#1A1730", marginBottom: "4px" }}>
               {isPremium ? "Premium" : "Free"}
-            </span>
+            </div>
+          </div>
+          {isPremium && currentPlan ? (
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "5px", padding: "4px 12px", borderRadius: "50px", background: "rgba(155,142,232,0.12)", border: "1px solid rgba(155,142,232,0.25)", fontSize: "11px", fontWeight: 600, color: "#9B8EE8", letterSpacing: "0.3px" }}>
+              {"\u2726"} Premium &middot; {currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)}
+            </div>
+          ) : isPremium ? (
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "5px", padding: "4px 12px", borderRadius: "50px", background: "rgba(155,142,232,0.12)", border: "1px solid rgba(155,142,232,0.25)", fontSize: "11px", fontWeight: 600, color: "#9B8EE8", letterSpacing: "0.3px" }}>
+              {"\u2726"} Premium
+            </div>
+          ) : (
+            <div style={{ display: "inline-flex", alignItems: "center", padding: "4px 12px", borderRadius: "50px", background: "rgba(26,23,48,0.06)", border: "1px solid rgba(26,23,48,0.1)", fontSize: "11px", fontWeight: 600, color: "rgba(26,23,48,0.42)", letterSpacing: "0.3px" }}>
+              Free
+            </div>
           )}
         </div>
 
         {isPremium ? (
           <div>
-            <p className="text-sm text-zinc-400 mb-1">
-              Unlimited message history, keyword filters, custom themes.
-            </p>
+            <div style={sDesc}>Unlimited message history, keyword filters, custom themes.</div>
             {premiumExpiresAt && (
-              <p className="text-xs text-zinc-600 mb-4">
+              <div style={{ fontSize: "12.5px", color: "rgba(26,23,48,0.42)", marginBottom: "16px" }}>
                 Renews{" "}
                 {new Date(premiumExpiresAt).toLocaleDateString("en-US", {
                   month: "long",
                   day: "numeric",
                   year: "numeric",
                 })}
-              </p>
+              </div>
             )}
 
-            {/* Switch plan options — show plans the user is NOT on */}
             {currentPlan && (
               <>
-                <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-2 mt-4">
-                  Switch Plan
-                </p>
-                <div
-                  className={`grid gap-2 mb-4 ${
-                    PLANS.filter((p) => p.key !== currentPlan).length === 2
-                      ? "grid-cols-2"
-                      : "grid-cols-1"
-                  }`}
-                >
+                <div style={{ ...sLabel, marginTop: "16px", marginBottom: "8px" }}>Switch Plan</div>
+                <div style={{ display: "grid", gridTemplateColumns: PLANS.filter((p) => p.key !== currentPlan).length === 2 ? "1fr 1fr" : "1fr", gap: "8px", marginBottom: "16px" }}>
                   {PLANS.filter((p) => p.key !== currentPlan).map((plan) => {
                     const isUpgrade =
                       (currentPlan === "weekly") ||
@@ -612,37 +529,20 @@ export default function SettingsClient({
                         type="button"
                         onClick={() => handleChangePlan(plan.key)}
                         disabled={changingPlan}
-                        className="relative flex flex-col items-center p-3 rounded-xl border border-border-subtle hover:border-purple-500/40 hover:bg-purple-500/5 transition-all duration-200"
-                        style={{ opacity: changingPlan ? 0.6 : 1 }}
+                        style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", padding: "14px 10px", borderRadius: "14px", border: "1.5px solid rgba(190,185,215,0.4)", background: "#fff", cursor: changingPlan ? "default" : "pointer", transition: "all 0.2s", opacity: changingPlan ? 0.6 : 1, boxShadow: "0 2px 8px rgba(100,90,160,0.07)" }}
                       >
                         {plan.badge && (
-                          <span
-                            className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
-                            style={{
-                              background: "linear-gradient(135deg, #a855f7, #7c3aed)",
-                              color: "#fff",
-                            }}
-                          >
+                          <span style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", fontSize: "10px", fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.5px", padding: "2px 8px", borderRadius: "50px", background: "linear-gradient(135deg, #9B8EE8, #7C6FCC)", color: "#fff", whiteSpace: "nowrap" }}>
                             {plan.badge}
                           </span>
                         )}
-                        <span className="text-xs text-zinc-500 mb-1">{plan.label}</span>
-                        <span className="text-lg font-bold text-white">
-                          {plan.price}
-                        </span>
-                        <span className="text-xs text-zinc-600">{plan.period}</span>
+                        <span style={{ fontSize: "12px", color: "rgba(26,23,48,0.42)", marginBottom: "4px" }}>{plan.label}</span>
+                        <span style={{ fontSize: "18px", fontWeight: 700, color: "#1A1730" }}>{plan.price}</span>
+                        <span style={{ fontSize: "12px", color: "rgba(26,23,48,0.42)" }}>{plan.period}</span>
                         {plan.savings && (
-                          <span className="text-[10px] text-emerald-400 font-medium mt-0.5">
-                            {plan.savings}
-                          </span>
+                          <span style={{ fontSize: "10px", color: "#10b981", fontWeight: 500, marginTop: "2px" }}>{plan.savings}</span>
                         )}
-                        <span
-                          className={`text-[10px] font-semibold mt-1.5 px-2 py-0.5 rounded-full ${
-                            isUpgrade
-                              ? "text-purple-300 bg-purple-500/10"
-                              : "text-zinc-400 bg-zinc-800"
-                          }`}
-                        >
+                        <span style={{ fontSize: "10px", fontWeight: 600, marginTop: "6px", padding: "2px 8px", borderRadius: "50px", background: isUpgrade ? "rgba(155,142,232,0.1)" : "rgba(26,23,48,0.06)", color: isUpgrade ? "#9B8EE8" : "rgba(26,23,48,0.42)" }}>
                           {isUpgrade ? "Upgrade" : "Downgrade"}
                         </span>
                       </button>
@@ -652,138 +552,68 @@ export default function SettingsClient({
               </>
             )}
 
-            {/* Manage Subscription — opens Stripe Customer Portal */}
-            <button
-              onClick={handleManageSubscription}
-              disabled={openingPortal}
-              className="w-full py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 border border-border-subtle text-zinc-400 hover:text-zinc-300 hover:border-border-default hover:bg-surface-2"
-              style={{ opacity: openingPortal ? 0.6 : 1 }}
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              {openingPortal ? "Opening..." : "Manage Subscription"}
+            <button onClick={handleManageSubscription} disabled={openingPortal} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", width: "100%", padding: "12px", borderRadius: "12px", border: "1px solid rgba(180,175,205,0.5)", background: "#fff", cursor: openingPortal ? "default" : "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", fontWeight: 400, color: "rgba(26,23,48,0.42)", transition: "all 0.2s", boxShadow: "0 2px 6px rgba(100,90,160,0.07)", opacity: openingPortal ? 0.6 : 1 }}>
+              {"\u2699\uFE0F"} {openingPortal ? "Opening..." : "Manage Subscription"}
             </button>
           </div>
         ) : (
           <div>
-            <p className="text-sm text-zinc-400 mb-4">
-              Unlock unlimited history, keyword filters, and custom link themes.
-            </p>
+            <div style={sDesc}>Unlock unlimited history, keyword filters, and custom link themes.</div>
 
-            {/* Pricing tiers */}
-            <div className="grid grid-cols-3 gap-2 mb-4">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", marginBottom: "16px" }}>
               {PLANS.map((plan) => (
                 <button
                   key={plan.key}
                   type="button"
                   onClick={() => setSelectedPlan(plan.key)}
-                  className={`relative flex flex-col items-center p-3 rounded-xl border transition-all duration-200 ${
-                    selectedPlan === plan.key
-                      ? "border-purple-500/50 bg-purple-500/10"
-                      : "border-border-subtle hover:border-border-default"
-                  }`}
+                  style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", padding: "14px 10px", borderRadius: "14px", border: selectedPlan === plan.key ? "1.5px solid #9B8EE8" : "1.5px solid rgba(190,185,215,0.4)", cursor: "pointer", transition: "all 0.2s", background: selectedPlan === plan.key ? "#faf9ff" : "#fff", boxShadow: selectedPlan === plan.key ? "0 4px 14px rgba(155,142,232,0.2), 0 8px 24px rgba(155,142,232,0.1)" : "0 2px 8px rgba(100,90,160,0.07)" }}
                 >
                   {plan.badge && (
-                    <span
-                      className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
-                      style={{
-                        background: "linear-gradient(135deg, #a855f7, #7c3aed)",
-                        color: "#fff",
-                      }}
-                    >
+                    <span style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", fontSize: "10px", fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.5px", padding: "2px 8px", borderRadius: "50px", background: "linear-gradient(135deg, #9B8EE8, #7C6FCC)", color: "#fff", whiteSpace: "nowrap" }}>
                       {plan.badge}
                     </span>
                   )}
-                  <span className={`text-xs text-zinc-500 mb-1 ${plan.badge ? "mt-1" : ""}`}>
-                    {plan.label}
-                  </span>
-                  <span className="text-lg font-bold text-white">{plan.price}</span>
-                  <span className="text-xs text-zinc-600">{plan.period}</span>
+                  <span style={{ fontSize: "12px", color: "rgba(26,23,48,0.42)", marginBottom: "4px", marginTop: plan.badge ? "4px" : 0 }}>{plan.label}</span>
+                  <span style={{ fontSize: "18px", fontWeight: 700, color: "#1A1730" }}>{plan.price}</span>
+                  <span style={{ fontSize: "12px", color: "rgba(26,23,48,0.42)" }}>{plan.period}</span>
                   {plan.savings && (
-                    <span className="text-[10px] text-emerald-400 font-medium mt-0.5">
-                      {plan.savings}
-                    </span>
+                    <span style={{ fontSize: "10px", color: "#10b981", fontWeight: 500, marginTop: "2px" }}>{plan.savings}</span>
                   )}
                 </button>
               ))}
             </div>
 
-            <button
-              onClick={handleUpgrade}
-              disabled={checkingOut}
-              className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
-              style={{
-                background: "linear-gradient(135deg, #a855f7, #7c3aed)",
-                color: "#fff",
-                border: "1px solid rgba(168, 85, 247, 0.4)",
-                boxShadow: "0 0 20px rgba(168, 85, 247, 0.15)",
-                opacity: checkingOut ? 0.6 : 1,
-              }}
-            >
-              <svg
-                className="w-4.5 h-4.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
+            <button onClick={handleUpgrade} disabled={checkingOut} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", padding: "14px", borderRadius: "12px", border: "none", cursor: checkingOut ? "default" : "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "15px", fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #9B8EE8 0%, #7C6FCC 100%)", boxShadow: "0 4px 16px rgba(124,111,204,0.4), inset 0 1px 0 rgba(255,255,255,0.2)", transition: "all 0.2s", opacity: checkingOut ? 0.6 : 1 }}>
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
               {checkingOut
                 ? "Redirecting..."
-                : `Upgrade — ${selectedPlan === "weekly" ? "$0.99/wk" : selectedPlan === "monthly" ? "$4.99/mo" : "$39.99/yr"}`}
+                : `Upgrade \u2014 ${selectedPlan === "weekly" ? "$0.99/wk" : selectedPlan === "monthly" ? "$4.99/mo" : "$39.99/yr"}`}
             </button>
           </div>
         )}
       </div>
 
-      {/* Keyword Filters (Premium) */}
+      {/* KEYWORD FILTERS (Premium) */}
       {isPremium && (
-        <div className="card animate-fade-in-up-delay-3">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-              Keyword Filters
-            </h2>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="text-xs text-denim-300 hover:text-denim-200 transition"
-              type="button"
-            >
+        <div className="anim-6 settings-card">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
+            <div style={sLabel}>Keyword Filters</div>
+            <button onClick={() => setShowFilters(!showFilters)} type="button" style={{ fontSize: "12px", color: "#9B8EE8", background: "none", border: "none", cursor: "pointer", fontWeight: 500 }}>
               {showFilters ? "Hide" : "Manage"}
             </button>
           </div>
-          <p className="text-xs text-zinc-600 mb-3">
+          <div style={sDesc}>
             Block messages containing specific words.{" "}
             {filters.length > 0 && (
-              <span className="text-zinc-500">
+              <span style={{ color: "rgba(26,23,48,0.55)" }}>
                 {filters.length} active filter{filters.length !== 1 && "s"}
               </span>
             )}
-          </p>
+          </div>
 
           {showFilters && (
-            <div className="animate-fade-in-up">
-              <div className="flex gap-2 mb-3">
+            <div>
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                 <input
                   type="text"
                   value={filterInput}
@@ -795,38 +625,21 @@ export default function SettingsClient({
                     }
                   }}
                   placeholder="word1, word2, word3..."
-                  className="input text-sm flex-1"
                   disabled={savingFilters}
+                  style={{ flex: 1, padding: "12px 15px", borderRadius: "11px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(255,255,255,0.8)", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", color: "#1A1730", outline: "none", transition: "all 0.2s" }}
                 />
-                <button
-                  onClick={handleAddFilters}
-                  disabled={
-                    savingFilters || filterInput.trim().length === 0
-                  }
-                  className="btn-primary py-2 px-4 text-xs whitespace-nowrap"
-                  type="button"
-                >
+                <button onClick={handleAddFilters} disabled={savingFilters || filterInput.trim().length === 0} type="button" style={{ padding: "12px 22px", borderRadius: "11px", border: "none", cursor: "pointer", background: "#9B8EE8", color: "#fff", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap", opacity: (savingFilters || filterInput.trim().length === 0) ? 0.6 : 1 }}>
                   {savingFilters ? "..." : "Add"}
                 </button>
               </div>
 
               {filters.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
+                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "12px" }}>
                   {filters.map((f) => (
-                    <span
-                      key={f.id}
-                      className="inline-flex items-center gap-1 bg-surface-2 border border-border-subtle rounded-lg px-2.5 py-1 text-xs text-zinc-300"
-                    >
+                    <div key={f.id} style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "5px 12px", borderRadius: "50px", background: "rgba(155,142,232,0.08)", border: "1px solid rgba(155,142,232,0.18)", fontSize: "12.5px", color: "#3D3860" }}>
                       {f.keyword}
-                      <button
-                        onClick={() => handleRemoveFilter(f.id)}
-                        className="text-zinc-600 hover:text-red-400 transition ml-0.5"
-                        type="button"
-                        aria-label={`Remove ${f.keyword}`}
-                      >
-                        &times;
-                      </button>
-                    </span>
+                      <span onClick={() => handleRemoveFilter(f.id)} style={{ cursor: "pointer", color: "rgba(26,23,48,0.42)", fontSize: "11px" }}>{"\u2715"}</span>
+                    </div>
                   ))}
                 </div>
               )}
@@ -835,86 +648,43 @@ export default function SettingsClient({
         </div>
       )}
 
-      {/* Link Theme (Premium) */}
+      {/* THEME (Premium) */}
       {isPremium && (
-        <div className="card animate-fade-in-up-delay-3">
-          <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-3">
-            Link Page Theme
-          </h2>
-          <div className="grid grid-cols-4 gap-2">
-            {THEME_OPTIONS.map((theme) => (
-              <button
-                key={theme.value}
-                onClick={() => handleThemeChange(theme.value)}
-                disabled={savingTheme}
-                className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all duration-200 ${
-                  selectedTheme === theme.value
-                    ? "border-denim-400 bg-surface-2"
-                    : "border-border-subtle hover:border-border-default"
-                }`}
-                type="button"
+        <div className="anim-6 settings-card">
+          <div style={sLabel}>Link Page Theme</div>
+          <div style={{ ...sDesc, marginBottom: "18px" }}>Choose how your profile page looks to visitors.</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px" }}>
+            {THEME_OPTIONS.map((t) => (
+              <div
+                key={t.value}
+                onClick={() => handleThemeChange(t.value)}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", padding: "14px 10px", borderRadius: "14px", border: selectedTheme === t.value ? "1.5px solid #9B8EE8" : "1.5px solid rgba(190,185,215,0.4)", cursor: savingTheme ? "default" : "pointer", transition: "all 0.2s", background: selectedTheme === t.value ? "#faf9ff" : "#fff", boxShadow: selectedTheme === t.value ? "0 4px 14px rgba(155,142,232,0.2), 0 8px 24px rgba(155,142,232,0.1)" : "0 2px 8px rgba(100,90,160,0.07)", opacity: savingTheme ? 0.7 : 1 }}
               >
-                <div
-                  className="w-8 h-8 rounded-full border border-border-default"
-                  style={{
-                    background: theme.bg,
-                    boxShadow:
-                      selectedTheme === theme.value
-                        ? `0 0 8px ${theme.accent}40`
-                        : "none",
-                  }}
-                >
-                  <div
-                    className="w-3 h-3 rounded-full mx-auto mt-2.5"
-                    style={{ background: theme.accent }}
-                  />
+                <div style={{ width: "40px", height: "40px", borderRadius: "50%", boxShadow: "0 2px 8px rgba(0,0,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", ...t.dot }}>
+                  {selectedTheme === t.value && <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "15px", fontWeight: 700, color: "#fff" }}>{"\u2713"}</span>}
                 </div>
-                <span className="text-xs text-zinc-400">{theme.label}</span>
-              </button>
+                <div style={{ fontSize: "12.5px", fontWeight: selectedTheme === t.value ? 600 : 500, color: selectedTheme === t.value ? "#9B8EE8" : "#3D3860" }}>{t.label}</div>
+              </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Account */}
-      <div className="card animate-fade-in-up-delay-3">
-        <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-3">
-          Account
-        </h2>
-        <p className="text-sm text-zinc-400 mb-4">
-          Logged in as{" "}
-          <span className="text-denim-200 font-medium">@{username}</span>
-        </p>
-
-        {/* Email Notifications Toggle */}
-        <div className="flex items-center justify-between py-3 px-4 rounded-xl border border-border-subtle mb-4">
-          <div>
-            <p className="text-sm text-zinc-300 font-medium">Email Notifications</p>
-            <p className="text-xs text-zinc-600">Get notified when you receive a message</p>
-          </div>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={emailNotifs}
-            onClick={handleToggleEmailNotifs}
-            disabled={savingNotifs}
-            className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
-            style={{
-              backgroundColor: emailNotifs ? "#7c6aac" : "#27272a",
-              opacity: savingNotifs ? 0.6 : 1,
-            }}
-          >
-            <span
-              className="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transform transition duration-200 ease-in-out"
-              style={{ transform: emailNotifs ? "translateX(20px)" : "translateX(0)" }}
-            />
-          </button>
+      {/* ACCOUNT */}
+      <div className="anim-7 settings-card">
+        <div style={sLabel}>Account</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid rgba(26,23,48,0.09)" }}>
+          <div style={{ fontSize: "14px", color: "#3D3860" }}>Logged in as</div>
+          <div style={{ fontSize: "14px", color: "#9B8EE8", fontWeight: 500 }}>@{username}</div>
         </div>
-
-        <button
-          onClick={handleLogout}
-          className="w-full border border-red-500/30 text-red-400/80 text-sm font-medium py-2.5 rounded-xl hover:bg-red-500/5 hover:border-red-500/50 transition"
-        >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0" }}>
+          <div>
+            <div style={{ fontSize: "14px", color: "#3D3860" }}>Email Notifications</div>
+            <div style={{ fontSize: "12px", color: "rgba(26,23,48,0.42)", marginTop: "2px" }}>Get notified when you receive a message</div>
+          </div>
+          <Toggle checked={emailNotifs} onChange={handleToggleEmailNotifs} disabled={savingNotifs} />
+        </div>
+        <button onClick={handleLogout} style={{ display: "block", width: "100%", padding: "13px", borderRadius: "12px", border: "1px solid rgba(229,115,115,0.25)", background: "rgba(229,115,115,0.05)", cursor: "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "15px", fontWeight: 500, color: "#C62828", transition: "all 0.2s", marginTop: "14px" }}>
           Log Out
         </button>
       </div>

@@ -1264,3 +1264,104 @@ body {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+
+
+/* ── Settings page ─────────────────────────────────────── */
+.settings-page-wrap {
+  position: relative;
+  z-index: 10;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 90px 24px 120px;
+}
+
+.settings-card {
+  background: #fff;
+  border: 1px solid rgba(190,185,215,0.45);
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 0 rgba(255,255,255,1) inset, 0 4px 6px rgba(100,90,160,0.06), 0 10px 20px rgba(100,90,160,0.08), 0 20px 40px rgba(100,90,160,0.05);
+  transition: box-shadow 0.2s;
+}
+
+.settings-card:hover {
+  box-shadow: 0 1px 0 rgba(255,255,255,1) inset, 0 6px 12px rgba(100,90,160,0.09), 0 16px 32px rgba(100,90,160,0.10), 0 28px 48px rgba(100,90,160,0.06);
+}
+
+.settings-platform-btn {
+  flex: 1;
+  min-width: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(200,196,215,0.7);
+  background: #fff;
+  cursor: pointer;
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1A1730;
+  transition: all 0.2s;
+  box-shadow: 0 2px 0 rgba(200,196,215,0.6), 0 3px 8px rgba(100,90,160,0.07);
+}
+
+.settings-platform-btn:hover {
+  border-color: #C4BBF5;
+  color: #9B8EE8;
+  background: #faf9ff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(100,90,160,0.14);
+}
+
+.settings-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 10px 24px 20px;
+  background: rgba(244,243,248,0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(155,142,232,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.settings-bar-btn {
+  flex: 1;
+  max-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  color: rgba(26,23,48,0.42);
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.settings-bar-btn:hover {
+  background: rgba(255,255,255,0.6);
+  color: #1A1730;
+}
+
+.settings-bar-active {
+  background: rgba(155,142,232,0.1);
+  color: #9B8EE8;
+}
+
+@media (max-width: 640px) {
+  .settings-page-wrap { padding: 80px 16px 120px; }
+}

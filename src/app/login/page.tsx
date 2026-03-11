@@ -238,7 +238,7 @@ function LoginForm() {
               className="anim-5 card-btn-primary"
               style={{ marginBottom: "16px" }}
             >
-              {loading ? "Logging in…" : "Log In"}
+              {loading ? "Logging in\u2026" : "Log In"}
             </button>
           </form>
 
