@@ -55,8 +55,8 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--background);
   color: var(--foreground);
-  fon
-
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
 /* Landing page styles */
 .landing-page {
   background: var(--bg);
