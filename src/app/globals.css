@@ -1365,3 +1365,7 @@ body {
 @media (max-width: 640px) {
   .settings-page-wrap { padding: 80px 16px 120px; }
 }
+
+/* ── Inbox page ──────────────────────────────────────── */
+.inbox-page-wrap { position: relative; z-index: 10; max-width: 640px; margin: 0 auto; padding: 90px 24px 120px; }
+@media (max-width: 640px) { .inbox-page-wrap { padding: 80px 16px 120px; } }
