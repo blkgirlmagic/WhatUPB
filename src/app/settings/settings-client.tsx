@@ -231,7 +231,7 @@ export default function SettingsClient({
     try {
       const res = await fetch("/api/create-checkout-session", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-csrf-protection": "1" },
         body: JSON.stringify({ plan: selectedPlan }),
       });
       const data = await res.json();
@@ -252,7 +252,7 @@ export default function SettingsClient({
     try {
       const res = await fetch("/api/change-plan", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-csrf-protection": "1" },
         body: JSON.stringify({ plan }),
       });
       const data = await res.json();
