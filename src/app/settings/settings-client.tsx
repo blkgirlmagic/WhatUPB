@@ -483,61 +483,102 @@ export default function SettingsClient({
         {isPremium ? (
           <div>
             <div style={sDesc}>Unlimited message history, keyword filters, custom themes.</div>
-            {premiumExpiresAt && (
-              <div style={{ fontSize: "12.5px", color: "rgba(26,23,48,0.42)", marginBottom: "16px" }}>
-                Renews{" "}
-                {new Date(premiumExpiresAt).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </div>
-            )}
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", marginBottom: "16px" }}>
+              {PLANS.map((plan) => {
+                const isActive = plan.key === currentPlan;
+                const isDowngrade = currentPlan === "yearly" && plan.key !== "yearly";
+                const isUpgrade =
+                  (currentPlan === "weekly" && plan.key !== "weekly") ||
+                  (currentPlan === "monthly" && plan.key === "yearly");
+                const canSwitch = !isActive && !isDowngrade;
+
+                return (
+                  <button
+                    key={plan.key}
+                    type="button"
+                    onClick={canSwitch ? () => handleChangePlan(plan.key) : undefined}
+                    disabled={!canSwitch || changingPlan}
+                    style={{
+                      position: "relative",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      padding: "16px 10px",
+                      borderRadius: "14px",
+                      border: isActive
+                        ? "2px solid #9B8EE8"
+                        : "1.5px solid rgba(190,185,215,0.4)",
+                      background: isActive
+                        ? "linear-gradient(135deg, #faf9ff 0%, #f0edff 100%)"
+                        : "#fff",
+                      cursor: canSwitch && !changingPlan ? "pointer" : "default",
+                      transition: "all 0.2s",
+                      opacity: isDowngrade ? 0.55 : changingPlan && canSwitch ? 0.6 : 1,
+                      boxShadow: isActive
+                        ? "0 4px 18px rgba(155,142,232,0.25), 0 8px 28px rgba(155,142,232,0.12)"
+                        : "0 2px 8px rgba(100,90,160,0.07)",
+                    }}
+                  >
+                    {isActive && (
+                      <span style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", fontSize: "10px", fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.5px", padding: "2px 10px", borderRadius: "50px", background: "linear-gradient(135deg, #9B8EE8, #7C6FCC)", color: "#fff", whiteSpace: "nowrap" }}>
+                        Current Plan
+                      </span>
+                    )}
+                    {!isActive && plan.badge && (
+                      <span style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", fontSize: "10px", fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.5px", padding: "2px 8px", borderRadius: "50px", background: isDowngrade ? "rgba(26,23,48,0.15)" : "linear-gradient(135deg, #9B8EE8, #7C6FCC)", color: "#fff", whiteSpace: "nowrap" }}>
+                        {plan.badge}
+                      </span>
+                    )}
+                    <span style={{ fontSize: "12px", color: isActive ? "#9B8EE8" : "rgba(26,23,48,0.42)", marginBottom: "4px", marginTop: (isActive || plan.badge) ? "4px" : 0, fontWeight: isActive ? 600 : 400 }}>{plan.label}</span>
+                    <span style={{ fontSize: "18px", fontWeight: 700, color: isActive ? "#1A1730" : isDowngrade ? "rgba(26,23,48,0.4)" : "#1A1730" }}>{plan.price}</span>
+                    <span style={{ fontSize: "12px", color: isActive ? "rgba(26,23,48,0.55)" : "rgba(26,23,48,0.42)" }}>{plan.period}</span>
+                    {plan.savings && (
+                      <span style={{ fontSize: "10px", color: isDowngrade ? "rgba(26,23,48,0.3)" : "#10b981", fontWeight: 500, marginTop: "2px" }}>{plan.savings}</span>
+                    )}
+                    {isActive && premiumExpiresAt && (
+                      <div style={{ marginTop: "8px", textAlign: "center" }}>
+                        <div style={{ fontSize: "10px", fontWeight: 600, color: "#9B8EE8", marginBottom: "2px" }}>
+                          Renews {new Date(premiumExpiresAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                        </div>
+                        <div style={{ fontSize: "9.5px", color: "rgba(26,23,48,0.42)" }}>Auto-renew is on</div>
+                      </div>
+                    )}
+                    {!isActive && isUpgrade && (
+                      <span style={{ fontSize: "10px", fontWeight: 600, marginTop: "6px", padding: "2px 8px", borderRadius: "50px", background: "rgba(155,142,232,0.1)", color: "#9B8EE8" }}>
+                        Upgrade
+                      </span>
+                    )}
+                    {isDowngrade && (
+                      <span style={{ fontSize: "9px", color: "rgba(26,23,48,0.4)", marginTop: "6px", textAlign: "center", lineHeight: 1.3 }}>
+                        Available after current billing period
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
             {currentPlan && (
-              <>
-                <div style={{ ...sLabel, marginTop: "16px", marginBottom: "8px" }}>Switch Plan</div>
-                <div style={{ display: "grid", gridTemplateColumns: PLANS.filter((p) => p.key !== currentPlan).length === 2 ? "1fr 1fr" : "1fr", gap: "8px", marginBottom: "16px" }}>
-                  {PLANS.filter((p) => p.key !== currentPlan).map((plan) => {
-                    const isUpgrade =
-                      (currentPlan === "weekly") ||
-                      (currentPlan === "monthly" && plan.key === "yearly");
-                    return (
-                      <button
-                        key={plan.key}
-                        type="button"
-                        onClick={() => handleChangePlan(plan.key)}
-                        disabled={changingPlan}
-                        style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", padding: "14px 10px", borderRadius: "14px", border: "1.5px solid rgba(190,185,215,0.4)", background: "#fff", cursor: changingPlan ? "default" : "pointer", transition: "all 0.2s", opacity: changingPlan ? 0.6 : 1, boxShadow: "0 2px 8px rgba(100,90,160,0.07)" }}
-                      >
-                        {plan.badge && (
-                          <span style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", fontSize: "10px", fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.5px", padding: "2px 8px", borderRadius: "50px", background: "linear-gradient(135deg, #9B8EE8, #7C6FCC)", color: "#fff", whiteSpace: "nowrap" }}>
-                            {plan.badge}
-                          </span>
-                        )}
-                        <span style={{ fontSize: "12px", color: "rgba(26,23,48,0.42)", marginBottom: "4px" }}>{plan.label}</span>
-                        <span style={{ fontSize: "18px", fontWeight: 700, color: "#1A1730" }}>{plan.price}</span>
-                        <span style={{ fontSize: "12px", color: "rgba(26,23,48,0.42)" }}>{plan.period}</span>
-                        {plan.savings && (
-                          <span style={{ fontSize: "10px", color: "#10b981", fontWeight: 500, marginTop: "2px" }}>{plan.savings}</span>
-                        )}
-                        <span style={{ fontSize: "10px", fontWeight: 600, marginTop: "6px", padding: "2px 8px", borderRadius: "50px", background: isUpgrade ? "rgba(155,142,232,0.1)" : "rgba(26,23,48,0.06)", color: isUpgrade ? "#9B8EE8" : "rgba(26,23,48,0.42)" }}>
-                          {isUpgrade ? "Upgrade" : "Downgrade"}
-                        </span>
-                      </button>
-                    );
-                  })}
+              <div style={{ padding: "14px 16px", borderRadius: "12px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(155,142,232,0.04)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <span style={{ fontSize: "13px", color: "rgba(26,23,48,0.55)" }}>
+                    {currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)} Plan Active
+                  </span>
+                  <span style={{ fontSize: "13px", fontWeight: 600, color: "#9B8EE8" }}>
+                    {premiumExpiresAt
+                      ? `Renews ${new Date(premiumExpiresAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
+                      : "Active"}
+                  </span>
                 </div>
-              </>
-            )}
-
-            <div style={{ padding: "14px 16px", borderRadius: "12px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(155,142,232,0.04)" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                <span style={{ fontSize: "13px", color: "rgba(26,23,48,0.55)" }}>Billing cycle</span>
-                <span style={{ fontSize: "13px", fontWeight: 600, color: "#9B8EE8" }}>{currentPlan ? currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1) : "Premium"}</span>
+                {currentPlan === "yearly" && (
+                  <div style={{ fontSize: "12px", color: "rgba(26,23,48,0.35)", marginBottom: "4px" }}>
+                    Downgrades to Weekly or Monthly are available when your yearly term ends.
+                  </div>
+                )}
+                <div style={{ fontSize: "12px", color: "rgba(26,23,48,0.35)" }}>To manage payment methods or cancel, visit your Stripe billing portal.</div>
               </div>
-              <div style={{ fontSize: "12px", color: "rgba(26,23,48,0.35)" }}>To manage your subscription, visit your Stripe billing portal.</div>
-            </div>
+            )}
           </div>
         ) : (
           <div>

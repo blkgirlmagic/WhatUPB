@@ -92,6 +92,17 @@ export async function POST(request: Request) {
       );
     }
 
+    // Prevent yearly subscribers from downgrading to weekly/monthly mid-term
+    const currentPriceId = currentItem.price.id;
+    const isCurrentlyYearly = currentPriceId === process.env.STRIPE_PRICE_ID_YEARLY;
+    const isDowngrade = newPriceId === process.env.STRIPE_PRICE_ID_WEEKLY || newPriceId === process.env.STRIPE_PRICE_ID_MONTHLY;
+    if (isCurrentlyYearly && isDowngrade) {
+      return NextResponse.json(
+        { error: "Downgrades from the yearly plan are available when your current billing period ends." },
+        { status: 400 }
+      );
+    }
+
     // Update the subscription to the new price with proration
     await stripe.subscriptions.update(profile.stripe_subscription_id, {
       items: [{ id: currentItem.id, price: newPriceId }],
