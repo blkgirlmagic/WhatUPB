@@ -701,7 +701,6 @@ export default function SignUp() {
       const isBlocked = localStorage.getItem("whatupb_age_blocked") === "1";
       if (isBlocked) {
         setBlocked(true);
-        setTimeout(() => { window.location.href = "/"; }, 3000);
       }
     }
   }, []);
@@ -754,9 +753,8 @@ export default function SignUp() {
       localStorage.setItem("whatupb_age_blocked", "1");
       document.cookie = "age_blocked_client=1; path=/; max-age=315360000; SameSite=Strict";
       setAgeCookie(dob);
-      setAgeError("You must be 18 or older to enter WhatUPB.");
+      setAgeError("Thanks for stopping by! WhatUPB is for 18+ only. Come back when you're of age \u2014 we'll be here.");
       setBlocked(true);
-      setTimeout(() => { window.location.href = "/"; }, 3000);
       return;
     }
 
@@ -835,15 +833,37 @@ export default function SignUp() {
   if (phase === "age-gate") {
     if (blocked && !ageSuccess) {
       return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6" style={{ background: "linear-gradient(180deg, #fdfcfb 0%, #f5f2ed 100%)" }}>
-          <div className="text-center max-w-md animate-rejection-fade-in">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center px-6" style={{ background: "linear-gradient(180deg, #fdfcfb 0%, #f5f2ed 100%)" }}>
+          <div className="text-center max-w-md">
             <div className="mb-6">
-              <svg className="w-12 h-12 mx-auto opacity-40" fill="none" viewBox="0 0 24 24" stroke="#8b5cf6" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-              </svg>
+              <div style={{ width: 56, height: 56, margin: "0 auto", borderRadius: "50%", background: "rgba(139,92,246,0.08)", border: "1px solid rgba(139,92,246,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#8b5cf6" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+              </div>
             </div>
-            <p className="text-xl font-semibold mb-3" style={{ color: "#1a1a2e" }}>Thanks for the interest!</p>
-            <p className="text-sm leading-relaxed" style={{ color: "#6b7280" }}>Keep us in mind further down the road &mdash; we&apos;ll be here.</p>
+            <p className="text-xl font-semibold mb-3" style={{ color: "#1a1a2e", fontFamily: "'DM Sans', sans-serif" }}>Thanks for the interest!</p>
+            <p className="text-sm leading-relaxed mb-8" style={{ color: "#6b7280", fontFamily: "'DM Sans', sans-serif" }}>Keep us in mind further down the road &mdash; we&apos;ll be here.</p>
+            <a
+              href="/"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "12px 28px",
+                background: "linear-gradient(135deg, #8b5cf6, #a78bfa)",
+                color: "white",
+                borderRadius: "12px",
+                fontSize: "14px",
+                fontWeight: 500,
+                fontFamily: "'DM Sans', sans-serif",
+                textDecoration: "none",
+                boxShadow: "0 4px 16px rgba(139,92,246,0.25)",
+                transition: "all 0.25s ease",
+              }}
+            >
+              &larr; Back to WhatUPB
+            </a>
           </div>
         </div>
       );

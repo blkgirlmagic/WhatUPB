@@ -40,7 +40,7 @@ export default async function Home() {
         </Link>
         <div className="nav-links">
           <a href="#how-it-works">How it works</a>
-          <a href="#safety">Safety</a>
+          <Link href="/safety">Safety</Link>
           <a href="#">Blog</a>
           {user ? (
             <Link href="/inbox" className="nav-cta">
@@ -219,8 +219,8 @@ export default async function Home() {
               <Link href="/privacy">Privacy</Link>
               <Link href="/terms">Terms</Link>
               <Link href="/content-policy">Content Policy</Link>
-              <a href="#safety">Safety</a>
-              <a href="#">Support</a>
+              <Link href="/safety">Safety</Link>
+              <Link href="/support">Support</Link>
             </div>
           </div>
         </div>
