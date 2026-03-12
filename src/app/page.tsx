@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
-import { CloudLogo } from "@/components/cloud-logo";
+
 import { DiagonalLines } from "@/components/diagonal-lines";
 import { ChatParallax } from "@/components/chat-parallax";
 
@@ -36,9 +36,6 @@ export default async function Home() {
       {/* Nav */}
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">
-          <div className="logo-mark">
-            <CloudLogo />
-          </div>
           WhatUPB
         </Link>
         <div className="nav-links">
@@ -59,16 +56,6 @@ export default async function Home() {
 
       {/* Hero */}
       <section className="hero">
-        <div className="mascot-wrap">
-          <CloudLogo
-            width={90}
-            height={74}
-            className="mascot-svg"
-            showShadow
-            showExtraHighlights
-          />
-        </div>
-
         <div className="hero-wordmark">WhatUPB</div>
         <p className="hero-sub">
           Say what people <em>really</em> think — anonymously.
@@ -217,7 +204,6 @@ export default async function Home() {
         <div className="footer-top">
           <div className="footer-brand">
             <div className="footer-logo-row">
-              <CloudLogo width={32} height={28} />
               <span className="footer-wordmark">WhatUPB</span>
             </div>
             <p className="footer-tagline">

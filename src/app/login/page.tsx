@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase-browser";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import posthog from "posthog-js";
-import { CloudLogo } from "@/components/cloud-logo";
+
 import { DiagonalLines } from "@/components/diagonal-lines";
 
 function parseHashParams(hash: string): Record<string, string> {
@@ -130,7 +130,6 @@ function LoginForm() {
       {/* NAV */}
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">
-          <div className="logo-mark"><CloudLogo /></div>
           WhatUPB
         </Link>
         <div className="nav-links">
@@ -258,7 +257,6 @@ function LoginForm() {
         <div className="footer-top">
           <div className="footer-brand">
             <div className="footer-logo-row">
-              <CloudLogo width={30} height={25} />
               <span className="footer-wordmark">WhatUPB</span>
             </div>
             <p className="footer-tagline">

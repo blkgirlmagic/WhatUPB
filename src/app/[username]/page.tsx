@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { CloudLogo } from "@/components/cloud-logo";
+
 import { DiagonalLines } from "@/components/diagonal-lines";
 import MessageForm from "./message-form";
 import ReactionsFeed from "./reactions-feed";
@@ -50,7 +50,6 @@ export default async function PublicProfile({
       {/* NAV */}
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">
-          <div className="logo-mark"><CloudLogo /></div>
           WhatUPB
         </Link>
         <div className="nav-links">
@@ -100,7 +99,6 @@ export default async function PublicProfile({
         <div className="footer-top">
           <div className="footer-brand">
             <div className="footer-logo-row">
-              <CloudLogo width={28} height={25} />
               <span className="footer-wordmark">WhatUPB</span>
             </div>
             <p className="footer-tagline">
