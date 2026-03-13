@@ -694,14 +694,12 @@ export default function SignUp() {
   const router = useRouter();
   const supabase = createClient();
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const isBlocked = localStorage.getItem("whatupb_age_blocked") === "1";
-      if (isBlocked) {
-        setBlocked(true);
-      }
-    }
-  }, []);
+  // NOTE: We intentionally do NOT check localStorage for a previous
+  // age-gate failure on mount. Every visit to /signup shows the age gate
+  // fresh — the "Thanks for the interest" rejection only appears when the
+  // user actively enters an under-18 DOB in the current session.
+  // The localStorage/cookie flags are still SET on failure (for server-side
+  // validation in the signup API) but they don't block the client UI.
 
   const passwordChecks = useMemo(
     () => PASSWORD_RULES.map((rule) => ({ ...rule, passed: rule.test(password) })),
