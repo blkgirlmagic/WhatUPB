@@ -104,7 +104,7 @@ function LoginForm() {
     borderRadius: "11px",
     border: `1px solid ${focused ? "#9B8EE8" : "rgba(155,142,232,0.2)"}`,
     background: focused ? "#fff" : "rgba(255,255,255,0.8)",
-    fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif",
+    fontFamily: "var(--font-lora), 'Lora', Georgia, serif",
     fontSize: "15px",
     color: "#1A1730",
     outline: "none",
@@ -163,11 +163,11 @@ function LoginForm() {
           }} />
 
           {/* Wordmark */}
-          <div className="anim-1" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", fontFamily: "var(--font-syne), 'Syne', sans-serif", fontWeight: 800, fontSize: "20px", color: "#9B8EE8", letterSpacing: "-0.3px", marginBottom: "6px" }}>
+          <div className="anim-1" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 800, fontSize: "20px", color: "#9B8EE8", letterSpacing: "-0.3px", marginBottom: "6px" }}>
             WhatUPB
           </div>
 
-          <h1 className="anim-2" style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontWeight: 800, fontSize: "26px", color: "#1A1730", textAlign: "center", letterSpacing: "-0.5px", marginBottom: "6px" }}>
+          <h1 className="anim-2" style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 800, fontSize: "26px", color: "#1A1730", textAlign: "center", letterSpacing: "-0.5px", marginBottom: "6px" }}>
             Welcome back
           </h1>
           <p className="anim-3" style={{ fontSize: "14px", color: "rgba(26,23,48,0.42)", textAlign: "center", marginBottom: "30px" }}>
@@ -191,7 +191,7 @@ function LoginForm() {
           <form onSubmit={handleSubmit}>
             {/* Email */}
             <div className="anim-4" style={{ marginBottom: "18px" }}>
-              <label style={{ fontSize: "10.5px", letterSpacing: "2px", textTransform: "uppercase" as const, color: "rgba(26,23,48,0.42)", fontWeight: 500, marginBottom: "7px", display: "block" }}>
+              <label style={{ fontSize: "10.5px", letterSpacing: "2px", textTransform: "uppercase" as const, color: "rgba(26,23,48,0.42)", fontWeight: 500, marginBottom: "7px", display: "block", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>
                 Email
               </label>
               <input
@@ -210,7 +210,7 @@ function LoginForm() {
             {/* Password */}
             <div className="anim-4" style={{ marginBottom: "18px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "7px" }}>
-                <label style={{ fontSize: "10.5px", letterSpacing: "2px", textTransform: "uppercase" as const, color: "rgba(26,23,48,0.42)", fontWeight: 500 }}>
+                <label style={{ fontSize: "10.5px", letterSpacing: "2px", textTransform: "uppercase" as const, color: "rgba(26,23,48,0.42)", fontWeight: 500, fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>
                   Password
                 </label>
                 <Link href="/forgot-password" style={{ fontSize: "12.5px", color: "#9B8EE8", textDecoration: "none", transition: "color 0.2s" }}>

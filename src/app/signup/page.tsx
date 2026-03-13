@@ -9,8 +9,6 @@ import posthog from "posthog-js";
 // ── Age gate inline styles — Redesigned Elegant Light theme ──────────────
 
 const ageGateStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
-
   :root {
     --gate-bg: #fdfcfb;
     --gate-bg-end: #f5f2ed;
@@ -28,7 +26,7 @@ const ageGateStyles = `
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-lora), 'Lora', Georgia, serif;
     position: relative;
     overflow: hidden;
   }
@@ -184,7 +182,7 @@ const ageGateStyles = `
   /* ── Headline — Playfair Display ──────────────────────────────── */
 
   .gate-headline {
-    font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+    font-family: var(--font-playfair), 'Playfair Display', serif;
     font-size: clamp(36px, 7vw, 52px);
     font-weight: 800;
     line-height: 1.1;
@@ -330,7 +328,7 @@ const ageGateStyles = `
     border: none;
     border-radius: 14px;
     color: white;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-lora), 'Lora', Georgia, serif;
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
@@ -419,7 +417,7 @@ const ageGateStyles = `
     border-radius: 10px;
     padding: 12px 10px;
     color: var(--gate-text);
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-lora), 'Lora', Georgia, serif;
     font-size: 14px;
     cursor: pointer;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -457,7 +455,7 @@ const ageGateStyles = `
     border: none;
     border-radius: 12px;
     color: white;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-lora), 'Lora', Georgia, serif;
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;
@@ -549,7 +547,7 @@ const ageGateStyles = `
   }
 
   .gate-success-text {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-playfair), 'Playfair Display', serif;
     font-size: 32px;
     font-weight: 700;
     color: var(--gate-text);
@@ -842,8 +840,8 @@ export default function SignUp() {
                 </svg>
               </div>
             </div>
-            <p className="text-xl font-semibold mb-3" style={{ color: "#1a1a2e", fontFamily: "'DM Sans', sans-serif" }}>Thanks for the interest!</p>
-            <p className="text-sm leading-relaxed mb-8" style={{ color: "#6b7280", fontFamily: "'DM Sans', sans-serif" }}>Keep us in mind further down the road &mdash; we&apos;ll be here.</p>
+            <p className="text-xl font-semibold mb-3" style={{ color: "#1a1a2e", fontFamily: "'Lora', Georgia, serif" }}>Thanks for the interest!</p>
+            <p className="text-sm leading-relaxed mb-8" style={{ color: "#6b7280", fontFamily: "'Lora', Georgia, serif" }}>Keep us in mind further down the road &mdash; we&apos;ll be here.</p>
             <a
               href="/"
               style={{
@@ -856,7 +854,7 @@ export default function SignUp() {
                 borderRadius: "12px",
                 fontSize: "14px",
                 fontWeight: 500,
-                fontFamily: "'DM Sans', sans-serif",
+                fontFamily: "'Lora', Georgia, serif",
                 textDecoration: "none",
                 boxShadow: "0 4px 16px rgba(139,92,246,0.25)",
                 transition: "all 0.25s ease",
@@ -1006,16 +1004,16 @@ export default function SignUp() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#6b7280" }}>Username</label>
+            <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#6b7280", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>Username</label>
             <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="yourname" required className="input" style={{ background: "#ffffff", border: "1px solid #d1d5db", color: "#1a1a2e" }} />
             <p className="text-xs mt-1.5" style={{ color: "#9ca3af" }}>Your link will be{" "}<span className="font-mono" style={{ color: "#8b5cf6" }}>whatupb.com/{username.toLowerCase() || "yourname"}</span></p>
           </div>
           <div>
-            <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#6b7280" }}>Email</label>
+            <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#6b7280", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>Email</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" required className="input" style={{ background: "#ffffff", border: "1px solid #d1d5db", color: "#1a1a2e" }} />
           </div>
           <div>
-            <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#6b7280" }}>Password</label>
+            <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#6b7280", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>Password</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min 8 characters" required className="input" style={{ background: "#ffffff", border: "1px solid #d1d5db", color: "#1a1a2e" }} />
 
             {password.length > 0 && (

@@ -10,7 +10,7 @@ export default function PrivacyPolicy() {
     <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #fdfcfb 0%, #f5f2ed 100%)" }}>
       {/* Nav */}
       <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", maxWidth: 900, margin: "0 auto" }}>
-        <Link href="/" style={{ fontWeight: 700, fontSize: 20, color: "#1a1a2e", textDecoration: "none", fontFamily: "'Syne', sans-serif" }}>WhatUPB</Link>
+        <Link href="/" style={{ fontWeight: 700, fontSize: 20, color: "#1a1a2e", textDecoration: "none", fontFamily: "'Playfair Display', serif" }}>WhatUPB</Link>
         <div style={{ display: "flex", gap: 24, alignItems: "center", fontSize: 14 }}>
           <Link href="/terms" style={{ color: "#6b7280", textDecoration: "none", transition: "color 0.2s" }}>Terms</Link>
           <Link href="/safety" style={{ color: "#6b7280", textDecoration: "none", transition: "color 0.2s" }}>Safety</Link>

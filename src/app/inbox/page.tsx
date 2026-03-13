@@ -83,7 +83,7 @@ export default async function Inbox() {
       <div className="inbox-page-wrap">
         {/* Header */}
         <div className="anim-1" style={{ marginBottom: "28px" }}>
-          <div style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontSize: "28px", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.5px", marginBottom: "6px" }}>
+          <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: "28px", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.5px", marginBottom: "6px" }}>
             Inbox
           </div>
           {messageCount > 0 ? (

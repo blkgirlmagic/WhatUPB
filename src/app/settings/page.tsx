@@ -103,7 +103,7 @@ export default async function Settings() {
 
       {/* PAGE */}
       <div className="settings-page-wrap">
-        <div className="anim-1" style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontSize: "28px", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.5px", marginBottom: "28px" }}>
+        <div className="anim-1" style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: "28px", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.5px", marginBottom: "28px" }}>
           Settings
         </div>
 

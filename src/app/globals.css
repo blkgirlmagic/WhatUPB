@@ -55,12 +55,12 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
 }
 /* Landing page styles */
 .landing-page {
   background: var(--bg);
-  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
   color: var(--ink);
   overflow-x: hidden;
   min-height: 100vh;
@@ -99,7 +99,7 @@ body {
 }
 .nav-logo {
   display: flex; align-items: center; gap: 9px;
-  font-family: var(--font-syne), 'Syne', sans-serif;
+  font-family: var(--font-playfair), 'Playfair Display', serif;
   font-weight: 800; font-size: 18px;
   color: var(--ink); letter-spacing: -0.3px;
 }
@@ -138,7 +138,7 @@ body {
 
 /* Wordmark */
 .hero-wordmark {
-  font-family: var(--font-syne), 'Syne', sans-serif;
+  font-family: var(--font-playfair), 'Playfair Display', serif;
   font-weight: 800;
   font-size: clamp(64px, 13vw, 160px);
   letter-spacing: -5px; line-height: 0.92;
@@ -182,7 +182,7 @@ body {
   border: 1px solid var(--faint);
   background: rgba(255,255,255,0.6);
   color: var(--muted);
-  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
   font-size: 15px; font-weight: 400;
   cursor: pointer;
   display: flex; align-items: center; gap: 6px;
@@ -198,7 +198,7 @@ body {
   border: none;
   background: var(--lav);
   color: #fff;
-  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
   font-size: 15px; font-weight: 600;
   cursor: pointer;
   display: flex; align-items: center; gap: 6px;
@@ -241,11 +241,12 @@ body {
 }
 
 .card-label {
+  font-family: var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace;
   font-size: 10.5px; letter-spacing: 2.5px; text-transform: uppercase;
   color: var(--lav); margin-bottom: 14px; font-weight: 500;
 }
 .card-headline {
-  font-family: var(--font-syne), 'Syne', sans-serif;
+  font-family: var(--font-playfair), 'Playfair Display', serif;
   font-size: 22px; font-weight: 700; line-height: 1.25;
   color: var(--ink); margin-bottom: 8px;
 }
@@ -257,7 +258,7 @@ body {
 .card-btn-primary {
   display: block; width: 100%;
   padding: 14px; border-radius: 12px; border: none; cursor: pointer;
-  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
   font-size: 15px; font-weight: 600;
   color: #fff;
   background: var(--lav);
@@ -280,7 +281,7 @@ body {
   padding: 13px; border-radius: 12px;
   border: 1px solid var(--faint);
   background: transparent; cursor: pointer;
-  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
   font-size: 15px; font-weight: 400;
   color: var(--muted);
   transition: all 0.2s;
@@ -373,7 +374,7 @@ body {
 }
 .stat { text-align: center; }
 .stat-num {
-  font-family: var(--font-syne), 'Syne', sans-serif;
+  font-family: var(--font-playfair), 'Playfair Display', serif;
   font-size: 24px; font-weight: 800;
   color: var(--ink); letter-spacing: -0.5px;
 }
@@ -388,11 +389,12 @@ body {
   max-width: 920px; margin: 0 auto; padding: 96px 32px;
 }
 .s-eyebrow {
+  font-family: var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace;
   font-size: 10.5px; letter-spacing: 3px; text-transform: uppercase;
   color: var(--lav); margin-bottom: 12px; text-align: center; font-weight: 500;
 }
 .s-title {
-  font-family: var(--font-syne), 'Syne', sans-serif;
+  font-family: var(--font-playfair), 'Playfair Display', serif;
   font-size: clamp(28px, 4.5vw, 46px); font-weight: 800;
   text-align: center; color: var(--ink);
   letter-spacing: -1.5px; margin-bottom: 56px; line-height: 1.1;
@@ -413,10 +415,10 @@ body {
   border-color: rgba(155,142,232,0.3);
 }
 .step-num {
-  font-family: var(--font-syne), 'Syne', sans-serif; font-size: 38px; font-weight: 800;
+  font-family: var(--font-playfair), 'Playfair Display', serif; font-size: 38px; font-weight: 800;
   color: rgba(155,142,232,0.2); margin-bottom: 12px; line-height: 1;
 }
-.step-title { font-family: var(--font-syne), 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 7px; }
+.step-title { font-family: var(--font-playfair), 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 7px; }
 .step-body { font-size: 13px; color: var(--muted); line-height: 1.65; }
 
 /* ══════════════════════
@@ -427,7 +429,7 @@ body {
   text-align: center; padding: 96px 24px 120px;
 }
 .bc-title {
-  font-family: var(--font-syne), 'Syne', sans-serif;
+  font-family: var(--font-playfair), 'Playfair Display', serif;
   font-size: clamp(32px, 6vw, 60px); font-weight: 800;
   color: var(--ink); letter-spacing: -2px; line-height: 1.05; margin-bottom: 16px;
 }
@@ -436,7 +438,7 @@ body {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 16px 48px; border-radius: 50px;
   background: var(--lav); color: #fff;
-  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
   font-size: 16px; font-weight: 600;
   border: none; cursor: pointer; text-decoration: none;
   box-shadow: 0 8px 32px rgba(155,142,232,0.35);
@@ -465,7 +467,7 @@ body {
   display: flex; align-items: center; gap: 9px;
 }
 .footer-wordmark {
-  font-family: var(--font-syne), 'Syne', sans-serif; font-weight: 800;
+  font-family: var(--font-playfair), 'Playfair Display', serif; font-weight: 800;
   font-size: 17px; color: var(--ink2);
   letter-spacing: -0.3px;
 }
@@ -475,6 +477,7 @@ body {
 }
 .footer-links-col { display: flex; flex-direction: column; gap: 12px; }
 .footer-col-label {
+  font-family: var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace;
   font-size: 10.5px; letter-spacing: 2.5px; text-transform: uppercase;
   color: var(--lav); font-weight: 500;
 }
@@ -556,7 +559,7 @@ body {
   border-radius: 14px;
   border: 1px solid rgba(155,142,232,0.18);
   background: rgba(255,255,255,0.8);
-  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
   font-size: 15px;
   color: var(--ink);
   line-height: 1.6;
@@ -1277,7 +1280,7 @@ body {
   border: 1px solid rgba(200,196,215,0.7);
   background: #fff;
   cursor: pointer;
-  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
   font-size: 12px;
   font-weight: 500;
   color: #1A1730;
@@ -1322,7 +1325,7 @@ body {
   background: transparent;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
   color: rgba(26,23,48,0.42);
   font-size: 11px;
   text-decoration: none;

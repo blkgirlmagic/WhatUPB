@@ -122,11 +122,11 @@ export default function MessageForm({
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontWeight: 700, fontSize: "18px", color: "var(--ink)", marginBottom: "4px" }}>Message sent!</p>
+        <p style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 700, fontSize: "18px", color: "var(--ink)", marginBottom: "4px" }}>Message sent!</p>
         <p style={{ fontSize: "14px", color: "var(--muted)", marginBottom: "24px" }}>
           Your anonymous message was delivered to @{username}.
         </p>
-        <button onClick={() => setSent(false)} style={{ padding: "10px 24px", borderRadius: "50px", border: "1px solid var(--faint)", background: "rgba(255,255,255,0.6)", color: "var(--muted)", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", cursor: "pointer", transition: "all 0.2s" }}>
+        <button onClick={() => setSent(false)} style={{ padding: "10px 24px", borderRadius: "50px", border: "1px solid var(--faint)", background: "rgba(255,255,255,0.6)", color: "var(--muted)", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "14px", cursor: "pointer", transition: "all 0.2s" }}>
           Send another message
         </button>
       </div>
@@ -238,7 +238,7 @@ export default function MessageForm({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
               </svg>
             </div>
-            <p style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontWeight: 700, color: "var(--ink)", textAlign: "center", marginBottom: "8px" }}>
+            <p style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 700, color: "var(--ink)", textAlign: "center", marginBottom: "8px" }}>
               You&apos;re not alone
             </p>
             <p style={{ color: "var(--muted)", fontSize: "14px", textAlign: "center", lineHeight: 1.6, marginBottom: "24px" }}>

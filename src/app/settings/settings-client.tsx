@@ -309,7 +309,7 @@ export default function SettingsClient({
     router.refresh();
   }
 
-  const sLabel: React.CSSProperties = { fontSize: "10px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "#9B8EE8", fontWeight: 600, marginBottom: "4px" };
+  const sLabel: React.CSSProperties = { fontSize: "10px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "#9B8EE8", fontWeight: 600, marginBottom: "4px", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" };
   const sDesc: React.CSSProperties = { fontSize: "13px", color: "rgba(26,23,48,0.42)", lineHeight: 1.5, marginBottom: "16px" };
 
   return (
@@ -319,12 +319,12 @@ export default function SettingsClient({
         <div style={sLabel}>Your Link</div>
         <div style={{ background: "#EDEAF4", border: "1px solid rgba(190,182,220,0.55)", borderRadius: "14px", padding: "20px 20px 6px", textAlign: "center", boxShadow: "0 2px 8px rgba(100,90,160,0.08), inset 0 1px 0 rgba(255,255,255,0.7)" }}>
           <div style={{ fontSize: "10px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "rgba(26,23,48,0.35)", marginBottom: "10px" }}>Your personal link</div>
-          <div style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontSize: "20px", fontWeight: 700, letterSpacing: "-0.3px", lineHeight: 1.3, marginBottom: "4px" }}>
+          <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: "20px", fontWeight: 700, letterSpacing: "-0.3px", lineHeight: 1.3, marginBottom: "4px" }}>
             <span style={{ color: "rgba(26,23,48,0.28)" }}>whatupb.com/</span>
             <span style={{ color: "#9B8EE8" }}>{username}</span>
           </div>
           <div style={{ fontSize: "12px", color: "rgba(26,23,48,0.32)", marginBottom: "18px" }}>This is your personal link &mdash; share it anywhere.</div>
-          <button onClick={handleCopy} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", margin: "0 auto 16px", padding: "11px 26px", borderRadius: "50px", border: "none", cursor: "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", fontWeight: 600, color: "#fff", background: copied ? "#6EBD9A" : "#9B8EE8", boxShadow: "0 4px 14px rgba(155,142,232,0.4)", transition: "all 0.2s" }}>
+          <button onClick={handleCopy} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", margin: "0 auto 16px", padding: "11px 26px", borderRadius: "50px", border: "none", cursor: "pointer", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "14px", fontWeight: 600, color: "#fff", background: copied ? "#6EBD9A" : "#9B8EE8", boxShadow: "0 4px 14px rgba(155,142,232,0.4)", transition: "all 0.2s" }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
             {copied ? "\u2713 Copied!" : "Copy Link"}
           </button>
@@ -335,7 +335,7 @@ export default function SettingsClient({
       <div className="anim-3 settings-card">
         <div style={sLabel}>Share Your Link</div>
         <div style={sDesc}>whatupb.com/{username}</div>
-        <button onClick={handleNativeShare} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "9px", width: "100%", padding: "14px", borderRadius: "12px", border: "none", cursor: "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "15px", fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #9B8EE8 0%, #7C6FCC 100%)", boxShadow: "0 4px 16px rgba(124,111,204,0.4), inset 0 1px 0 rgba(255,255,255,0.2)", transition: "all 0.2s", marginBottom: "10px" }}>
+        <button onClick={handleNativeShare} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "9px", width: "100%", padding: "14px", borderRadius: "12px", border: "none", cursor: "pointer", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "15px", fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #9B8EE8 0%, #7C6FCC 100%)", boxShadow: "0 4px 16px rgba(124,111,204,0.4), inset 0 1px 0 rgba(255,255,255,0.2)", transition: "all 0.2s", marginBottom: "10px" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" /></svg>
           Share My Link
         </button>
@@ -362,7 +362,7 @@ export default function SettingsClient({
       <div className="anim-4 settings-card">
         <div style={sLabel}>Instagram Story</div>
         <div style={sDesc}>Generate a story card image to share on Instagram or any platform.</div>
-        <button onClick={handleStoryCard} disabled={generatingCard} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", padding: "13px", borderRadius: "12px", border: "1px solid rgba(180,175,205,0.5)", background: "#fff", cursor: generatingCard ? "default" : "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", fontWeight: 500, color: "#3D3860", transition: "all 0.2s", boxShadow: "0 2px 6px rgba(100,90,160,0.07)", opacity: generatingCard ? 0.6 : 1 }}>
+        <button onClick={handleStoryCard} disabled={generatingCard} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", padding: "13px", borderRadius: "12px", border: "1px solid rgba(180,175,205,0.5)", background: "#fff", cursor: generatingCard ? "default" : "pointer", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "14px", fontWeight: 500, color: "#3D3860", transition: "all 0.2s", boxShadow: "0 2px 6px rgba(100,90,160,0.07)", opacity: generatingCard ? 0.6 : 1 }}>
           {generatingCard ? (
             <>
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" className="animate-spin"><circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
@@ -379,7 +379,7 @@ export default function SettingsClient({
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", marginBottom: "4px" }}>
           <div>
             <div style={sLabel}>Plan</div>
-            <div style={{ fontFamily: "var(--font-syne), 'Syne', sans-serif", fontSize: "16px", fontWeight: 700, color: "#1A1730", marginBottom: "4px" }}>
+            <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: "16px", fontWeight: 700, color: "#1A1730", marginBottom: "4px" }}>
               {isPremium ? "Premium" : "Free"}
             </div>
           </div>
@@ -525,7 +525,7 @@ export default function SettingsClient({
               ))}
             </div>
 
-            <button onClick={handleUpgrade} disabled={checkingOut} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", padding: "14px", borderRadius: "12px", border: "none", cursor: checkingOut ? "default" : "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "15px", fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #9B8EE8 0%, #7C6FCC 100%)", boxShadow: "0 4px 16px rgba(124,111,204,0.4), inset 0 1px 0 rgba(255,255,255,0.2)", transition: "all 0.2s", opacity: checkingOut ? 0.6 : 1 }}>
+            <button onClick={handleUpgrade} disabled={checkingOut} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", padding: "14px", borderRadius: "12px", border: "none", cursor: checkingOut ? "default" : "pointer", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "15px", fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #9B8EE8 0%, #7C6FCC 100%)", boxShadow: "0 4px 16px rgba(124,111,204,0.4), inset 0 1px 0 rgba(255,255,255,0.2)", transition: "all 0.2s", opacity: checkingOut ? 0.6 : 1 }}>
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
               {checkingOut
                 ? "Redirecting..."
@@ -568,9 +568,9 @@ export default function SettingsClient({
                   }}
                   placeholder="word1, word2, word3..."
                   disabled={savingFilters}
-                  style={{ flex: 1, padding: "12px 15px", borderRadius: "11px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(255,255,255,0.8)", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", color: "#1A1730", outline: "none", transition: "all 0.2s" }}
+                  style={{ flex: 1, padding: "12px 15px", borderRadius: "11px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(255,255,255,0.8)", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "14px", color: "#1A1730", outline: "none", transition: "all 0.2s" }}
                 />
-                <button onClick={handleAddFilters} disabled={savingFilters || filterInput.trim().length === 0} type="button" style={{ padding: "12px 22px", borderRadius: "11px", border: "none", cursor: "pointer", background: "#9B8EE8", color: "#fff", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap", opacity: (savingFilters || filterInput.trim().length === 0) ? 0.6 : 1 }}>
+                <button onClick={handleAddFilters} disabled={savingFilters || filterInput.trim().length === 0} type="button" style={{ padding: "12px 22px", borderRadius: "11px", border: "none", cursor: "pointer", background: "#9B8EE8", color: "#fff", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "14px", fontWeight: 600, transition: "all 0.2s", whiteSpace: "nowrap", opacity: (savingFilters || filterInput.trim().length === 0) ? 0.6 : 1 }}>
                   {savingFilters ? "..." : "Add"}
                 </button>
               </div>
@@ -626,7 +626,7 @@ export default function SettingsClient({
           </div>
           <Toggle checked={emailNotifs} onChange={handleToggleEmailNotifs} disabled={savingNotifs} />
         </div>
-        <button onClick={handleLogout} style={{ display: "block", width: "100%", padding: "13px", borderRadius: "12px", border: "1px solid rgba(229,115,115,0.25)", background: "rgba(229,115,115,0.05)", cursor: "pointer", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "15px", fontWeight: 500, color: "#C62828", transition: "all 0.2s", marginTop: "14px" }}>
+        <button onClick={handleLogout} style={{ display: "block", width: "100%", padding: "13px", borderRadius: "12px", border: "1px solid rgba(229,115,115,0.25)", background: "rgba(229,115,115,0.05)", cursor: "pointer", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "15px", fontWeight: 500, color: "#C62828", transition: "all 0.2s", marginTop: "14px" }}>
           Log Out
         </button>
       </div>

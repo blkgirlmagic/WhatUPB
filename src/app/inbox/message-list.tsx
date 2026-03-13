@@ -147,12 +147,12 @@ export default function MessageList({
     card.appendChild(glow);
 
     const quoteDecor = document.createElement("div");
-    quoteDecor.style.cssText = `position:absolute;top:340px;left:100px;font-size:280px;line-height:1;color:rgba(155,142,232,0.1);font-family:Georgia,serif;pointer-events:none;`;
+    quoteDecor.style.cssText = `position:absolute;top:340px;left:100px;font-size:280px;line-height:1;color:rgba(155,142,232,0.1);font-family:var(--font-lora), 'Lora', Georgia, serif;pointer-events:none;`;
     quoteDecor.textContent = "\u201C";
     card.appendChild(quoteDecor);
 
     const quoteClose = document.createElement("div");
-    quoteClose.style.cssText = `position:absolute;bottom:340px;right:100px;font-size:280px;line-height:1;color:rgba(155,142,232,0.1);font-family:Georgia,serif;pointer-events:none;`;
+    quoteClose.style.cssText = `position:absolute;bottom:340px;right:100px;font-size:280px;line-height:1;color:rgba(155,142,232,0.1);font-family:var(--font-lora), 'Lora', Georgia, serif;pointer-events:none;`;
     quoteClose.textContent = "\u201D";
     card.appendChild(quoteClose);
 
@@ -281,7 +281,7 @@ export default function MessageList({
     background: "transparent",
     cursor: "pointer",
     transition: "all 0.2s",
-    fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif",
+    fontFamily: "var(--font-lora), 'Lora', Georgia, serif",
     color: "rgba(26,23,48,0.42)",
   };
 
@@ -382,7 +382,7 @@ export default function MessageList({
         <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowReactionModal(false)}>
           <div style={{ position: "absolute", inset: 0, background: "rgba(26,23,48,0.3)", backdropFilter: "blur(8px)" }} />
           <div style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: "420px", margin: "0 16px", background: "rgba(255,255,255,0.95)", backdropFilter: "blur(40px)", border: "1px solid rgba(255,255,255,0.9)", borderRadius: "20px", padding: "24px", boxShadow: "0 24px 60px rgba(100,90,180,0.15)" }} className="animate-fade-in-up" onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ color: "var(--ink)", fontSize: "18px", fontWeight: 700, fontFamily: "var(--font-syne), 'Syne', sans-serif", marginBottom: "4px" }}>Post a reaction</h2>
+            <h2 style={{ color: "var(--ink)", fontSize: "18px", fontWeight: 700, fontFamily: "var(--font-playfair), 'Playfair Display', serif", marginBottom: "4px" }}>Post a reaction</h2>
             <p style={{ color: "var(--muted)", fontSize: "13px", marginBottom: "16px" }}>This will appear on your public profile.</p>
             <textarea
               value={reactionText}
@@ -394,7 +394,7 @@ export default function MessageList({
               placeholder="say something back to the void\u2026"
               maxLength={280}
               rows={3}
-              style={{ width: "100%", padding: "12px 15px", borderRadius: "12px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(255,255,255,0.8)", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", color: "#1A1730", outline: "none", resize: "none", marginBottom: "8px" }}
+              style={{ width: "100%", padding: "12px 15px", borderRadius: "12px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(255,255,255,0.8)", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "14px", color: "#1A1730", outline: "none", resize: "none", marginBottom: "8px" }}
               disabled={sendingReaction}
               autoFocus
             />
@@ -405,7 +405,7 @@ export default function MessageList({
                 <button
                   onClick={() => handleReactionSend()}
                   disabled={sendingReaction || reactionText.trim().length === 0}
-                  style={{ padding: "8px 20px", fontSize: "13px", fontWeight: 600, borderRadius: "10px", border: "none", cursor: (sendingReaction || reactionText.trim().length === 0) ? "not-allowed" : "pointer", color: "#fff", background: (sendingReaction || reactionText.trim().length === 0) ? "rgba(155,142,232,0.4)" : "linear-gradient(135deg, #9B8EE8 0%, #7C6FCC 100%)", boxShadow: "0 4px 14px rgba(124,111,204,0.3)", transition: "all 0.2s", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif" }}
+                  style={{ padding: "8px 20px", fontSize: "13px", fontWeight: 600, borderRadius: "10px", border: "none", cursor: (sendingReaction || reactionText.trim().length === 0) ? "not-allowed" : "pointer", color: "#fff", background: (sendingReaction || reactionText.trim().length === 0) ? "rgba(155,142,232,0.4)" : "linear-gradient(135deg, #9B8EE8 0%, #7C6FCC 100%)", boxShadow: "0 4px 14px rgba(124,111,204,0.3)", transition: "all 0.2s", fontFamily: "var(--font-lora), 'Lora', Georgia, serif" }}
                   type="button"
                 >
                   {sendingReaction ? "Posting..." : "Post"}
@@ -458,7 +458,7 @@ export default function MessageList({
               </button>
             </div>
 
-            <button onClick={closeShareMenu} style={{ width: "100%", padding: "12px", fontSize: "13px", color: "var(--muted)", background: "rgba(155,142,232,0.06)", border: "1px solid rgba(155,142,232,0.15)", borderRadius: "12px", cursor: "pointer", transition: "all 0.2s", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif" }}>
+            <button onClick={closeShareMenu} style={{ width: "100%", padding: "12px", fontSize: "13px", color: "var(--muted)", background: "rgba(155,142,232,0.06)", border: "1px solid rgba(155,142,232,0.15)", borderRadius: "12px", cursor: "pointer", transition: "all 0.2s", fontFamily: "var(--font-lora), 'Lora', Georgia, serif" }}>
               Cancel
             </button>
           </div>
@@ -470,7 +470,7 @@ export default function MessageList({
         <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => { setShowReportModal(false); setReportReason(""); setReportDetails(""); }}>
           <div style={{ position: "absolute", inset: 0, background: "rgba(26,23,48,0.3)", backdropFilter: "blur(8px)" }} />
           <div style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: "420px", margin: "0 16px", background: "rgba(255,255,255,0.95)", backdropFilter: "blur(40px)", border: "1px solid rgba(255,255,255,0.9)", borderRadius: "20px", padding: "24px", boxShadow: "0 24px 60px rgba(100,90,180,0.15)" }} className="animate-fade-in-up" onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ color: "var(--ink)", fontSize: "18px", fontWeight: 700, fontFamily: "var(--font-syne), 'Syne', sans-serif", marginBottom: "4px" }}>Report message</h2>
+            <h2 style={{ color: "var(--ink)", fontSize: "18px", fontWeight: 700, fontFamily: "var(--font-playfair), 'Playfair Display', serif", marginBottom: "4px" }}>Report message</h2>
             <p style={{ color: "var(--muted)", fontSize: "13px", marginBottom: "16px" }}>This message will be removed from your inbox and flagged for review.</p>
 
             {/* Reason selection */}
@@ -491,7 +491,7 @@ export default function MessageList({
                     color: reportReason === option.value ? "#92400e" : "var(--ink)",
                     fontWeight: reportReason === option.value ? 600 : 400,
                     cursor: "pointer",
-                    fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif",
+                    fontFamily: "var(--font-lora), 'Lora', Georgia, serif",
                   }}
                   type="button"
                 >
@@ -507,7 +507,7 @@ export default function MessageList({
               placeholder="Additional details (optional)"
               maxLength={200}
               rows={2}
-              style={{ width: "100%", padding: "12px 15px", borderRadius: "12px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(255,255,255,0.8)", fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", fontSize: "14px", color: "#1A1730", outline: "none", resize: "none", minHeight: "60px", marginBottom: "4px" }}
+              style={{ width: "100%", padding: "12px 15px", borderRadius: "12px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(255,255,255,0.8)", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "14px", color: "#1A1730", outline: "none", resize: "none", minHeight: "60px", marginBottom: "4px" }}
               disabled={submittingReport}
             />
             <span style={{ fontSize: "11px", color: "var(--muted)", display: "block", marginBottom: "16px" }}>{reportDetails.length}/200</span>
@@ -527,7 +527,7 @@ export default function MessageList({
                   border: "none",
                   cursor: submittingReport || !reportReason ? "not-allowed" : "pointer",
                   transition: "all 0.2s",
-                  fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif",
+                  fontFamily: "var(--font-lora), 'Lora', Georgia, serif",
                 }}
                 type="button"
               >
