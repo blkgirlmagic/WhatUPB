@@ -1007,16 +1007,16 @@ export default function SignUp() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#6b7280" }}>Username</label>
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="yourname" required className="input" />
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="yourname" required className="input" style={{ background: "#ffffff", border: "1px solid #d1d5db", color: "#1a1a2e" }} />
             <p className="text-xs mt-1.5" style={{ color: "#9ca3af" }}>Your link will be{" "}<span className="font-mono" style={{ color: "#8b5cf6" }}>whatupb.com/{username.toLowerCase() || "yourname"}</span></p>
           </div>
           <div>
             <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#6b7280" }}>Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" required className="input" />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" required className="input" style={{ background: "#ffffff", border: "1px solid #d1d5db", color: "#1a1a2e" }} />
           </div>
           <div>
             <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#6b7280" }}>Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min 8 characters" required className="input" />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min 8 characters" required className="input" style={{ background: "#ffffff", border: "1px solid #d1d5db", color: "#1a1a2e" }} />
 
             {password.length > 0 && (
               <div className="mt-2.5 space-y-2.5">
