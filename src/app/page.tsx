@@ -16,6 +16,9 @@ export default async function Home() {
       <DiagonalLines />
       <ChatParallax />
 
+      {/* Decorative watermark */}
+      <div className="watermark-qb" aria-hidden="true">?B?</div>
+
       {/* Floating chat messages */}
       <div className="chat-float cf1">
         <div className="msg">&ldquo;I&rsquo;ve never told you this but you saved me that year.&rdquo;</div>

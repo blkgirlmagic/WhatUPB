@@ -302,6 +302,35 @@ body {
 }
 
 /* ══════════════════════
+   DECORATIVE WATERMARK
+══════════════════════ */
+.watermark-qb {
+  position: fixed;
+  top: 50%;
+  right: -2%;
+  transform: translateY(-50%);
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 800;
+  font-size: 460px;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--ink);
+  opacity: 0.045;
+  pointer-events: none;
+  z-index: 0;
+  user-select: none;
+  letter-spacing: -12px;
+}
+
+@media (max-width:1024px) {
+  .watermark-qb { font-size: 320px; right: -4%; }
+}
+@media (max-width:640px) {
+  .watermark-qb { font-size: 200px; right: -6%; opacity: 0.035; }
+}
+
+/* ══════════════════════
    FLOATING CHAT MESSAGES
 ══════════════════════ */
 .chat-float {
