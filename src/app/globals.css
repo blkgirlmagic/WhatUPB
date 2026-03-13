@@ -328,12 +328,18 @@ body {
 .cf3 .msg { animation-duration: 8s;   animation-delay: -1.5s; }
 .cf4 .msg { animation-duration: 10.5s; animation-delay: -5s;  }
 .cf5 .msg { animation-duration: 6.5s; animation-delay: -2.5s; }
+.cf6 .msg { animation-duration: 8.5s; animation-delay: -4s;   }
+.cf7 .msg { animation-duration: 7.5s; animation-delay: -1s;   }
+.cf8 .msg { animation-duration: 9.5s; animation-delay: -6s;   }
 
 .cf1 { top: 15%; left: 4%;  }
 .cf2 { top: 21%; right: 5%; }
 .cf3 { top: 60%; left: 3%;  }
 .cf4 { top: 67%; right: 4%; }
 .cf5 { top: 41%; left: 2%;  }
+.cf6 { top: 48%; right: 3%; }
+.cf7 { top: 78%; left: 5%;  }
+.cf8 { top: 85%; right: 6%; }
 
 @keyframes cf-float {
   0%,100% { transform: translateY(0px);   }
@@ -600,7 +606,7 @@ body {
   .stat-sep { display: none; }
   .footer-top { flex-direction: column; }
   .footer-bottom { justify-content: center; text-align: center; }
-  .cf1, .cf5 { display: none; }
+  .cf1, .cf5, .cf6, .cf7, .cf8 { display: none; }
   .login-page-wrap { padding: 90px 16px 60px; }
   .profile-page-wrap { padding: 86px 16px 110px; }
 }

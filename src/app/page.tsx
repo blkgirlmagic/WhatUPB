@@ -18,19 +18,28 @@ export default async function Home() {
 
       {/* Floating chat messages */}
       <div className="chat-float cf1">
-        <div className="msg">💬 &ldquo;ok honestly&hellip; your fits ARE fire&rdquo;</div>
+        <div className="msg">&ldquo;I&rsquo;ve never told you this but you saved me that year.&rdquo;</div>
       </div>
       <div className="chat-float cf2">
-        <div className="msg">🔥 &ldquo;that meeting could&rsquo;ve been an email&rdquo;</div>
+        <div className="msg">&ldquo;You&rsquo;re the only person I trust completely.&rdquo;</div>
       </div>
       <div className="chat-float cf3">
-        <div className="msg">💜 &ldquo;you deserve that promotion fr&rdquo;</div>
+        <div className="msg">&ldquo;That meeting could&rsquo;ve been an email.&rdquo;</div>
       </div>
       <div className="chat-float cf4">
-        <div className="msg">👀 &ldquo;someone out here misses you ngl&rdquo;</div>
+        <div className="msg">&ldquo;I think about our conversation every single day.&rdquo;</div>
       </div>
       <div className="chat-float cf5">
-        <div className="msg">✨ &ldquo;your energy today was IT&rdquo;</div>
+        <div className="msg">&ldquo;You deserved better than what they gave you.&rdquo;</div>
+      </div>
+      <div className="chat-float cf6">
+        <div className="msg">&ldquo;I was wrong. I should have said that sooner.&rdquo;</div>
+      </div>
+      <div className="chat-float cf7">
+        <div className="msg">&ldquo;Watching you succeed from a distance makes me proud.&rdquo;</div>
+      </div>
+      <div className="chat-float cf8">
+        <div className="msg">&ldquo;I&rsquo;ve never met anyone who makes people feel seen the way you do.&rdquo;</div>
       </div>
 
       {/* Nav */}
@@ -101,7 +110,7 @@ export default async function Home() {
             </p>
             <Link href="/signup">
               <button className="card-btn-primary">
-                ✦ Get Your Link — Free
+                Get Your Link — Free
               </button>
             </Link>
             <Link href="/login">
