@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Playfair_Display, IBM_Plex_Mono, Lora } from "next/font/google";
 import { ToastProvider } from "@/components/toast";
+import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,10 +34,28 @@ const lora = Lora({
   style: ["normal", "italic"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#9B8EE8",
+};
+
 export const metadata: Metadata = {
   title: "WhatUPB — Say What You Really Think",
   description:
     "Get honest, anonymous messages from friends and followers. Share your link, get real talk. Abuse automatically blocked.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "WhatUPB",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
+  icons: {
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     title: "WhatUPB — Anonymous Messages",
     description:
@@ -64,6 +83,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${ibmPlexMono.variable} ${lora.variable} antialiased texture-overlay`}
       >
         <ToastProvider>{children}</ToastProvider>
+        <ServiceWorkerRegistrar />
       </body>
     </html>
   );

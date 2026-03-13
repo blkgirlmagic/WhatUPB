@@ -6,10 +6,17 @@
 //  Registration is gated to production in ServiceWorkerRegistrar.tsx.
 // ---------------------------------------------------------------------------
 
-const CACHE_NAME = "whatupb-v2";
+const CACHE_NAME = "whatupb-v3";
 
 // Assets to pre-cache during install
-const PRECACHE_ASSETS = ["/offline", "/favicon.png", "/icon-192.png"];
+const PRECACHE_ASSETS = [
+  "/offline",
+  "/",
+  "/favicon.png",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/apple-touch-icon.png",
+];
 
 // ── INSTALL ─────────────────────────────────────────────────────────────────
 
@@ -66,10 +73,19 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // ── Navigation (HTML pages) → network-first, offline fallback ──
+  // ── Navigation (HTML pages) → network-first, cache fallback, then offline ──
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request).catch(() => caches.match("/offline"))
+      fetch(request)
+        .then((response) => {
+          // Cache successful page loads for offline access
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request).then((cached) => cached || caches.match("/offline")))
     );
     return;
   }
