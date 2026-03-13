@@ -70,7 +70,7 @@ export default async function PublicProfile({
         {/* Profile Header */}
         <div className="anim-1" style={{ textAlign: "center", marginBottom: "32px", width: "min(520px, 100%)" }}>
           <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: "28px", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.5px", marginBottom: "6px" }}>
-            <span style={{ color: "var(--lav)" }}>@</span>{profile.username}
+            <span style={{ color: "#c9a84c" }}>@</span>{profile.username}
           </div>
           {moodStatus && (
             <div style={{ fontSize: "15px", fontStyle: "italic", fontWeight: 300, color: "var(--muted)", lineHeight: 1.5 }}>

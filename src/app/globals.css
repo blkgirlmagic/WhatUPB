@@ -243,7 +243,7 @@ body {
 .card-label {
   font-family: var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace;
   font-size: 10.5px; letter-spacing: 2.5px; text-transform: uppercase;
-  color: var(--lav); margin-bottom: 14px; font-weight: 500;
+  color: #c9a84c; margin-bottom: 14px; font-weight: 500;
 }
 .card-headline {
   font-family: var(--font-playfair), 'Playfair Display', serif;
@@ -391,7 +391,7 @@ body {
 .s-eyebrow {
   font-family: var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace;
   font-size: 10.5px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--lav); margin-bottom: 12px; text-align: center; font-weight: 500;
+  color: #c9a84c; margin-bottom: 12px; text-align: center; font-weight: 500;
 }
 .s-title {
   font-family: var(--font-playfair), 'Playfair Display', serif;
@@ -479,7 +479,7 @@ body {
 .footer-col-label {
   font-family: var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace;
   font-size: 10.5px; letter-spacing: 2.5px; text-transform: uppercase;
-  color: var(--lav); font-weight: 500;
+  color: #c9a84c; font-weight: 500;
 }
 .footer-links-row {
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center;

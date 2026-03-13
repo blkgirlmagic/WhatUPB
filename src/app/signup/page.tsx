@@ -160,7 +160,7 @@ const ageGateStyles = `
     padding: 5px 12px;
     font-size: 11px;
     font-weight: 500;
-    color: #7c3aed;
+    color: #c9a84c;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     margin-bottom: 20px;
@@ -170,7 +170,7 @@ const ageGateStyles = `
   .gate-badge-dot {
     width: 6px; height: 6px;
     border-radius: 50%;
-    background: #8b5cf6;
+    background: #c9a84c;
     animation: pulse 2s infinite;
   }
 
@@ -247,7 +247,7 @@ const ageGateStyles = `
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(139,92,246,0.5);
+    color: #c9a84c;
     margin-bottom: 6px;
   }
 
@@ -270,7 +270,7 @@ const ageGateStyles = `
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(26,26,46,0.35);
+    color: #c9a84c;
     margin-bottom: 10px;
   }
 
@@ -1004,16 +1004,16 @@ export default function SignUp() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#6b7280", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>Username</label>
+            <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#c9a84c", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>Username</label>
             <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="yourname" required className="input" style={{ background: "#ffffff", border: "1px solid #d1d5db", color: "#1a1a2e" }} />
-            <p className="text-xs mt-1.5" style={{ color: "#9ca3af" }}>Your link will be{" "}<span className="font-mono" style={{ color: "#8b5cf6" }}>whatupb.com/{username.toLowerCase() || "yourname"}</span></p>
+            <p className="text-xs mt-1.5" style={{ color: "#9ca3af" }}>Your link will be{" "}<span className="font-mono" style={{ color: "#c9a84c" }}>whatupb.com/{username.toLowerCase() || "yourname"}</span></p>
           </div>
           <div>
-            <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#6b7280", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>Email</label>
+            <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#c9a84c", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>Email</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" required className="input" style={{ background: "#ffffff", border: "1px solid #d1d5db", color: "#1a1a2e" }} />
           </div>
           <div>
-            <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#6b7280", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>Password</label>
+            <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#c9a84c", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>Password</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min 8 characters" required className="input" style={{ background: "#ffffff", border: "1px solid #d1d5db", color: "#1a1a2e" }} />
 
             {password.length > 0 && (

@@ -173,7 +173,7 @@ export default function MessageForm({
 
         {prompt && (
           <div style={{ marginBottom: "20px" }}>
-            <div style={{ fontSize: "10.5px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "var(--muted)", fontWeight: 500, marginBottom: "6px" }}>
+            <div style={{ fontSize: "10.5px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "#c9a84c", fontWeight: 500, marginBottom: "6px" }}>
               They want to know:
             </div>
             <div style={{ fontSize: "16px", fontStyle: "italic", fontWeight: 400, color: "var(--lav)", lineHeight: 1.5 }}>

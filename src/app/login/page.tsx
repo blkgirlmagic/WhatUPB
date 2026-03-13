@@ -191,7 +191,7 @@ function LoginForm() {
           <form onSubmit={handleSubmit}>
             {/* Email */}
             <div className="anim-4" style={{ marginBottom: "18px" }}>
-              <label style={{ fontSize: "10.5px", letterSpacing: "2px", textTransform: "uppercase" as const, color: "rgba(26,23,48,0.42)", fontWeight: 500, marginBottom: "7px", display: "block", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>
+              <label style={{ fontSize: "10.5px", letterSpacing: "2px", textTransform: "uppercase" as const, color: "#c9a84c", fontWeight: 500, marginBottom: "7px", display: "block", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>
                 Email
               </label>
               <input
@@ -210,7 +210,7 @@ function LoginForm() {
             {/* Password */}
             <div className="anim-4" style={{ marginBottom: "18px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "7px" }}>
-                <label style={{ fontSize: "10.5px", letterSpacing: "2px", textTransform: "uppercase" as const, color: "rgba(26,23,48,0.42)", fontWeight: 500, fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>
+                <label style={{ fontSize: "10.5px", letterSpacing: "2px", textTransform: "uppercase" as const, color: "#c9a84c", fontWeight: 500, fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>
                   Password
                 </label>
                 <Link href="/forgot-password" style={{ fontSize: "12.5px", color: "#9B8EE8", textDecoration: "none", transition: "color 0.2s" }}>

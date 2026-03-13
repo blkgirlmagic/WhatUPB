@@ -80,7 +80,7 @@ export default function ReactionsFeed({
       <div className="anim-3" style={{ width: "min(520px, 100%)", marginTop: "16px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "14px" }}>
           <div style={{ flex: 1, height: "1px", background: "rgba(155,142,232,0.12)" }} />
-          <div style={{ fontSize: "10.5px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "var(--muted)", fontWeight: 500, whiteSpace: "nowrap" }}>Reactions</div>
+          <div style={{ fontSize: "10.5px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "#c9a84c", fontWeight: 500, whiteSpace: "nowrap" }}>Reactions</div>
           <div style={{ flex: 1, height: "1px", background: "rgba(155,142,232,0.12)" }} />
         </div>
         <p style={{ textAlign: "center", fontSize: "14px", color: "var(--muted)", fontStyle: "italic", padding: "24px 0" }}>
@@ -94,7 +94,7 @@ export default function ReactionsFeed({
     <div className="anim-3" style={{ width: "min(520px, 100%)", marginTop: "16px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "14px" }}>
         <div style={{ flex: 1, height: "1px", background: "rgba(155,142,232,0.12)" }} />
-        <div style={{ fontSize: "10.5px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "var(--muted)", fontWeight: 500, whiteSpace: "nowrap" }}>Reactions</div>
+        <div style={{ fontSize: "10.5px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "#c9a84c", fontWeight: 500, whiteSpace: "nowrap" }}>Reactions</div>
         <div style={{ flex: 1, height: "1px", background: "rgba(155,142,232,0.12)" }} />
       </div>
 

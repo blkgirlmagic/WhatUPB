@@ -309,7 +309,7 @@ export default function SettingsClient({
     router.refresh();
   }
 
-  const sLabel: React.CSSProperties = { fontSize: "10px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "#9B8EE8", fontWeight: 600, marginBottom: "4px", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" };
+  const sLabel: React.CSSProperties = { fontSize: "10px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "#c9a84c", fontWeight: 600, marginBottom: "4px", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" };
   const sDesc: React.CSSProperties = { fontSize: "13px", color: "rgba(26,23,48,0.42)", lineHeight: 1.5, marginBottom: "16px" };
 
   return (
