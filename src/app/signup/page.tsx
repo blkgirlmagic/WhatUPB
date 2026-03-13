@@ -833,7 +833,7 @@ export default function SignUp() {
   if (phase === "age-gate") {
     if (blocked && !ageSuccess) {
       return (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center px-6" style={{ background: "linear-gradient(180deg, #fdfcfb 0%, #f5f2ed 100%)" }}>
+        <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px", background: "linear-gradient(180deg, #fdfcfb 0%, #f5f2ed 100%)" }}>
           <div className="text-center max-w-md">
             <div className="mb-6">
               <div style={{ width: 56, height: 56, margin: "0 auto", borderRadius: "50%", background: "rgba(139,92,246,0.08)", border: "1px solid rgba(139,92,246,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
