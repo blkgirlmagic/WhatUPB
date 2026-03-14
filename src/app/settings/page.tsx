@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getStripe } from "@/lib/stripe";
-import { CloudLogo } from "@/components/cloud-logo";
+
 import { DiagonalLines } from "@/components/diagonal-lines";
 import SettingsClient from "./settings-client";
 
@@ -91,7 +91,6 @@ export default async function Settings() {
       {/* NAV */}
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">
-          <div className="logo-mark"><CloudLogo /></div>
           WhatUPB
         </Link>
         <div className="nav-links">
