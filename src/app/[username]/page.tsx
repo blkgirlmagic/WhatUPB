@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 
 import { DiagonalLines } from "@/components/diagonal-lines";
+import { resolveTheme } from "@/lib/themes";
 import MessageForm from "./message-form";
 import ReactionsFeed from "./reactions-feed";
 import OwnerToolbar from "./owner-toolbar";
@@ -41,8 +42,10 @@ export default async function PublicProfile({
   const promptOfDay = (prof.prompt_of_day as string) ?? null;
   const moodStatus = (prof.mood_status as string) ?? null;
 
+  const { vars: themeVars } = resolveTheme(profile.link_theme);
+
   return (
-    <div className="landing-page">
+    <div className="landing-page" style={themeVars as React.CSSProperties}>
       {/* Bloom */}
       <div className="bloom" />
       <DiagonalLines />

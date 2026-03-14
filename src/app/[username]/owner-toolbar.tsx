@@ -45,23 +45,21 @@ export default function OwnerToolbar({
     <>
       {/* Floating pill at bottom center */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up">
-        <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md rounded-full px-2 py-1.5 shadow-lg" style={{ border: '1px solid rgba(201,168,76,0.3)' }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", background: "rgba(20,18,30,0.92)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", border: "1px solid rgba(201,168,76,0.3)", borderRadius: "9999px", padding: "6px", boxShadow: "0 4px 20px rgba(0,0,0,0.3)" }}>
           <Link
             href="/inbox"
-            className="flex items-center gap-1.5 text-xs text-white transition px-3 py-1.5 rounded-full"
-            style={{ border: '1px solid #c9a84c' }}
+            style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#fff", padding: "6px 14px", borderRadius: "9999px", border: "1.5px solid #c9a84c", background: "transparent", textDecoration: "none", transition: "all 0.2s" }}
           >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg style={{ width: "14px", height: "14px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M12 3v8.25m0 0l-3-3m3 3l3-3" />
             </svg>
             Inbox
           </Link>
           <Link
             href="/settings"
-            className="flex items-center gap-1.5 text-xs text-white transition px-3 py-1.5 rounded-full"
-            style={{ border: '1px solid #c9a84c' }}
+            style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#fff", padding: "6px 14px", borderRadius: "9999px", border: "1.5px solid #c9a84c", background: "transparent", textDecoration: "none", transition: "all 0.2s" }}
           >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg style={{ width: "14px", height: "14px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28z" />
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -69,11 +67,10 @@ export default function OwnerToolbar({
           </Link>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-1.5 text-xs transition px-3 py-1.5 rounded-full"
-            style={{ border: '1px solid #c9a84c', color: expanded ? '#fff' : '#fff', background: expanded ? '#c9a84c' : 'transparent' }}
+            style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#fff", padding: "6px 14px", borderRadius: "9999px", border: "1.5px solid #c9a84c", background: expanded ? "#c9a84c" : "transparent", cursor: "pointer", transition: "all 0.2s" }}
             type="button"
           >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg style={{ width: "14px", height: "14px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
             </svg>
             Edit

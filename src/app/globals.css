@@ -1367,7 +1367,7 @@ body {
   right: 0;
   z-index: 100;
   padding: 10px 24px 20px;
-  background: rgba(20,20,24,0.85);
+  background: rgba(20,18,30,0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(201,168,76,0.2);
@@ -1387,28 +1387,24 @@ body {
   padding: 8px 12px;
   border-radius: 12px;
   background: transparent;
-  border: 1px solid #c9a84c;
+  border: 1.5px solid #c9a84c;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: var(--font-lora), 'Lora', Georgia, serif;
-  color: #fff;
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  color: #ffffff;
   font-size: 11px;
   text-decoration: none;
 }
 
 .settings-bar-btn:hover {
   background: rgba(201,168,76,0.15);
-  color: #fff;
-}
-
-.settings-bar-btn svg {
-  stroke: #fff;
+  color: #ffffff;
 }
 
 .settings-bar-active {
   background: #c9a84c;
+  color: #ffffff;
   border-color: #c9a84c;
-  color: #fff;
 }
 
 .settings-bar-active:hover {
