@@ -5,7 +5,7 @@ import StudiosClient from "./studios-client";
 
 export const metadata = {
   title: "Studios — WhatUPB",
-  description: "Original audio series from WhatUPB. Unfiltered conversations, culture drops, and late-night deep dives.",
+  description: "Original video series from WhatUPB Studios. Watch MOTE, What Up B, and BETWEEN on TikTok @GetWhatUPB.",
 };
 
 export default async function Studios() {
@@ -67,7 +67,7 @@ export default async function Studios() {
             lineHeight: 1.2,
             marginBottom: "10px",
           }}>
-            Stories worth hearing.
+            Stories worth watching.
           </div>
           <p style={{
             fontSize: "15px",
@@ -75,8 +75,8 @@ export default async function Studios() {
             lineHeight: 1.6,
             maxWidth: "420px",
           }}>
-            Original audio series exploring honesty, identity, and the things
-            we never say out loud.
+            Original video series from WhatUPB Studios. Whimsy, mystery,
+            and anime \u2014 all on TikTok @GetWhatUPB.
           </p>
         </div>
 

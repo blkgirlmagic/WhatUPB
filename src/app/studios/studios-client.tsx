@@ -2,54 +2,68 @@
 
 import { useState } from "react";
 
-/* ── Episode data ──────────────────────────────────────── */
+/* ── Episode type ──────────────────────────────────────── */
 type Episode = {
   id: string;
+  ep: number;
   title: string;
-  subtitle: string;
-  duration: string;
+  synopsis: string;
   series: string;
-  audioSrc?: string;
-  thumbnail?: string;
+  tiktokUrl: string;
 };
+
+/* ── Series data ──────────────────────────────────────── */
+const TIKTOK = "https://www.tiktok.com/@GetWhatUPB";
 
 const SERIES = [
   {
-    key: "unfiltered",
-    title: "Unfiltered",
-    tagline: "Raw conversations about identity, honesty, and being seen.",
-    color: "#6b5ce7",
-    episodes: [
-      { id: "uf-01", title: "Why We Hide", subtitle: "The masks we wear online vs. IRL", duration: "12:34", series: "Unfiltered" },
-      { id: "uf-02", title: "The Anonymous Effect", subtitle: "What happens when identity is removed", duration: "14:08", series: "Unfiltered" },
-      { id: "uf-03", title: "Truth or Trauma", subtitle: "When honesty becomes a weapon", duration: "11:22", series: "Unfiltered" },
-    ],
-  },
-  {
-    key: "signal",
-    title: "Signal",
-    tagline: "Short-form drops on trends, culture, and what the internet won\u2019t say.",
+    key: "mote",
+    title: "MOTE",
+    genre: "Whimsical Series",
+    tagline: "A tiny speck of light drifts through impossible worlds \u2014 finding meaning in the smallest things.",
     color: "#c9a84c",
+    gradient: "linear-gradient(135deg, #c9a84c 0%, #e8d48b 50%, #c9a84c 100%)",
     episodes: [
-      { id: "sg-01", title: "Main Character Energy", subtitle: "Why everyone wants to be the protagonist", duration: "6:45", series: "Signal" },
-      { id: "sg-02", title: "Digital Boundaries", subtitle: "Protecting your peace in a connected world", duration: "8:12", series: "Signal" },
-      { id: "sg-03", title: "The Algorithm Knows", subtitle: "How platforms shape what you believe", duration: "7:58", series: "Signal" },
+      { id: "mote-01", ep: 1, title: "The First Drift", synopsis: "A mote of light awakens in an endless void and begins to drift toward something it cannot name.", series: "MOTE", tiktokUrl: TIKTOK },
+      { id: "mote-02", ep: 2, title: "The Garden of Echoes", synopsis: "MOTE discovers a garden where every flower replays a forgotten memory.", series: "MOTE", tiktokUrl: TIKTOK },
+      { id: "mote-03", ep: 3, title: "The Clockwork Rain", synopsis: "Tiny mechanical raindrops fall upward, and MOTE must decide which one to follow.", series: "MOTE", tiktokUrl: TIKTOK },
+      { id: "mote-04", ep: 4, title: "The Paper Sea", synopsis: "An origami ocean unfolds before MOTE, each wave carrying a whispered secret.", series: "MOTE", tiktokUrl: TIKTOK },
+      { id: "mote-05", ep: 5, title: "The Lantern Keeper", synopsis: "MOTE meets a creature whose only purpose is to carry light it cannot see.", series: "MOTE", tiktokUrl: TIKTOK },
     ],
   },
   {
-    key: "after-hours",
-    title: "After Hours",
-    tagline: "Late-night deep dives. Philosophy, feelings, and the spaces between.",
-    color: "#9B8EE8",
+    key: "whatupb",
+    title: "What Up B",
+    genre: "Mystery Series",
+    tagline: "Anonymous messages. Real consequences. Someone knows what you did \u2014 and they\u2019re not afraid to say it.",
+    color: "#6b5ce7",
+    gradient: "linear-gradient(135deg, #6b5ce7 0%, #9B8EE8 50%, #6b5ce7 100%)",
     episodes: [
-      { id: "ah-01", title: "3 AM Thoughts", subtitle: "The things you only admit in the dark", duration: "18:30", series: "After Hours" },
-      { id: "ah-02", title: "Letters Never Sent", subtitle: "Reading real anonymous confessions", duration: "22:15", series: "After Hours" },
-      { id: "ah-03", title: "The Space Between Us", subtitle: "Why distance makes honesty easier", duration: "16:44", series: "After Hours" },
+      { id: "wub-01", ep: 1, title: "The Link", synopsis: "A college student shares her anonymous link as a joke. The first message changes everything.", series: "What Up B", tiktokUrl: TIKTOK },
+      { id: "wub-02", ep: 2, title: "Seen", synopsis: "The messages keep coming \u2014 each one more specific, more personal, more impossible to ignore.", series: "What Up B", tiktokUrl: TIKTOK },
+      { id: "wub-03", ep: 3, title: "The Thread", synopsis: "She starts connecting the clues. Someone close to her is behind the messages.", series: "What Up B", tiktokUrl: TIKTOK },
+      { id: "wub-04", ep: 4, title: "Anonymous", synopsis: "Every suspect has a motive. Every friend has a secret. Trust becomes the real mystery.", series: "What Up B", tiktokUrl: TIKTOK },
+      { id: "wub-05", ep: 5, title: "Delivered", synopsis: "The final message arrives. The truth was never anonymous \u2014 it was just waiting.", series: "What Up B", tiktokUrl: TIKTOK },
+    ],
+  },
+  {
+    key: "between",
+    title: "BETWEEN",
+    genre: "Anime Series",
+    tagline: "Two frequencies collide across a dead galaxy. Connection isn\u2019t found \u2014 it\u2019s built.",
+    color: "#9B8EE8",
+    gradient: "linear-gradient(135deg, #1a1a2e 0%, #9B8EE8 50%, #1a1a2e 100%)",
+    episodes: [
+      { id: "btw-01", ep: 1, title: "Signal", synopsis: "KI broadcasts into the void. Something answers \u2014 not with words, but with a frequency that matches her own.", series: "BETWEEN", tiktokUrl: TIKTOK },
+      { id: "btw-02", ep: 2, title: "Resonance", synopsis: "The Other\u2019s signal grows stronger. KI realizes they\u2019re not just communicating \u2014 they\u2019re harmonizing.", series: "BETWEEN", tiktokUrl: TIKTOK },
+      { id: "btw-03", ep: 3, title: "The Dead Galaxy", synopsis: "They meet in a graveyard of stars. The amber light reveals what was lost \u2014 and what could be rebuilt.", series: "BETWEEN", tiktokUrl: TIKTOK },
+      { id: "btw-04", ep: 4, title: "Fracture", synopsis: "A dissonant frequency threatens to tear them apart. To stay connected, both must change.", series: "BETWEEN", tiktokUrl: TIKTOK },
+      { id: "btw-05", ep: 5, title: "The New Frequency", synopsis: "A signal neither could create alone cuts through the cosmos. The universe just got larger.", series: "BETWEEN", tiktokUrl: TIKTOK },
     ],
   },
 ];
 
-/* ── Styles ──────────────────────────────────────────── */
+/* ── Shared styles ──────────────────────────────────────── */
 const label: React.CSSProperties = {
   fontSize: "10px",
   letterSpacing: "2.5px",
@@ -69,31 +83,26 @@ const sectionTitle: React.CSSProperties = {
   marginBottom: "4px",
 };
 
-const tagline: React.CSSProperties = {
+const taglineStyle: React.CSSProperties = {
   fontSize: "13px",
   color: "rgba(26,23,48,0.5)",
   lineHeight: 1.5,
   marginBottom: "18px",
 };
 
+/* ── Component ──────────────────────────────────────────── */
 export default function StudiosClient() {
-  const [nowPlaying, setNowPlaying] = useState<Episode | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  function handlePlay(ep: Episode) {
-    setNowPlaying(ep);
-    setIsPlaying(true);
-  }
+  const [selected, setSelected] = useState<Episode | null>(null);
 
   return (
     <div>
-      {/* ── Player ── */}
+      {/* ── Now Watching hero ── */}
       <div
         style={{
-          background: nowPlaying
+          background: selected
             ? "linear-gradient(135deg, #1a1730 0%, #2d2450 100%)"
             : "linear-gradient(135deg, rgba(107,92,231,0.08) 0%, rgba(201,168,76,0.08) 100%)",
-          border: nowPlaying
+          border: selected
             ? "1px solid rgba(201,168,76,0.3)"
             : "1px solid rgba(107,92,231,0.15)",
           borderRadius: "20px",
@@ -104,8 +113,7 @@ export default function StudiosClient() {
           overflow: "hidden",
         }}
       >
-        {/* Decorative glow */}
-        {nowPlaying && (
+        {selected && (
           <div
             style={{
               position: "absolute",
@@ -120,10 +128,10 @@ export default function StudiosClient() {
           />
         )}
 
-        {nowPlaying ? (
+        {selected ? (
           <div style={{ position: "relative", zIndex: 1 }}>
             <div style={{ ...label, color: "#c9a84c", marginBottom: "10px" }}>
-              Now Playing
+              Now Watching
             </div>
             <div
               style={{
@@ -135,16 +143,10 @@ export default function StudiosClient() {
                 marginBottom: "4px",
               }}
             >
-              {nowPlaying.title}
+              {selected.title}
             </div>
-            <div
-              style={{
-                fontSize: "13px",
-                color: "rgba(255,255,255,0.5)",
-                marginBottom: "4px",
-              }}
-            >
-              {nowPlaying.subtitle}
+            <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>
+              {selected.synopsis}
             </div>
             <div
               style={{
@@ -154,69 +156,34 @@ export default function StudiosClient() {
                 marginBottom: "18px",
               }}
             >
-              {nowPlaying.series} &middot; {nowPlaying.duration}
+              {selected.series} &middot; Episode {selected.ep}
             </div>
 
-            {/* Progress bar */}
-            <div
+            <a
+              href={selected.tiktokUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
-                width: "100%",
-                height: "3px",
-                borderRadius: "2px",
-                background: "rgba(255,255,255,0.1)",
-                marginBottom: "14px",
-                position: "relative",
-                overflow: "hidden",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "10px 22px",
+                borderRadius: "50px",
+                border: "1.5px solid #c9a84c",
+                background: "rgba(201,168,76,0.12)",
+                color: "#c9a84c",
+                fontSize: "13px",
+                fontWeight: 600,
+                fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace",
+                textDecoration: "none",
+                transition: "all 0.2s",
               }}
             >
-              <div
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  top: 0,
-                  height: "100%",
-                  width: isPlaying ? "35%" : "0%",
-                  background: "linear-gradient(90deg, #c9a84c, #6b5ce7)",
-                  borderRadius: "2px",
-                  transition: "width 0.3s",
-                }}
-              />
-            </div>
-
-            {/* Controls */}
-            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-              <button
-                onClick={() => setIsPlaying(!isPlaying)}
-                style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "50%",
-                  border: "1.5px solid #c9a84c",
-                  background: "rgba(201,168,76,0.12)",
-                  color: "#c9a84c",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.2s",
-                }}
-                type="button"
-              >
-                {isPlaying ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <rect x="6" y="4" width="4" height="16" rx="1" />
-                    <rect x="14" y="4" width="4" height="16" rx="1" />
-                  </svg>
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                )}
-              </button>
-              <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>
-                {isPlaying ? "0:00" : "--:--"} / {nowPlaying.duration}
-              </div>
-            </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              Watch on TikTok
+            </a>
           </div>
         ) : (
           <div style={{ textAlign: "center", padding: "16px 0" }}>
@@ -234,7 +201,7 @@ export default function StudiosClient() {
               }}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(107,92,231,0.4)" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375v0c0-.621.504-1.125 1.125-1.125h9.75c.621 0 1.125.504 1.125 1.125v0c0 .621.504 1.125 1.125 1.125h1.5m0 0a1.125 1.125 0 001.125-1.125M3.375 19.5h-1.5A1.125 1.125 0 01.75 18.375v0M21.75 18.375V5.625A1.125 1.125 0 0020.625 4.5H3.375A1.125 1.125 0 002.25 5.625v12.75" />
               </svg>
             </div>
             <div
@@ -246,10 +213,10 @@ export default function StudiosClient() {
                 marginBottom: "6px",
               }}
             >
-              Select an episode to play
+              Select an episode to watch
             </div>
             <div style={{ fontSize: "12px", color: "rgba(26,23,48,0.25)" }}>
-              Tap any card below to start listening
+              Tap any card below to preview
             </div>
           </div>
         )}
@@ -260,25 +227,25 @@ export default function StudiosClient() {
         <div
           key={series.key}
           className={`anim-${si + 2}`}
-          style={{ marginBottom: "40px" }}
+          style={{ marginBottom: "44px" }}
         >
-          <div style={label}>{series.key.replace("-", " ")}</div>
+          <div style={label}>{series.genre}</div>
           <div style={sectionTitle}>{series.title}</div>
-          <div style={tagline}>{series.tagline}</div>
+          <div style={taglineStyle}>{series.tagline}</div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {series.episodes.map((ep) => {
-              const isActive = nowPlaying?.id === ep.id;
+              const isActive = selected?.id === ep.id;
               return (
                 <button
                   key={ep.id}
-                  onClick={() => handlePlay(ep)}
+                  onClick={() => setSelected(ep)}
                   type="button"
                   style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "14px",
-                    padding: "16px 18px",
+                    padding: "14px 16px",
                     borderRadius: "16px",
                     border: isActive
                       ? `1.5px solid ${series.color}`
@@ -295,42 +262,57 @@ export default function StudiosClient() {
                       : "0 1px 4px rgba(100,90,160,0.06)",
                   }}
                 >
-                  {/* Play icon */}
+                  {/* Thumbnail */}
                   <div
                     style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "50%",
+                      width: "52px",
+                      height: "52px",
+                      borderRadius: "12px",
                       flexShrink: 0,
+                      background: series.gradient,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      background: isActive ? series.color : "rgba(107,92,231,0.08)",
-                      color: isActive ? "#fff" : series.color,
-                      transition: "all 0.2s",
+                      position: "relative",
+                      overflow: "hidden",
+                      boxShadow: isActive ? `0 2px 8px ${series.color}40` : "0 1px 4px rgba(0,0,0,0.1)",
                     }}
                   >
-                    {isActive && isPlaying ? (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <rect x="6" y="4" width="4" height="16" rx="1" />
-                        <rect x="14" y="4" width="4" height="16" rx="1" />
-                      </svg>
-                    ) : (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    )}
+                    <div
+                      style={{
+                        fontSize: "10px",
+                        fontWeight: 700,
+                        fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace",
+                        color: series.key === "between" ? "#fff" : "#1a1730",
+                        opacity: 0.7,
+                        letterSpacing: "0.5px",
+                      }}
+                    >
+                      EP{ep.ep}
+                    </div>
                   </div>
 
                   {/* Info */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
+                        fontSize: "10px",
+                        fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace",
+                        color: isActive ? series.color : "rgba(26,23,48,0.35)",
+                        letterSpacing: "1px",
+                        textTransform: "uppercase",
+                        marginBottom: "3px",
+                      }}
+                    >
+                      Episode {ep.ep}
+                    </div>
+                    <div
+                      style={{
                         fontFamily: "var(--font-playfair), 'Playfair Display', serif",
                         fontSize: "15px",
                         fontWeight: 700,
                         color: isActive ? series.color : "#1a1730",
-                        marginBottom: "2px",
+                        marginBottom: "3px",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
@@ -342,26 +324,41 @@ export default function StudiosClient() {
                       style={{
                         fontSize: "12px",
                         color: "rgba(26,23,48,0.45)",
+                        lineHeight: 1.4,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
                         overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
                       }}
                     >
-                      {ep.subtitle}
+                      {ep.synopsis}
                     </div>
                   </div>
 
-                  {/* Duration */}
-                  <div
+                  {/* Watch button */}
+                  <a
+                    href={ep.tiktokUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
                     style={{
-                      fontSize: "11px",
-                      fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace",
-                      color: isActive ? series.color : "rgba(26,23,48,0.35)",
                       flexShrink: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "50%",
+                      background: isActive ? series.color : "rgba(107,92,231,0.08)",
+                      color: isActive ? "#fff" : series.color,
+                      transition: "all 0.2s",
+                      textDecoration: "none",
                     }}
                   >
-                    {ep.duration}
-                  </div>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </a>
                 </button>
               );
             })}
@@ -377,8 +374,8 @@ export default function StudiosClient() {
           borderTop: "1px solid rgba(107,92,231,0.1)",
         }}
       >
-        <div style={{ ...label, marginBottom: "14px" }}>Follow WhatUPB</div>
-        <div style={{ display: "flex", justifyContent: "center", gap: "12px" }}>
+        <div style={{ ...label, marginBottom: "14px" }}>Watch on</div>
+        <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
           {/* TikTok */}
           <a
             href="https://www.tiktok.com/@GetWhatUPB"
@@ -395,7 +392,7 @@ export default function StudiosClient() {
               color: "#1a1730",
               fontSize: "13px",
               fontWeight: 600,
-              fontFamily: "var(--font-lora), 'Lora', Georgia, serif",
+              fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace",
               textDecoration: "none",
               transition: "all 0.2s",
             }}
@@ -422,7 +419,7 @@ export default function StudiosClient() {
               color: "#1a1730",
               fontSize: "13px",
               fontWeight: 600,
-              fontFamily: "var(--font-lora), 'Lora', Georgia, serif",
+              fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace",
               textDecoration: "none",
               transition: "all 0.2s",
             }}
