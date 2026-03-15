@@ -35,7 +35,8 @@ export default async function Inbox() {
 
   const isPremium = premiumData?.is_premium ?? false;
 
-  const MESSAGE_CAP = 15;
+  const FREE_VISIBLE = 5;
+  const FREE_BLUR_EXTRA = 10; // show 10 more blurred so curiosity builds
   const PREMIUM_PAGE_SIZE = 100;
 
   // Get total count for free users
@@ -48,14 +49,14 @@ export default async function Inbox() {
     totalCount = count ?? 0;
   }
 
-  // Free users: cap at 15 most recent. Premium: 100.
+  // Free users: fetch visible + blurred batch. Premium: 100.
   let query = supabase
     .from("messages")
     .select("*")
     .eq("recipient_id", user.id)
     .order("created_at", { ascending: false });
 
-  query = query.limit(isPremium ? PREMIUM_PAGE_SIZE : MESSAGE_CAP);
+  query = query.limit(isPremium ? PREMIUM_PAGE_SIZE : FREE_VISIBLE + FREE_BLUR_EXTRA);
 
   const { data } = await query;
   const messages = data;
@@ -89,7 +90,7 @@ export default async function Inbox() {
             <p style={{ fontSize: "14px", color: "var(--muted)" }}>
               {isPremium
                 ? `${messageCount} anonymous message${messageCount !== 1 ? "s" : ""}`
-                : `${messageCount} of ${totalCount} message${totalCount !== 1 ? "s" : ""}`}
+                : `${Math.min(messageCount, FREE_VISIBLE)} of ${totalCount} message${totalCount !== 1 ? "s" : ""}`}
             </p>
           ) : (
             <p style={{ fontSize: "14px", color: "var(--muted)" }}>Waiting for messages&hellip;</p>
@@ -125,6 +126,7 @@ export default async function Inbox() {
               initialMessages={messages}
               isPremium={isPremium}
               totalCount={isPremium ? (messages?.length ?? 0) : totalCount}
+              freeVisible={FREE_VISIBLE}
             />
           </div>
         )}
