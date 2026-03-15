@@ -13,4 +13,7 @@ Sentry.init({
 
   // Don't send events in development
   enabled: process.env.NODE_ENV === "production",
+
+  // Suppress noisy console output
+  debug: false,
 });

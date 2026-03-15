@@ -41,11 +41,10 @@ export default async function PublicProfile({
   const prof = profile as Record<string, unknown>;
   const promptOfDay = (prof.prompt_of_day as string) ?? null;
   const moodStatus = (prof.mood_status as string) ?? null;
-
-  const { vars: themeVars } = resolveTheme(profile.link_theme);
+  const { name: themeName, vars: themeVars } = resolveTheme(profile.link_theme);
 
   return (
-    <div className="landing-page" style={themeVars as React.CSSProperties}>
+    <div className="landing-page" data-theme={themeName} style={themeVars as React.CSSProperties}>
       {/* Bloom */}
       <div className="bloom" />
       <DiagonalLines />

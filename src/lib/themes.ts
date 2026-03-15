@@ -2,6 +2,10 @@
  * Theme CSS variable overrides.
  * Maps the saved `link_theme` value to CSS custom property overrides
  * that cascade to every child element via inline style.
+ *
+ * These override both the component-level vars (--background, --surface-*)
+ * AND the landing-page vars (--bg, --ink, --muted, --lav, --faint, etc.)
+ * so themes work correctly on the public profile page.
  */
 export const THEMES: Record<string, Record<string, string>> = {
   dark: {
@@ -20,6 +24,8 @@ export const THEMES: Record<string, Record<string, string>> = {
     "--glass-border": "rgba(255,255,255,0.15)",
     "--line-col": "rgba(201,168,76,0.18)",
     "--line-bright": "rgba(201,168,76,0.32)",
+    "--background": "#1a1a2e",
+    "--foreground": "#ededed",
     "--surface-1": "rgba(255,255,255,0.06)",
     "--surface-2": "rgba(255,255,255,0.10)",
     "--surface-3": "rgba(255,255,255,0.15)",
@@ -42,6 +48,8 @@ export const THEMES: Record<string, Record<string, string>> = {
     "--glass-border": "rgba(0,0,0,0.08)",
     "--line-col": "rgba(201,168,76,0.18)",
     "--line-bright": "rgba(201,168,76,0.32)",
+    "--background": "#ffffff",
+    "--foreground": "#1a1a2e",
     "--surface-1": "rgba(0, 0, 0, 0.04)",
     "--surface-2": "rgba(0, 0, 0, 0.07)",
     "--surface-3": "rgba(0, 0, 0, 0.10)",
@@ -64,6 +72,8 @@ export const THEMES: Record<string, Record<string, string>> = {
     "--glass-border": "rgba(124,58,237,0.15)",
     "--line-col": "rgba(201,168,76,0.18)",
     "--line-bright": "rgba(201,168,76,0.32)",
+    "--background": "#ede9f6",
+    "--foreground": "#3b1f6e",
     "--surface-1": "#ffffff",
     "--surface-2": "rgba(124,58,237,0.08)",
     "--surface-3": "rgba(124,58,237,0.12)",

@@ -16,8 +16,12 @@ export default withSentryConfig(nextConfig, {
   // Upload wider set of source maps for better stack traces
   widenClientFileUpload: true,
 
-  // Suppress source-map upload logs outside CI
-  silent: !process.env.CI,
+  // Suppress all Sentry build-time logs
+  silent: true,
+
+  // Only upload source maps in CI (skip in local dev & Vercel preview)
+  disableServerWebpackPlugin: !process.env.CI,
+  disableClientWebpackPlugin: !process.env.CI,
 
   // Automatically tree-shake Sentry debug statements to reduce bundle size
   bundleSizeOptimizations: {
