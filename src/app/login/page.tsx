@@ -135,7 +135,7 @@ function LoginForm() {
         <div className="nav-links">
           <a href="/#how-it-works">How it works</a>
           <a href="/#safety">Safety</a>
-          <a href="#">Blog</a>
+          <Link href="/studios">Studios</Link>
           <Link href="/signup" className="nav-cta">Sign Up</Link>
         </div>
       </nav>

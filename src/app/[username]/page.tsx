@@ -58,7 +58,7 @@ export default async function PublicProfile({
         <div className="nav-links">
           <a href="/#how-it-works">How it works</a>
           <a href="/#safety">Safety</a>
-          <a href="#">Blog</a>
+          <Link href="/studios">Studios</Link>
           {isOwner ? (
             <Link href="/inbox" className="nav-cta">Go to Inbox</Link>
           ) : (

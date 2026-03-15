@@ -53,7 +53,7 @@ export default async function Home() {
         <div className="nav-links">
           <a href="#how-it-works">How it works</a>
           <Link href="/safety">Safety</Link>
-          <a href="#">Blog</a>
+          <Link href="/studios">Studios</Link>
           {user ? (
             <Link href="/inbox" className="nav-cta">
               Go to Inbox
