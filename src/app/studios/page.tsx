@@ -91,7 +91,7 @@ export default async function Studios() {
               <span className="footer-wordmark">WhatUPB</span>
             </div>
             <p className="footer-tagline">
-              Built for honest conversations.<br />No human review of messages &mdash; ever.
+              Built for honest conversations.<br />Messages are moderated for safety.
             </p>
           </div>
           <div className="footer-links-col">
@@ -107,7 +107,7 @@ export default async function Studios() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>&copy; 2025 WhatUPB. All rights reserved.</span>
+          <span>&copy; 2026 WhatUPB. All rights reserved.</span>
           <span>whatupb.com</span>
         </div>
       </footer>

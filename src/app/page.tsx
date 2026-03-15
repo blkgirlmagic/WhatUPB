@@ -221,7 +221,7 @@ export default async function Home() {
             <p className="footer-tagline">
               Built for honest conversations.
               <br />
-              No human review of messages — ever.
+              Messages are moderated for safety.
             </p>
           </div>
           <div className="footer-links-col">
@@ -237,7 +237,7 @@ export default async function Home() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© 2025 WhatUPB. All rights reserved.</span>
+          <span>© 2026 WhatUPB. All rights reserved.</span>
           <span>whatupb.com</span>
         </div>
       </footer>
