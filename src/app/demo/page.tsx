@@ -1,23 +1,19 @@
-import type { Metadata } from "next";
-import DemoClient from "./demo-client";
-
-export const metadata: Metadata = {
+export const metadata = {
   title: "WhatUPB — Say What You Really Think",
   description: "Anonymous messages. No account needed. Share your link publicly.",
-  openGraph: {
-    title: "WhatUPB — Say What You Really Think",
-    description: "Anonymous messages. No account needed. Share your link publicly.",
-    url: "https://whatupb.com/demo",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@GetWhatUPB",
-    title: "WhatUPB — Say What You Really Think",
-    description: "Anonymous messages. No account needed. Share your link publicly.",
-  },
 };
 
 export default function DemoPage() {
-  return <DemoClient />;
+  return (
+    <iframe
+      src="/demo-static.html"
+      style={{
+        width: "100vw",
+        height: "100vh",
+        border: "none",
+        display: "block",
+      }}
+      title="WhatUPB Demo"
+    />
+  );
 }
