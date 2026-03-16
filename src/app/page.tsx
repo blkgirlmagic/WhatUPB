@@ -54,6 +54,7 @@ export default async function Home() {
           <a href="#how-it-works">How it works</a>
           <Link href="/safety">Safety</Link>
           <Link href="/studios">Studios</Link>
+          <Link href="/blog">Blog</Link>
           {user ? (
             <Link href="/inbox" className="nav-cta">
               Go to Inbox
