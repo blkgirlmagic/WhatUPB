@@ -2,6 +2,12 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Let search-engine crawlers through without age gate or auth checks
+  const ua = request.headers.get('user-agent') || ''
+  if (/googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebot|twitterbot|linkedinbot|crawler|spider|bot\b/i.test(ua)) {
+    return NextResponse.next()
+  }
+
   // Skip middleware entirely for webhook routes — they need the raw body
   // untouched for signature verification and have no auth cookies.
   if (request.nextUrl.pathname.startsWith('/api/webhooks/')) {
