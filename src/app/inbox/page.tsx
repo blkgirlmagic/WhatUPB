@@ -2,31 +2,22 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import MessageList from "./message-list";
-
 import { DiagonalLines } from "@/components/diagonal-lines";
 
 export default async function Inbox() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
 
-  // Get username
   const { data: profile } = await supabase
     .from("profiles")
     .select("username")
     .eq("id", user.id)
     .single();
 
-  if (!profile) {
-    redirect("/login");
-  }
+  if (!profile) redirect("/login");
 
-  // Try to get premium status
   const { data: premiumData } = await supabase
     .from("profiles")
     .select("is_premium")
@@ -36,10 +27,9 @@ export default async function Inbox() {
   const isPremium = premiumData?.is_premium ?? false;
 
   const FREE_VISIBLE = 5;
-  const FREE_BLUR_EXTRA = 10; // show 10 more blurred so curiosity builds
+  const FREE_BLUR_EXTRA = 10;
   const PREMIUM_PAGE_SIZE = 100;
 
-  // Get total count for free users
   let totalCount = 0;
   if (!isPremium) {
     const { count } = await supabase
@@ -49,7 +39,6 @@ export default async function Inbox() {
     totalCount = count ?? 0;
   }
 
-  // Free users: fetch visible + blurred batch. Premium: 100.
   let query = supabase
     .from("messages")
     .select("id, content, created_at, coin_ticker, signal_type")
@@ -69,11 +58,10 @@ export default async function Inbox() {
 
       {/* NAV */}
       <nav className="landing-nav">
-        <Link href="/" className="nav-logo">
-          CoinRep
-        </Link>
+        <Link href="/" className="nav-logo">CoinRep</Link>
         <div className="nav-links">
-          <Link href="/inbox" style={{ color: "var(--ink)", fontWeight: 500 }}>Inbox</Link>
+          <Link href="/inbox" style={{ color: "var(--ink)", fontWeight: 500 }}>Signal Feed</Link>
+          <Link href="/news">News</Link>
           <Link href={`/${profile.username}`}>My Profile</Link>
           <Link href="/settings" className="nav-cta">Settings</Link>
         </div>
@@ -81,6 +69,7 @@ export default async function Inbox() {
 
       {/* PAGE */}
       <div className="inbox-page-wrap">
+
         {/* Header */}
         <div className="anim-1" style={{ marginBottom: "28px" }}>
           <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: "28px", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.5px", marginBottom: "6px" }}>
@@ -106,7 +95,7 @@ export default async function Inbox() {
               </svg>
             </div>
             <p style={{ color: "var(--ink)", fontWeight: 600, fontSize: "16px", marginBottom: "6px" }}>No signals yet</p>
-            <p style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "24px", maxWidth: "280px", margin: "0 auto 24px", lineHeight: 1.6 }}>
+            <p style={{ color: "var(--muted)", fontSize: "14px", maxWidth: "280px", margin: "0 auto 24px", lineHeight: 1.6 }}>
               Share your link to start receiving coin signals.
             </p>
             <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(255,255,255,0.6)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.8)", borderRadius: "12px", padding: "10px 16px", marginBottom: "24px" }}>
@@ -114,7 +103,7 @@ export default async function Inbox() {
                 coinrep.com/{profile.username}
               </code>
             </div>
-            <div style={{ display: "block" }}>
+            <div>
               <Link href="/settings" className="card-btn-primary" style={{ maxWidth: "240px", margin: "0 auto" }}>
                 Share Your Link
               </Link>
@@ -138,7 +127,7 @@ export default async function Inbox() {
           <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M12 3v8.25m0 0l-3-3m3 3l3-3" />
           </svg>
-          Inbox
+          Feed
         </Link>
         <Link href={`/${profile.username}`} className="settings-bar-btn">
           <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -152,4 +141,8 @@ export default async function Inbox() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           Settings
-        <
+        </Link>
+      </div>
+    </div>
+  );
+}

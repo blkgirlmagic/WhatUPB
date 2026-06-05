@@ -665,4 +665,93 @@ export default function MessageList({
                   type="button"
                 >
                   {option.label}
-           
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              value={reportDetails}
+              onChange={(e) => setReportDetails(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Escape") { setShowReportModal(false); setReportReason(""); setReportDetails(""); } }}
+              placeholder="Additional details (optional)"
+              maxLength={200}
+              rows={2}
+              style={{ width: "100%", padding: "12px 15px", borderRadius: "12px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(255,255,255,0.8)", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "14px", color: "#1A1730", outline: "none", resize: "none", minHeight: "60px", marginBottom: "4px" }}
+              disabled={submittingReport}
+            />
+            <span style={{ fontSize: "11px", color: "var(--muted)", display: "block", marginBottom: "16px" }}>{reportDetails.length}/200</span>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
+              <button onClick={() => { setShowReportModal(false); setReportReason(""); setReportDetails(""); }} style={{ fontSize: "13px", color: "var(--muted)", background: "none", border: "none", cursor: "pointer", padding: "6px 12px" }} type="button">Cancel</button>
+              <button
+                onClick={handleReportSubmit}
+                disabled={submittingReport || !reportReason}
+                style={{
+                  background: submittingReport || !reportReason ? "rgba(245,158,11,0.3)" : "#f59e0b",
+                  color: "#fff",
+                  padding: "8px 20px",
+                  fontSize: "13px",
+                  borderRadius: "10px",
+                  fontWeight: 600,
+                  border: "none",
+                  cursor: submittingReport || !reportReason ? "not-allowed" : "pointer",
+                  transition: "all 0.2s",
+                  fontFamily: "var(--font-lora), 'Lora', Georgia, serif",
+                }}
+                type="button"
+              >
+                {submittingReport ? "Reporting\u2026" : "Report & Remove"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+                  {option.label}
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              value={reportDetails}
+              onChange={(e) => setReportDetails(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Escape") { setShowReportModal(false); setReportReason(""); setReportDetails(""); } }}
+              placeholder="Additional details (optional)"
+              maxLength={200}
+              rows={2}
+              style={{ width: "100%", padding: "12px 15px", borderRadius: "12px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(255,255,255,0.8)", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "14px", color: "#1A1730", outline: "none", resize: "none", minHeight: "60px", marginBottom: "4px" }}
+              disabled={submittingReport}
+            />
+            <span style={{ fontSize: "11px", color: "var(--muted)", display: "block", marginBottom: "16px" }}>{reportDetails.length}/200</span>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
+              <button onClick={() => { setShowReportModal(false); setReportReason(""); setReportDetails(""); }} style={{ fontSize: "13px", color: "var(--muted)", background: "none", border: "none", cursor: "pointer", padding: "6px 12px" }} type="button">Cancel</button>
+              <button
+                onClick={handleReportSubmit}
+                disabled={submittingReport || !reportReason}
+                style={{
+                  background: submittingReport || !reportReason ? "rgba(245,158,11,0.3)" : "#f59e0b",
+                  color: "#fff",
+                  padding: "8px 20px",
+                  fontSize: "13px",
+                  borderRadius: "10px",
+                  fontWeight: 600,
+                  border: "none",
+                  cursor: submittingReport || !reportReason ? "not-allowed" : "pointer",
+                  transition: "all 0.2s",
+                  fontFamily: "var(--font-lora), 'Lora', Georgia, serif",
+                }}
+                type="button"
+              >
+                {submittingReport ? "Reporting…" : "Report & Remove"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
