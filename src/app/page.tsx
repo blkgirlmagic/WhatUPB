@@ -40,7 +40,7 @@ export default async function Home() {
       {/* Top bar */}
       <div style={{ borderBottom: "1px solid #27272a", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#09090b", position: "sticky", top: 0, zIndex: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <span style={{ color: "#22c55e", fontWeight: 700, fontSize: "15px", letterSpacing: "0.08em" }}>\u25b6 COINREP</span>
+          <span style={{ color: "#22c55e", fontWeight: 700, fontSize: "15px", letterSpacing: "0.08em" }}>{"\u25b6 COINREP"}</span>
           <span style={{ color: "#52525b", fontSize: "11px" }}>MEME COIN REPUTATION TERMINAL</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -68,9 +68,9 @@ export default async function Home() {
         </div>
 
         <div style={{ display: "flex", gap: "20px", marginBottom: "20px", fontSize: "11px" }}>
-          <span><span style={{ color: "#22c55e" }}>\u25cf</span> BULLISH &ge; 60</span>
-          <span><span style={{ color: "#f59e0b" }}>\u25cf</span> NEUTRAL 40&ndash;60</span>
-          <span><span style={{ color: "#ef4444" }}>\u25cf</span> BEARISH &le; 40</span>
+          <span><span style={{ color: "#22c55e" }}>{"\u25cf"}</span> BULLISH &ge; 60</span>
+          <span><span style={{ color: "#f59e0b" }}>{"\u25cf"}</span> NEUTRAL 40&ndash;60</span>
+          <span><span style={{ color: "#ef4444" }}>{"\u25cf"}</span> BEARISH &le; 40</span>
         </div>
 
         {coins.length === 0 ? (
