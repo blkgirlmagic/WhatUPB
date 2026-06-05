@@ -18,7 +18,7 @@ export default function ForgotPassword() {
 
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(
       email,
-      { redirectTo: "https://whatupb.com/reset-password" }
+      { redirectTo: "https://coinrep.com/reset-password" }
     );
 
     if (resetError) {
@@ -39,7 +39,7 @@ export default function ForgotPassword() {
             href="/"
             className="text-2xl font-bold bg-gradient-to-r from-denim-200 to-white bg-clip-text text-transparent"
           >
-            WhatUPB
+            CoinRep
           </Link>
         </div>
 

@@ -746,10 +746,10 @@ export default function SignUp() {
     const dob: AgeData = { month: m, day: d, year: y };
 
     if (age < 18) {
-      localStorage.setItem("whatupb_age_blocked", "1");
+      localStorage.setItem("coinrep_age_blocked", "1");
       document.cookie = "age_blocked_client=1; path=/; max-age=315360000; SameSite=Strict";
       setAgeCookie(dob);
-      setAgeError("Thanks for stopping by! WhatUPB is for 18+ only. Come back when you're of age \u2014 we'll be here.");
+      setAgeError("Thanks for stopping by! CoinRep is for 18+ only. Come back when you're of age \u2014 we'll be here.");
       setBlocked(true);
       return;
     }
@@ -858,7 +858,7 @@ export default function SignUp() {
                 transition: "all 0.25s ease",
               }}
             >
-              &larr; Back to WhatUPB
+              &larr; Back to CoinRep
             </a>
           </div>
         </div>
@@ -874,7 +874,7 @@ export default function SignUp() {
           <div className="gate-success-overlay">
             <div className="gate-success-icon">&#10003;</div>
             <div className="gate-success-text">Welcome In</div>
-            <p style={{ color: "rgba(26,26,46,0.4)", fontSize: "14px" }}>Taking you to WhatUPB&hellip;</p>
+            <p style={{ color: "rgba(26,26,46,0.4)", fontSize: "14px" }}>Taking you to CoinRep&hellip;</p>
           </div>
         </>
       );
@@ -983,7 +983,7 @@ export default function SignUp() {
       <div className="w-full max-w-sm animate-welcome-glow">
         <div className="animate-fade-in-up">
           <div className="text-center mb-8">
-            <Link href="/" className="text-2xl font-bold" style={{ color: "#1a1a2e" }}>WhatUPB</Link>
+            <Link href="/" className="text-2xl font-bold" style={{ color: "#1a1a2e" }}>CoinRep</Link>
           </div>
           <h1 className="text-2xl font-bold mb-1 text-center tracking-tight" style={{ color: "#1a1a2e" }}>Create your link</h1>
           <p className="text-sm text-center mb-8" style={{ color: "#6b7280" }}>Takes 30 seconds. Start getting anonymous messages.</p>
@@ -1004,7 +1004,7 @@ export default function SignUp() {
           <div>
             <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#c9a84c", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>Username</label>
             <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="yourname" required className="input" style={{ background: "#ffffff", border: "1px solid #d1d5db", color: "#1a1a2e" }} />
-            <p className="text-xs mt-1.5" style={{ color: "#9ca3af" }}>Your link will be{" "}<span className="font-mono" style={{ color: "#c9a84c" }}>whatupb.com/{username.toLowerCase() || "yourname"}</span></p>
+            <p className="text-xs mt-1.5" style={{ color: "#9ca3af" }}>Your link will be{" "}<span className="font-mono" style={{ color: "#c9a84c" }}>coinrep.com/{username.toLowerCase() || "yourname"}</span></p>
           </div>
           <div>
             <label className="text-xs font-medium uppercase tracking-wider mb-1.5 block" style={{ color: "#c9a84c", fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace" }}>Email</label>

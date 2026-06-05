@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-//  Political content filter for WhatUPB anonymous messages.
+//  Political content filter for CoinRep anonymous messages.
 //
 //  Blocks targeted political messaging — slogans, calls to action, partisan
 //  rhetoric, and geopolitical conflict statements.  Casual mentions of news

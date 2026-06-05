@@ -93,7 +93,7 @@ export async function POST(request: Request) {
 
     // 4. Create checkout session
     const origin =
-      process.env.NEXT_PUBLIC_APP_URL || "https://whatupb.com";
+      process.env.NEXT_PUBLIC_APP_URL || "https://coinrep.com";
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,

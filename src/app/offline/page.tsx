@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Offline \u2014 WhatUPB",
+  title: "Offline \u2014 CoinRep",
 };
 
 export default function OfflinePage() {
@@ -26,7 +26,7 @@ export default function OfflinePage() {
           You&apos;re Offline
         </h1>
         <p className="text-zinc-400 text-sm mb-8 leading-relaxed">
-          WhatUPB needs an internet connection to send and receive messages.
+          CoinRep needs an internet connection to send and receive messages.
           Check your connection and try again.
         </p>
 

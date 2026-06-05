@@ -5,32 +5,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: "https://whatupb.com",
+      url: "https://coinrep.com",
       lastModified,
       changeFrequency: "weekly",
     },
     {
-      url: "https://whatupb.com/login",
+      url: "https://coinrep.com/login",
       lastModified,
       changeFrequency: "weekly",
     },
     {
-      url: "https://whatupb.com/signup",
+      url: "https://coinrep.com/signup",
       lastModified,
       changeFrequency: "weekly",
     },
     {
-      url: "https://whatupb.com/privacy",
+      url: "https://coinrep.com/privacy",
       lastModified,
       changeFrequency: "weekly",
     },
     {
-      url: "https://whatupb.com/terms",
+      url: "https://coinrep.com/terms",
       lastModified,
       changeFrequency: "weekly",
     },
     {
-      url: "https://whatupb.com/content-policy",
+      url: "https://coinrep.com/content-policy",
       lastModified,
       changeFrequency: "weekly",
     },

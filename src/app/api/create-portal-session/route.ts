@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
   try {
     const stripe = getStripe();
     const origin =
-      process.env.NEXT_PUBLIC_APP_URL || "https://whatupb.com";
+      process.env.NEXT_PUBLIC_APP_URL || "https://coinrep.com";
 
     const session = await stripe.billingPortal.sessions.create({
       customer: profile.stripe_customer_id,

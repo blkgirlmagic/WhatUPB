@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-//  Server-side content moderation for WhatUPB anonymous messages.
+//  Server-side content moderation for CoinRep anonymous messages.
 //
 //  Primary: HIVE TEXT MODERATION API (V2 production)
 //    POST https://api.thehive.ai/api/v2/task/sync

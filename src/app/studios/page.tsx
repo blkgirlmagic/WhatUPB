@@ -4,8 +4,8 @@ import { DiagonalLines } from "@/components/diagonal-lines";
 import StudiosClient from "./studios-client";
 
 export const metadata = {
-  title: "Studios — WhatUPB",
-  description: "Original video series from WhatUPB Studios. Watch MOTE, What Up B, and BETWEEN on TikTok @GetWhatUPB.",
+  title: "Studios — CoinRep",
+  description: "Original video series from CoinRep Studios. Watch MOTE, What Up B, and BETWEEN on TikTok @GetCoinRep.",
 };
 
 export default async function Studios() {
@@ -22,7 +22,7 @@ export default async function Studios() {
       {/* NAV */}
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">
-          WhatUPB
+          CoinRep
         </Link>
         <div className="nav-links">
           <a href="/#how-it-works">How it works</a>
@@ -55,7 +55,7 @@ export default async function Studios() {
             fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace",
             marginBottom: "8px",
           }}>
-            WhatUPB Studios
+            CoinRep Studios
           </div>
           <div style={{
             fontFamily: "var(--font-playfair), 'Playfair Display', serif",
@@ -75,8 +75,8 @@ export default async function Studios() {
             lineHeight: 1.6,
             maxWidth: "420px",
           }}>
-            Original video series from WhatUPB Studios. Whimsy, mystery,
-            and anime \u2014 all on TikTok @GetWhatUPB.
+            Original video series from CoinRep Studios. Whimsy, mystery,
+            and anime \u2014 all on TikTok @GetCoinRep.
           </p>
         </div>
 
@@ -88,7 +88,7 @@ export default async function Studios() {
         <div className="footer-top">
           <div className="footer-brand">
             <div className="footer-logo-row">
-              <span className="footer-wordmark">WhatUPB</span>
+              <span className="footer-wordmark">CoinRep</span>
             </div>
             <p className="footer-tagline">
               Built for honest conversations.<br />Messages are moderated for safety.
@@ -107,8 +107,8 @@ export default async function Studios() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>&copy; 2026 WhatUPB. All rights reserved.</span>
-          <span>whatupb.com</span>
+          <span>&copy; 2026 CoinRep. All rights reserved.</span>
+          <span>coinrep.com</span>
         </div>
       </footer>
     </div>

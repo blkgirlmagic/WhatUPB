@@ -80,7 +80,7 @@ export default function SettingsClient({
   const supabase = createClient();
   const { toast } = useToast();
 
-  const profileUrl = `https://whatupb.com/${username}`;
+  const profileUrl = `https://coinrep.com/${username}`;
 
   function handleCopy() {
     navigator.clipboard.writeText(profileUrl);
@@ -94,7 +94,7 @@ export default function SettingsClient({
       try {
         await navigator.share({
           title: "Send me anonymous messages!",
-          text: "Send me an anonymous message on WhatUPB",
+          text: "Send me an anonymous message on CoinRep",
           url: profileUrl,
         });
         toast("Shared!");
@@ -126,7 +126,7 @@ export default function SettingsClient({
       );
       if (!res.ok) throw new Error(`Server returned ${res.status}`);
       const blob = await res.blob();
-      const file = new File([blob], `whatupb-${username}.png`, {
+      const file = new File([blob], `coinrep-${username}.png`, {
         type: "image/png",
       });
       if (
@@ -135,7 +135,7 @@ export default function SettingsClient({
       ) {
         try {
           await navigator.share({
-            title: "WhatUPB",
+            title: "CoinRep",
             text: `Send me anonymous messages! ${profileUrl}`,
             files: [file],
           });
@@ -148,7 +148,7 @@ export default function SettingsClient({
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `whatupb-${username}.png`;
+      a.download = `coinrep-${username}.png`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -320,7 +320,7 @@ export default function SettingsClient({
         <div style={{ background: "#EDEAF4", border: "1px solid rgba(190,182,220,0.55)", borderRadius: "14px", padding: "20px 20px 6px", textAlign: "center", boxShadow: "0 2px 8px rgba(100,90,160,0.08), inset 0 1px 0 rgba(255,255,255,0.7)" }}>
           <div style={{ fontSize: "10px", letterSpacing: "2.5px", textTransform: "uppercase" as const, color: "rgba(26,23,48,0.35)", marginBottom: "10px" }}>Your personal link</div>
           <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: "20px", fontWeight: 700, letterSpacing: "-0.3px", lineHeight: 1.3, marginBottom: "4px" }}>
-            <span style={{ color: "rgba(26,23,48,0.28)" }}>whatupb.com/</span>
+            <span style={{ color: "rgba(26,23,48,0.28)" }}>coinrep.com/</span>
             <span style={{ color: "#9B8EE8" }}>{username}</span>
           </div>
           <div style={{ fontSize: "12px", color: "rgba(26,23,48,0.32)", marginBottom: "18px" }}>This is your personal link &mdash; share it anywhere.</div>
@@ -334,7 +334,7 @@ export default function SettingsClient({
       {/* SHARE YOUR LINK */}
       <div className="anim-3 settings-card">
         <div style={sLabel}>Share Your Link</div>
-        <div style={sDesc}>whatupb.com/{username}</div>
+        <div style={sDesc}>coinrep.com/{username}</div>
         <button onClick={handleNativeShare} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "9px", width: "100%", padding: "14px", borderRadius: "12px", border: "none", cursor: "pointer", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "15px", fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #9B8EE8 0%, #7C6FCC 100%)", boxShadow: "0 4px 16px rgba(124,111,204,0.4), inset 0 1px 0 rgba(255,255,255,0.2)", transition: "all 0.2s", marginBottom: "10px" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" /></svg>
           Share My Link
@@ -354,7 +354,7 @@ export default function SettingsClient({
           </button>
         </div>
         <div style={{ marginTop: "10px", fontSize: "11px", color: "rgba(26,23,48,0.45)", lineHeight: "1.4", textAlign: "center" }}>
-          {"\u26A0\uFE0F"} Post publicly only &mdash; sharing your link privately removes sender anonymity and defeats the purpose of WhatUPB.
+          {"\u26A0\uFE0F"} Post publicly only &mdash; sharing your link privately removes sender anonymity and defeats the purpose of CoinRep.
         </div>
       </div>
 

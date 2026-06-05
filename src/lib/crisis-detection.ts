@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-//  Client-side crisis detection for WhatUPB.
+//  Client-side crisis detection for CoinRep.
 //
 //  Detects self-directed distress keywords in message text and returns a
 //  boolean flag.  This is a passive UI helper — it does NOT block messages,

@@ -117,7 +117,7 @@ async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
 function hashIP(ip: string): string {
   return crypto
     .createHash("sha256")
-    .update(ip + "_whatupb_rate_limit")
+    .update(ip + "_coinrep_rate_limit")
     .digest("hex")
     .substring(0, 16);
 }
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { recipientId, content, turnstileToken } = body;
+    const { recipientId, content, turnstileToken, coinTicker, signalType } = body;
 
     // 1. Parameter validation
     if (
@@ -203,7 +203,7 @@ export async function POST(request: NextRequest) {
       // Fire-and-forget: log to blocked_messages table
       logBlockedMessage(politicalResult.reason!, ipHash).catch(() => {});
       return NextResponse.json(
-        { error: "WhatUPB is for personal messages only. Political content isn't allowed here." },
+        { error: "CoinRep is for personal messages only. Political content isn't allowed here." },
         { status: 403 }
       );
     }
@@ -312,11 +312,13 @@ export async function POST(request: NextRequest) {
 
     // 7. Call the SECURITY DEFINER function
     const supabase = getSupabase();
-    const { data, error } = await supabase.rpc("send_anonymous_message", {
+    const { data, error } = await supabase.rpc("send_anonymous_signal", {
       p_recipient_id: recipientId,
       p_content: content.trim(),
       p_ip_hash: ipHash,
       p_turnstile_token: turnstileToken || "",
+      p_coin_ticker: coinTicker ?? null,
+      p_signal_type: signalType ?? null,
     });
 
     if (error) {

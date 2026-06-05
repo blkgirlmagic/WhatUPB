@@ -1,247 +1,206 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
 
-import { DiagonalLines } from "@/components/diagonal-lines";
-import { ChatParallax } from "@/components/chat-parallax";
+type CoinRow = {
+  coin_ticker: string;
+  rep_score: number;
+  bullish_count: number;
+  bearish_count: number;
+  chaos_count: number;
+  last_calculated: string;
+  coins: {
+    name: string;
+    chain: string;
+  } | null;
+};
+
+function scoreColor(score: number): string {
+  if (score >= 60) return "#22c55e"; // green
+  if (score <= 40) return "#ef4444"; // red
+  return "#f59e0b";                   // amber
+}
+
+function scoreBar(score: number): string {
+  const filled = Math.round(score / 10);
+  return "█".repeat(filled) + "░".repeat(10 - filled);
+}
+
+function padEnd(str: string, len: number): string {
+  return str.length >= len ? str.slice(0, len) : str + " ".repeat(len - str.length);
+}
 
 export default async function Home() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const { data: rows } = await supabase
+    .from("coin_rep_scores")
+    .select("coin_ticker, rep_score, bullish_count, bearish_count, chaos_count, last_calculated, coins(name, chain)")
+    .order("rep_score", { ascending: false })
+    .limit(20);
+
+  const coins: CoinRow[] = (rows ?? []) as CoinRow[];
+  const now = new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC";
 
   return (
-    <div className="landing-page">
-      <div className="bloom" />
-      <DiagonalLines />
-      <ChatParallax />
-
-      {/* Decorative watermark */}
-      <div className="watermark-qb" aria-hidden="true">?B?</div>
-
-      {/* Floating chat messages */}
-      <div className="chat-float cf1">
-        <div className="msg">&ldquo;I&rsquo;ve never told you this but you saved me that year.&rdquo;</div>
-      </div>
-      <div className="chat-float cf2">
-        <div className="msg">&ldquo;You&rsquo;re the only person I trust completely.&rdquo;</div>
-      </div>
-      <div className="chat-float cf3">
-        <div className="msg">&ldquo;That meeting could&rsquo;ve been an email.&rdquo;</div>
-      </div>
-      <div className="chat-float cf4">
-        <div className="msg">&ldquo;I think about our conversation every single day.&rdquo;</div>
-      </div>
-      <div className="chat-float cf5">
-        <div className="msg">&ldquo;You deserved better than what they gave you.&rdquo;</div>
-      </div>
-      <div className="chat-float cf6">
-        <div className="msg">&ldquo;I was wrong. I should have said that sooner.&rdquo;</div>
-      </div>
-      <div className="chat-float cf7">
-        <div className="msg">&ldquo;Watching you succeed from a distance makes me proud.&rdquo;</div>
-      </div>
-      <div className="chat-float cf8">
-        <div className="msg">&ldquo;I&rsquo;ve never met anyone who makes people feel seen the way you do.&rdquo;</div>
-      </div>
-
-      {/* Nav */}
-      <nav className="landing-nav">
-        <Link href="/" className="nav-logo">
-          WhatUPB
-        </Link>
-        <div className="nav-links">
-          <a href="#how-it-works">How it works</a>
-          <Link href="/safety">Safety</Link>
-          <Link href="/studios">Studios</Link>
-          <Link href="/blog">Blog</Link>
-          {user ? (
-            <Link href="/inbox" className="nav-cta">
-              Go to Inbox
-            </Link>
-          ) : (
-            <Link href="/signup" className="nav-cta">
-              Create Account
-            </Link>
-          )}
+    <div style={{
+      minHeight: "100vh",
+      background: "#09090b",
+      color: "#d4d4d8",
+      fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', 'Courier New', monospace",
+      padding: "0",
+    }}>
+      {/* Top bar */}
+      <div style={{
+        borderBottom: "1px solid #27272a",
+        padding: "12px 24px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        background: "#09090b",
+        position: "sticky",
+        top: 0,
+        zIndex: 10,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <span style={{ color: "#22c55e", fontWeight: 700, fontSize: "15px", letterSpacing: "0.08em" }}>
+            ▶ COINREP
+          </span>
+          <span style={{ color: "#52525b", fontSize: "11px" }}>MEME COIN REPUTATION TERMINAL</span>
         </div>
-      </nav>
-
-      {/* Hero */}
-      <section className="hero">
-        <div className="hero-wordmark">WhatUPB</div>
-        <p className="hero-sub">
-          Say what people <em>really</em> think — anonymously.
-          <br />
-          No handles. No trace. Just honest vibes.
-        </p>
-
-        <div className="cta-row">
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           {user ? (
             <>
-              <Link href="/inbox" className="btn-ghost">
-                Go to Inbox <span className="arrow">↗</span>
+              <Link href="/news" style={{ color: "#a1a1aa", fontSize: "12px", textDecoration: "none", padding: "5px 12px", border: "1px solid #3f3f46", borderRadius: "4px", transition: "all 0.15s" }}>
+                News
               </Link>
-              <Link href="/settings" className="btn-filled">
-                Settings <span className="arrow">↗</span>
+              <Link href="/inbox" style={{ color: "#a1a1aa", fontSize: "12px", textDecoration: "none", padding: "5px 12px", border: "1px solid #3f3f46", borderRadius: "4px", transition: "all 0.15s" }}>
+                Signal Feed
+              </Link>
+              <Link href="/settings" style={{ color: "#22c55e", fontSize: "12px", textDecoration: "none", padding: "5px 12px", border: "1px solid #22c55e44", borderRadius: "4px", transition: "all 0.15s" }}>
+                Settings
               </Link>
             </>
           ) : (
             <>
-              <Link href="/login" className="btn-ghost">
-                Log In <span className="arrow">↗</span>
+              <Link href="/news" style={{ color: "#a1a1aa", fontSize: "12px", textDecoration: "none", padding: "5px 12px", border: "1px solid #3f3f46", borderRadius: "4px" }}>
+                News
               </Link>
-              <Link href="/signup" className="btn-filled">
-                Get Your Link — Free <span className="arrow">↗</span>
+              <Link href="/login" style={{ color: "#a1a1aa", fontSize: "12px", textDecoration: "none", padding: "5px 12px", border: "1px solid #3f3f46", borderRadius: "4px" }}>
+                Login
+              </Link>
+              <Link href="/signup" style={{ color: "#09090b", fontSize: "12px", fontWeight: 700, textDecoration: "none", padding: "5px 14px", background: "#22c55e", borderRadius: "4px", border: "none" }}>
+                Get Started
               </Link>
             </>
           )}
         </div>
+      </div>
 
-        {/* Glass card */}
-        <div className="glass-card">
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <div className="card-label">Your anonymous link</div>
-            <div className="card-headline">
-              Hear the truth people
-              <br />
-              never say out loud.
+      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "32px 24px" }}>
+
+        {/* Header block */}
+        <div style={{ marginBottom: "32px" }}>
+          <div style={{ color: "#52525b", fontSize: "11px", marginBottom: "8px", letterSpacing: "0.1em" }}>
+            $ coinrep --leaderboard --sort=rep_score --limit=20
+          </div>
+          <div style={{ color: "#22c55e", fontSize: "22px", fontWeight: 700, letterSpacing: "0.04em", marginBottom: "4px" }}>
+            MEME COIN REP SCORES
+          </div>
+          <div style={{ color: "#52525b", fontSize: "11px" }}>
+            Last updated: {now} &nbsp;│&nbsp; Community signals: bullish / bearish / chaos
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div style={{ display: "flex", gap: "20px", marginBottom: "20px", fontSize: "11px" }}>
+          <span><span style={{ color: "#22c55e" }}>●</span> BULLISH ≥ 60</span>
+          <span><span style={{ color: "#f59e0b" }}>●</span> NEUTRAL 40–60</span>
+          <span><span style={{ color: "#ef4444" }}>●</span> BEARISH ≤ 40</span>
+        </div>
+
+        {/* Table */}
+        {coins.length === 0 ? (
+          <div style={{ borderTop: "1px solid #27272a", paddingTop: "40px", textAlign: "center" }}>
+            <div style={{ color: "#52525b", fontSize: "13px", marginBottom: "12px" }}>
+              ░░ NO SIGNAL DATA YET ░░
             </div>
-            <p className="card-body">
-              Share your link anywhere. Friends send honest thoughts — zero
-              fear, zero trace. AI blocks every abusive message before you ever
-              see it.
-            </p>
-            <Link href="/signup">
-              <button className="card-btn-primary">
-                Get Your Link — Free
-              </button>
+            <div style={{ color: "#3f3f46", fontSize: "11px", marginBottom: "24px" }}>
+              Be the first to submit a signal.
+            </div>
+            <Link href="/signup" style={{ color: "#22c55e", fontSize: "12px", textDecoration: "none", padding: "8px 20px", border: "1px solid #22c55e44", borderRadius: "4px" }}>
+              Create Account →
             </Link>
-            <Link href="/login">
-              <button className="card-btn-secondary">Log In</button>
-            </Link>
-            <div className="trust-row">
-              <div className="trust-item">
-                <div className="t-check">✓</div>
-                <span>Abuse auto-blocked</span>
-              </div>
-              <div className="trust-item">
-                <div className="t-check">✓</div>
-                <span>Fully anonymous</span>
-              </div>
-              <div className="trust-item">
-                <div className="t-check">✓</div>
-                <span>30 seconds</span>
-              </div>
+          </div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            {/* Column headers */}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "36px 72px 1fr 120px 60px 60px 60px 90px",
+              gap: "0 12px",
+              padding: "6px 12px",
+              borderBottom: "1px solid #27272a",
+              fontSize: "10px",
+              color: "#52525b",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase" as const,
+            }}>
+              <span>#</span>
+              <span>TICKER</span>
+              <span>NAME</span>
+              <span>SCORE</span>
+              <span style={{ color: "#22c55e" }}>BULL</span>
+              <span style={{ color: "#ef4444" }}>BEAR</span>
+              <span style={{ color: "#f59e0b" }}>CHAOS</span>
+              <span>CHAIN</span>
             </div>
-          </div>
-        </div>
 
-        <div className="scroll-hint">
-          <div className="scroll-line" />
-        </div>
-      </section>
+            {coins.map((coin, i) => {
+              const color = scoreColor(coin.rep_score);
+              const bar = scoreBar(coin.rep_score);
+              const total = coin.bullish_count + coin.bearish_count + coin.chaos_count;
+              return (
+                <div
+                  key={coin.coin_ticker}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "36px 72px 1fr 120px 60px 60px 60px 90px",
+                    gap: "0 12px",
+                    padding: "10px 12px",
+                    borderBottom: "1px solid #18181b",
+                    fontSize: "13px",
+                    alignItems: "center",
+                    transition: "background 0.1s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "#18181b")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                >
+                  <span style={{ color: "#52525b", fontSize: "11px" }}>{i + 1}</span>
+                  <span style={{ color, fontWeight: 700, letterSpacing: "0.05em" }}>
+                    {coin.coin_ticker}
+                  </span>
+                  <span style={{ color: "#a1a1aa", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
+                    {coin.coins?.name ?? "—"}
+                  </span>
+                  <div style={{ display: "flex", flexDirection: "column" as const, gap: "2px" }}>
+                    <span style={{ color, fontWeight: 700, fontSize: "13px" }}>
+                      {Number(coin.rep_score).toFixed(1)}
+                    </span>
+                    <span style={{ color, fontSize: "9px", letterSpacing: "0.05em", opacity: 0.7 }}>
+                      {bar}
+                    </span>
+                  </div>
+                  <span style={{ color: "#22c55e" }}>{coin.bullish_count.toLocaleString()}</span>
+                  <span style={{ color: "#ef4444" }}>{coin.bearish_count.toLocaleString()}</span>
+                  <span style={{ color: "#f59e0b" }}>{coin.chaos_count.toLocaleString()}</span>
+                  <span style={{ color: "#52525b", fontSize: "11px" }}>
+                    {coin.coins?.chain ?? "—"}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
-      {/* Stats */}
-      <div className="stats-strip">
-        <div className="stat">
-          <div className="stat-num">50K+</div>
-          <div className="stat-label">Messages sent</div>
-        </div>
-        <div className="stat-sep" />
-        <div className="stat">
-          <div className="stat-num">12K+</div>
-          <div className="stat-label">Links created</div>
-        </div>
-        <div className="stat-sep" />
-        <div className="stat">
-          <div className="stat-num">99%</div>
-          <div className="stat-label">Abuse blocked</div>
-        </div>
-        <div className="stat-sep" />
-        <div className="stat">
-          <div className="stat-num">Zero</div>
-          <div className="stat-label">Identity leaks</div>
-        </div>
-      </div>
-
-      {/* How it works */}
-      <div id="how-it-works" className="section">
-        <div className="s-eyebrow">How It Works</div>
-        <div className="s-title">Three steps to real talk.</div>
-        <div className="steps-grid">
-          <div className="step-card">
-            <div className="step-num">01</div>
-            <div className="step-title">Create Your Link</div>
-            <p className="step-body">
-              Get your unique WhatUPB link in under 30 seconds. No card, no
-              setup.
-            </p>
-          </div>
-          <div className="step-card">
-            <div className="step-num">02</div>
-            <div className="step-title">Share Everywhere</div>
-            <p className="step-body">
-              Drop it in your bio, story, WhatsApp. Let people know the door
-              is open.
-            </p>
-          </div>
-          <div className="step-card">
-            <div className="step-num">03</div>
-            <div className="step-title">Read the Truth</div>
-            <p className="step-body">
-              Messages come in moderated by AI in real time. No hate — just
-              honest feedback.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom CTA */}
-      <div className="bottom-cta">
-        <div className="bc-title">
-          Ready for honest
-          <br />
-          conversations?
-        </div>
-        <p className="bc-sub">
-          Join thousands already hearing what people really think.
-        </p>
-        <Link href="/signup" className="bc-btn">
-          Create Your Free Link <span className="arrow">↗</span>
-        </Link>
-      </div>
-
-      {/* Footer */}
-      <footer className="landing-footer">
-        <div className="footer-top">
-          <div className="footer-brand">
-            <div className="footer-logo-row">
-              <span className="footer-wordmark">WhatUPB</span>
-            </div>
-            <p className="footer-tagline">
-              Built for honest conversations.
-              <br />
-              Messages are moderated for safety.
-            </p>
-          </div>
-          <div className="footer-links-col">
-            <div className="footer-col-label">Links</div>
-            <div className="footer-links-row">
-              <Link href="/">Home</Link>
-              <Link href="/privacy">Privacy</Link>
-              <Link href="/terms">Terms</Link>
-              <Link href="/content-policy">Content Policy</Link>
-              <Link href="/safety">Safety</Link>
-              <Link href="/support">Support</Link>
-            </div>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <span>© 2026 WhatUPB. All rights reserved.</span>
-          <span>whatupb.com</span>
-        </div>
-      </footer>
-    </div>
-  );
-}
+     

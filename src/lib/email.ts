@@ -41,14 +41,14 @@ export async function sendNewMessageNotification(
   console.log("[email] RESEND_API_KEY is set, preparing email...");
 
   const token = generateUnsubscribeToken(recipientId);
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://whatupb.com";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://coinrep.com";
   const unsubscribeUrl = `${baseUrl}/api/unsubscribe?uid=${recipientId}&token=${token}`;
   const inboxUrl = `${baseUrl}/inbox`;
-  const profileUrl = username ? `https://whatupb.com/${username}` : "https://whatupb.com";
-  const profileDisplay = username ? `whatupb.com/${username}` : "whatupb.com";
+  const profileUrl = username ? `https://coinrep.com/${username}` : "https://coinrep.com";
+  const profileDisplay = username ? `coinrep.com/${username}` : "coinrep.com";
 
   const { data: emailResult, error: emailError } = await resend.emails.send({
-    from: "WhatUPB <notifications@whatupb.com>",
+    from: "CoinRep <notifications@coinrep.com>",
     to: recipientEmail,
     subject: "Someone left you a message",
     headers: {
@@ -70,7 +70,7 @@ export async function sendNewMessageNotification(
           <!-- Logo -->
           <tr>
             <td align="center" style="padding-bottom:32px;">
-              <span style="font-size:24px;font-weight:700;color:#b9a3e0;letter-spacing:0.05em;">WhatUPB</span>
+              <span style="font-size:24px;font-weight:700;color:#b9a3e0;letter-spacing:0.05em;">CoinRep</span>
             </td>
           </tr>
           <!-- Single Card -->
@@ -80,7 +80,7 @@ export async function sendNewMessageNotification(
                 Someone left you a message
               </p>
               <p style="color:#71717a;font-size:14px;margin:0 0 28px;line-height:1.5;">
-                You received an anonymous message on WhatUPB.
+                You received an anonymous message on CoinRep.
               </p>
               <a href="${inboxUrl}" style="display:inline-block;background:linear-gradient(135deg,#7c6aac,#9b7fd4);color:#fff;font-weight:600;font-size:15px;padding:12px 32px;border-radius:12px;text-decoration:none;">
                 Read Message
@@ -92,7 +92,7 @@ export async function sendNewMessageNotification(
                 Want more messages?
               </p>
               <p style="color:#71717a;font-size:13px;margin:0 0 16px;">
-                Share your WhatUPB link:
+                Share your CoinRep link:
               </p>
               <a href="${profileUrl}" style="display:inline-block;background-color:#1c1c24;border:1px solid #2a2a35;border-radius:10px;padding:12px 24px;color:#b9a3e0;font-size:16px;font-weight:700;text-decoration:none;letter-spacing:0.02em;">
                 ${profileDisplay}
@@ -109,7 +109,7 @@ export async function sendNewMessageNotification(
           <tr>
             <td align="center" style="padding-top:24px;">
               <p style="color:#3f3f46;font-size:12px;margin:0;line-height:1.5;">
-                You're receiving this because you have an account on WhatUPB.<br>
+                You're receiving this because you have an account on CoinRep.<br>
                 <a href="${unsubscribeUrl}" style="color:#9b7fd4;text-decoration:underline;">Unsubscribe</a> from email notifications.
               </p>
             </td>

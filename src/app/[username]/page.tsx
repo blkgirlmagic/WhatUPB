@@ -61,7 +61,7 @@ export default async function PublicProfile({
       {/* NAV */}
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">
-          WhatUPB
+          CoinRep
         </Link>
         <div className="nav-links">
           <a href="/#how-it-works">How it works</a>
@@ -151,7 +151,7 @@ export default async function PublicProfile({
         <div className="footer-top">
           <div className="footer-brand">
             <div className="footer-logo-row">
-              <span className="footer-wordmark">WhatUPB</span>
+              <span className="footer-wordmark">CoinRep</span>
             </div>
             <p className="footer-tagline">
               Built for honest conversations.<br />Messages are moderated for safety.
@@ -170,8 +170,8 @@ export default async function PublicProfile({
           </div>
         </div>
         <div className="footer-bottom">
-          <span>&copy; 2026 WhatUPB. All rights reserved.</span>
-          <span>whatupb.com</span>
+          <span>&copy; 2026 CoinRep. All rights reserved.</span>
+          <span>coinrep.com</span>
         </div>
       </footer>
 

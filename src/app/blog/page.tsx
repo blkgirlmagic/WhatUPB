@@ -3,14 +3,14 @@ import Link from "next/link";
 import { DiagonalLines } from "@/components/diagonal-lines";
 
 export const metadata: Metadata = {
-  title: "Blog — WhatUPB",
-  description: "Updates, stories, and behind-the-scenes from the WhatUPB team.",
+  title: "Blog — CoinRep",
+  description: "Updates, stories, and behind-the-scenes from the CoinRep team.",
 };
 
 const POSTS = [
   {
-    slug: "why-we-built-whatupb",
-    title: "Why We Built WhatUPB",
+    slug: "why-we-built-coinrep",
+    title: "Why We Built CoinRep",
     excerpt:
       "The internet is full of noise. We wanted to build a place where people could say what they really think — anonymously, safely, and without judgment.",
     date: "Mar 15, 2026",
@@ -21,14 +21,14 @@ const POSTS = [
     slug: "safety-first-how-moderation-works",
     title: "Safety First: How Moderation Works",
     excerpt:
-      "Every message on WhatUPB passes through real-time content filters, crisis detection, and abuse prevention — before it ever reaches your inbox.",
+      "Every message on CoinRep passes through real-time content filters, crisis detection, and abuse prevention — before it ever reaches your inbox.",
     date: "Mar 12, 2026",
     tag: "Safety",
     tagColor: "#10b981",
   },
   {
     slug: "introducing-studios",
-    title: "Introducing WhatUPB Studios",
+    title: "Introducing CoinRep Studios",
     excerpt:
       "We're launching original video series — MOTE, What Up B, and BETWEEN — stories born from the anonymous messages people actually send.",
     date: "Mar 10, 2026",
@@ -64,7 +64,7 @@ export default function BlogPage() {
       {/* NAV */}
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">
-          WhatUPB
+          CoinRep
         </Link>
         <div className="nav-links">
           <a href="/#how-it-works">How it works</a>
@@ -82,7 +82,7 @@ export default function BlogPage() {
             color: "#c9a84c", fontWeight: 600,
             fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace",
           }}>
-            WhatUPB Blog
+            CoinRep Blog
           </div>
         </div>
         <h1 className="anim-1" style={{
@@ -156,7 +156,7 @@ export default function BlogPage() {
         <div className="footer-top">
           <div className="footer-brand">
             <div className="footer-logo-row">
-              <span className="footer-wordmark">WhatUPB</span>
+              <span className="footer-wordmark">CoinRep</span>
             </div>
             <p className="footer-tagline">
               Built for honest conversations.<br />Messages are moderated for safety.
@@ -175,8 +175,8 @@ export default function BlogPage() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>&copy; 2026 WhatUPB. All rights reserved.</span>
-          <span>whatupb.com</span>
+          <span>&copy; 2026 CoinRep. All rights reserved.</span>
+          <span>coinrep.com</span>
         </div>
       </footer>
     </div>

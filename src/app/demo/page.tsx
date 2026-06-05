@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "WhatUPB — Say What You Really Think",
+  title: "CoinRep — Say What You Really Think",
   description: "Anonymous messages. No account needed. Share your link publicly.",
 };
 
@@ -13,7 +13,7 @@ export default function DemoPage() {
         border: "none",
         display: "block",
       }}
-      title="WhatUPB Demo"
+      title="CoinRep Demo"
     />
   );
 }

@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Content Policy — WhatUPB",
-  description: "What is and isn't allowed on WhatUPB.",
+  title: "Content Policy — CoinRep",
+  description: "What is and isn't allowed on CoinRep.",
 };
 
 export default function ContentPolicy() {
@@ -10,7 +10,7 @@ export default function ContentPolicy() {
     <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #fdfcfb 0%, #f5f2ed 100%)" }}>
       {/* Nav */}
       <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", maxWidth: 900, margin: "0 auto" }}>
-        <Link href="/" style={{ fontWeight: 700, fontSize: 20, color: "#1a1a2e", textDecoration: "none", fontFamily: "'Playfair Display', serif" }}>WhatUPB</Link>
+        <Link href="/" style={{ fontWeight: 700, fontSize: 20, color: "#1a1a2e", textDecoration: "none", fontFamily: "'Playfair Display', serif" }}>CoinRep</Link>
         <div style={{ display: "flex", gap: 24, alignItems: "center", fontSize: 14 }}>
           <Link href="/privacy" style={{ color: "#6b7280", textDecoration: "none" }}>Privacy</Link>
           <Link href="/terms" style={{ color: "#6b7280", textDecoration: "none" }}>Terms</Link>
@@ -21,7 +21,7 @@ export default function ContentPolicy() {
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 24px 80px" }}>
         {/* Header */}
         <div style={{ marginBottom: 48 }}>
-          <Link href="/" style={{ fontSize: 13, color: "#8b5cf6", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>&larr; Back to WhatUPB</Link>
+          <Link href="/" style={{ fontSize: 13, color: "#8b5cf6", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>&larr; Back to CoinRep</Link>
           <h1 style={{ fontSize: 32, fontWeight: 700, color: "#1a1a2e", marginTop: 20, letterSpacing: "-0.02em" }}>Content Policy</h1>
           <p style={{ color: "#9ca3af", fontSize: 13, marginTop: 8 }}>Effective date: March 8, 2026</p>
         </div>
@@ -30,13 +30,13 @@ export default function ContentPolicy() {
         <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
           <section>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
-              WhatUPB is built for honest, anonymous conversations. To keep the platform safe for everyone, all users must follow this Content Policy. This applies to all messages sent through WhatUPB, whether anonymous or not.
+              CoinRep is built for honest, anonymous conversations. To keep the platform safe for everyone, all users must follow this Content Policy. This applies to all messages sent through CoinRep, whether anonymous or not.
             </p>
           </section>
 
           <section>
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>1. What&apos;s Allowed</h2>
-            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>WhatUPB encourages open, honest communication. You are welcome to:</p>
+            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>CoinRep encourages open, honest communication. You are welcome to:</p>
             <ul style={{ listStyle: "disc", paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>Send honest feedback, opinions, compliments, or questions.</li>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>Have candid conversations anonymously.</li>
@@ -48,7 +48,7 @@ export default function ContentPolicy() {
 
           <section>
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>2. What&apos;s Not Allowed</h2>
-            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>The following content is strictly prohibited on WhatUPB:</p>
+            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>The following content is strictly prohibited on CoinRep:</p>
             <ul style={{ listStyle: "disc", paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}><strong style={{ color: "#4b5563" }}>Threats:</strong> any message threatening violence, harm, or death against any person or group.</li>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}><strong style={{ color: "#4b5563" }}>Harassment:</strong> targeted bullying, intimidation, repeated unwanted contact, or messages intended to cause emotional distress.</li>
@@ -63,7 +63,7 @@ export default function ContentPolicy() {
 
           <section>
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>3. Automated Moderation</h2>
-            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>WhatUPB uses the Google Perspective API to automatically screen messages for toxic, threatening, or abusive content in real time. Here&apos;s how it works:</p>
+            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>CoinRep uses the Google Perspective API to automatically screen messages for toxic, threatening, or abusive content in real time. Here&apos;s how it works:</p>
             <ul style={{ listStyle: "disc", paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>Every message is analyzed before delivery for toxicity, threats, insults, and other harmful signals.</li>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>Messages that exceed our toxicity thresholds are blocked automatically and never delivered to the recipient.</li>
@@ -76,7 +76,7 @@ export default function ContentPolicy() {
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>4. Reporting Abuse</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>If you receive a message that violates this Content Policy or makes you feel unsafe, you can report it:</p>
             <ul style={{ listStyle: "disc", paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-              <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>Email us at <a href="mailto:contact.whatupb@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.whatupb@gmail.com</a> with a description of the issue.</li>
+              <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>Email us at <a href="mailto:contact.coinrep@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.coinrep@gmail.com</a> with a description of the issue.</li>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>Include as much context as possible (e.g., screenshot of the message, your username, approximate time received).</li>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>We take all reports seriously and will investigate promptly.</li>
             </ul>
@@ -97,7 +97,7 @@ export default function ContentPolicy() {
           <section>
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>6. Changes to This Policy</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
-              We may update this Content Policy as the platform evolves. If we make significant changes, we will notify users through the service. Continued use of WhatUPB after changes are posted constitutes acceptance of the updated policy.
+              We may update this Content Policy as the platform evolves. If we make significant changes, we will notify users through the service. Continued use of CoinRep after changes are posted constitutes acceptance of the updated policy.
             </p>
           </section>
 
@@ -105,7 +105,7 @@ export default function ContentPolicy() {
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>7. Contact Us</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
               If you have questions about this Content Policy or need to report a concern, contact Aurora Bridge LLC at{" "}
-              <a href="mailto:contact.whatupb@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.whatupb@gmail.com</a>.
+              <a href="mailto:contact.coinrep@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.coinrep@gmail.com</a>.
             </p>
           </section>
         </div>

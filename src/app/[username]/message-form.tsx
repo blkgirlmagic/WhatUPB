@@ -21,6 +21,8 @@ export default function MessageForm({
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [coinTicker, setCoinTicker] = useState("");
+  const [signalType, setSignalType] = useState<"bullish" | "bearish" | "chaos" | null>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
   const hasTurnstile = TURNSTILE_SITE_KEY.length > 0;
 
@@ -46,6 +48,8 @@ export default function MessageForm({
           recipientId,
           content: content.trim(),
           turnstileToken,
+          coinTicker: coinTicker.trim().toUpperCase() || undefined,
+          signalType: signalType || undefined,
         }),
       });
 
@@ -122,12 +126,12 @@ export default function MessageForm({
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 700, fontSize: "18px", color: "var(--ink)", marginBottom: "4px" }}>Message sent!</p>
+        <p style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 700, fontSize: "18px", color: "var(--ink)", marginBottom: "4px" }}>Signal submitted!</p>
         <p style={{ fontSize: "14px", color: "var(--muted)", marginBottom: "24px" }}>
-          Your anonymous message was delivered to @{username}.
+          Your anonymous signal was delivered to @{username}.
         </p>
-        <button onClick={() => setSent(false)} style={{ padding: "10px 24px", borderRadius: "50px", border: "1px solid var(--faint)", background: "rgba(255,255,255,0.6)", color: "var(--muted)", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "14px", cursor: "pointer", transition: "all 0.2s" }}>
-          Send another message
+        <button onClick={() => { setSent(false); setCoinTicker(""); setSignalType(null); }} style={{ padding: "10px 24px", borderRadius: "50px", border: "1px solid var(--faint)", background: "rgba(255,255,255,0.6)", color: "var(--muted)", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "14px", cursor: "pointer", transition: "all 0.2s" }}>
+          Submit another signal
         </button>
       </div>
     );
@@ -182,81 +186,87 @@ export default function MessageForm({
           </div>
         )}
 
+        {/* Coin ticker input */}
+        <div style={{ marginBottom: "14px" }}>
+          <div style={{ fontSize: "10px", letterSpacing: "2px", textTransform: "uppercase" as const, color: "var(--muted)", fontWeight: 500, marginBottom: "6px" }}>
+            Coin Ticker <span style={{ color: "rgba(26,23,48,0.3)", fontWeight: 400, letterSpacing: 0 }}>(optional)</span>
+          </div>
+          <input
+            type="text"
+            value={coinTicker}
+            onChange={(e) => setCoinTicker(e.target.value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10))}
+            placeholder="DOGE, PEPE, WIF…"
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              borderRadius: "10px",
+              border: "1px solid rgba(155,142,232,0.18)",
+              background: "rgba(255,255,255,0.6)",
+              fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace",
+              fontSize: "14px",
+              fontWeight: 600,
+              color: "#9B8EE8",
+              letterSpacing: "0.08em",
+              outline: "none",
+              textTransform: "uppercase" as const,
+            }}
+          />
+        </div>
+
+        {/* Signal type toggle */}
+        <div style={{ marginBottom: "16px" }}>
+          <div style={{ fontSize: "10px", letterSpacing: "2px", textTransform: "uppercase" as const, color: "var(--muted)", fontWeight: 500, marginBottom: "8px" }}>
+            Signal <span style={{ color: "rgba(26,23,48,0.3)", fontWeight: 400, letterSpacing: 0 }}>(optional)</span>
+          </div>
+          <div style={{ display: "flex", gap: "8px" }}>
+            {(["bullish", "bearish", "chaos"] as const).map((type) => {
+              const active = signalType === type;
+              const colors = {
+                bullish: { bg: "rgba(34,197,94,0.12)", border: "rgba(34,197,94,0.4)", text: "#22c55e" },
+                bearish: { bg: "rgba(239,68,68,0.12)", border: "rgba(239,68,68,0.4)", text: "#ef4444" },
+                chaos:   { bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.4)", text: "#f59e0b" },
+              };
+              const icons = { bullish: "▲", bearish: "▼", chaos: "⚡" };
+              const c = colors[type];
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setSignalType(active ? null : type)}
+                  style={{
+                    flex: 1,
+                    padding: "9px 6px",
+                    borderRadius: "10px",
+                    border: active ? `1.5px solid ${c.border}` : "1px solid rgba(155,142,232,0.15)",
+                    background: active ? c.bg : "rgba(255,255,255,0.5)",
+                    color: active ? c.text : "var(--muted)",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    letterSpacing: "0.06em",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                    textTransform: "uppercase" as const,
+                    fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace",
+                  }}
+                >
+                  {icons[type]} {type}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <textarea
           value={content}
           onChange={(e) => {
             setContent(e.target.value);
             setCrisisAcknowledged(false);
           }}
-          placeholder="Type your anonymous message..."
+          placeholder="Add context to your signal… (anonymous)"
           required
           maxLength={1000}
           rows={5}
           className="profile-textarea"
         />
 
-        <div style={{ textAlign: "right", fontSize: "11.5px", color: isOverLimit ? "#E57373" : "rgba(26,23,48,0.25)", marginBottom: "16px", fontVariantNumeric: "tabular-nums" }}>
-          {content.length} / 1000
-        </div>
-
-        {hasTurnstile && (
-          <div style={{ marginBottom: "12px", display: "flex", justifyContent: "center" }}>
-            <Turnstile
-              ref={turnstileRef}
-              siteKey={TURNSTILE_SITE_KEY}
-              onSuccess={(token) => setTurnstileToken(token)}
-              onExpire={() => setTurnstileToken(null)}
-              onError={() => setTurnstileToken(null)}
-            />
-          </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={loading || !content.trim() || (hasTurnstile && !turnstileToken)}
-          className="card-btn-primary"
-          style={{ marginBottom: "14px" }}
-        >
-          {loading ? "Sending..." : "Send Message"}
-        </button>
-
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontSize: "12.5px", color: "var(--muted)" }}>
-          <span style={{ fontSize: "13px" }}>{"🔒"}</span>
-          Completely anonymous. No account needed.
-        </div>
-      </form>
-
-      {showCrisisModal && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 16px" }}>
-          <div
-            style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
-            onClick={() => setShowCrisisModal(false)}
-          />
-          <div style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: "380px", background: "rgba(255,255,255,0.92)", backdropFilter: "blur(40px)", border: "1px solid rgba(255,255,255,0.95)", borderRadius: "22px", padding: "28px 24px" }}>
-            <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.25)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
-              <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#f59e0b" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-              </svg>
-            </div>
-            <p style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 700, color: "var(--ink)", textAlign: "center", marginBottom: "8px" }}>
-              You&apos;re not alone
-            </p>
-            <p style={{ color: "var(--muted)", fontSize: "14px", textAlign: "center", lineHeight: 1.6, marginBottom: "24px" }}>
-              If you&apos;re going through something hard, help is available 24/7. Text or call{" "}
-              <a href="tel:988" style={{ color: "var(--lav)", textDecoration: "underline", fontWeight: 500 }}>988</a>{" "}
-              anytime.
-            </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <a href="tel:988" className="card-btn-primary" style={{ textAlign: "center", textDecoration: "none" }}>
-                Call or Text 988
-              </a>
-              <button type="button" onClick={handleCrisisContinue} style={{ width: "100%", padding: "13px", borderRadius: "12px", border: "1px solid var(--faint)", background: "transparent", color: "var(--muted)", fontSize: "14px", cursor: "pointer", transition: "all 0.2s" }}>
-                Continue Sending
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
+        <div style={{ textAlign: "right", fontSize: "11.5px", color: isOverLimit ? "#E57373" : "rgba(26,23,48,0.25)", marginBottom: "16px", fontVariant

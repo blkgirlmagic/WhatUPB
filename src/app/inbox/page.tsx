@@ -52,7 +52,7 @@ export default async function Inbox() {
   // Free users: fetch visible + blurred batch. Premium: 100.
   let query = supabase
     .from("messages")
-    .select("*")
+    .select("id, content, created_at, coin_ticker, signal_type")
     .eq("recipient_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -70,7 +70,7 @@ export default async function Inbox() {
       {/* NAV */}
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">
-          WhatUPB
+          CoinRep
         </Link>
         <div className="nav-links">
           <Link href="/inbox" style={{ color: "var(--ink)", fontWeight: 500 }}>Inbox</Link>
@@ -84,16 +84,16 @@ export default async function Inbox() {
         {/* Header */}
         <div className="anim-1" style={{ marginBottom: "28px" }}>
           <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: "28px", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.5px", marginBottom: "6px" }}>
-            Inbox
+            Signal Feed
           </div>
           {messageCount > 0 ? (
             <p style={{ fontSize: "14px", color: "var(--muted)" }}>
               {isPremium
-                ? `${messageCount} anonymous message${messageCount !== 1 ? "s" : ""}`
-                : `${Math.min(messageCount, FREE_VISIBLE)} of ${totalCount} message${totalCount !== 1 ? "s" : ""}`}
+                ? `${messageCount} signal${messageCount !== 1 ? "s" : ""} received`
+                : `${Math.min(messageCount, FREE_VISIBLE)} of ${totalCount} signal${totalCount !== 1 ? "s" : ""}`}
             </p>
           ) : (
-            <p style={{ fontSize: "14px", color: "var(--muted)" }}>Waiting for messages&hellip;</p>
+            <p style={{ fontSize: "14px", color: "var(--muted)" }}>Waiting for signals&hellip;</p>
           )}
         </div>
 
@@ -105,13 +105,13 @@ export default async function Inbox() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
               </svg>
             </div>
-            <p style={{ color: "var(--ink)", fontWeight: 600, fontSize: "16px", marginBottom: "6px" }}>No messages yet</p>
+            <p style={{ color: "var(--ink)", fontWeight: 600, fontSize: "16px", marginBottom: "6px" }}>No signals yet</p>
             <p style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "24px", maxWidth: "280px", margin: "0 auto 24px", lineHeight: 1.6 }}>
-              Share your link to start receiving anonymous messages.
+              Share your link to start receiving coin signals.
             </p>
             <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(255,255,255,0.6)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.8)", borderRadius: "12px", padding: "10px 16px", marginBottom: "24px" }}>
               <code style={{ fontSize: "14px", fontFamily: "monospace", color: "#9B8EE8" }}>
-                whatupb.com/{profile.username}
+                coinrep.com/{profile.username}
               </code>
             </div>
             <div style={{ display: "block" }}>
@@ -152,8 +152,4 @@ export default async function Inbox() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           Settings
-        </Link>
-      </div>
-    </div>
-  );
-}
+        <

@@ -42,13 +42,13 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "WhatUPB — Say What You Really Think",
+  title: "CoinRep — Meme Coin Reputation Terminal",
   description:
-    "Get honest, anonymous messages from friends and followers. Share your link, get real talk. Abuse automatically blocked.",
+    "Community-powered reputation scores for meme coins. Submit bullish, bearish, or chaos signals. Real-time rep scores.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "WhatUPB",
+    title: "CoinRep",
   },
   other: {
     "mobile-web-app-capable": "yes",
@@ -57,18 +57,18 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "WhatUPB — Anonymous Messages",
+    title: "CoinRep — Meme Coin Reputation Terminal",
     description:
-      "Send and receive anonymous messages. Safe, private, and abuse-free.",
-    url: "https://whatupb.com",
-    siteName: "WhatUPB",
+      "Community-powered reputation scores for meme coins. Bullish, bearish, or chaos — the crowd never lies.",
+    url: "https://coinrep.com",
+    siteName: "CoinRep",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "WhatUPB — Anonymous Messages",
+    title: "CoinRep — Meme Coin Reputation Terminal",
     description:
-      "Send and receive anonymous messages. Safe, private, and abuse-free.",
+      "Community-powered reputation scores for meme coins. Bullish, bearish, or chaos — the crowd never lies.",
   },
 };
 
@@ -82,9 +82,4 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${ibmPlexMono.variable} ${lora.variable} antialiased texture-overlay`}
       >
-        <ToastProvider>{children}</ToastProvider>
-        <ServiceWorkerRegistrar />
-      </body>
-    </html>
-  );
-}
+        <ToastProvide

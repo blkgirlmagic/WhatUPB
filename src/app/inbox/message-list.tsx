@@ -10,6 +10,8 @@ type Message = {
   id: string;
   content: string;
   created_at: string;
+  coin_ticker: string | null;
+  signal_type: "bullish" | "bearish" | "chaos" | null;
 };
 
 const REPORT_REASONS = [
@@ -87,7 +89,7 @@ export default function MessageList({
       const { error: deleteError } = await supabase.from("messages").delete().eq("id", reportMessageId);
       if (deleteError) { console.error("[report] Delete error:", deleteError.message); }
       setMessages((prev) => prev.filter((m) => m.id !== reportMessageId));
-      toast("Message reported. Thanks for keeping WhatUPB safe \uD83D\uDC99");
+      toast("Message reported. Thanks for keeping CoinRep safe \uD83D\uDC99");
       setShowReportModal(false);
       setReportMessageId(null);
       setReportReason("");
@@ -181,17 +183,17 @@ export default function MessageList({
 
     const brand = document.createElement("div");
     brand.style.cssText = `font-size:36px;font-weight:700;letter-spacing:0.08em;color:rgba(155,142,232,0.5);`;
-    brand.textContent = "WhatUPB";
+    brand.textContent = "CoinRep";
     bottomArea.appendChild(brand);
 
     const tagline = document.createElement("div");
     tagline.style.cssText = `font-size:22px;color:rgba(155,142,232,0.3);letter-spacing:0.04em;`;
-    tagline.textContent = "anonymous messages";
+    tagline.textContent = "meme coin reputation";
     bottomArea.appendChild(tagline);
 
     const url = document.createElement("div");
     url.style.cssText = `font-size:18px;color:rgba(155,142,232,0.2);letter-spacing:0.04em;`;
-    url.textContent = "whatupb.com";
+    url.textContent = "coinrep.com";
     bottomArea.appendChild(url);
 
     card.appendChild(bottomArea);
@@ -211,7 +213,7 @@ export default function MessageList({
   async function handleDownload() {
     if (!shareImageUrl) return;
     const link = document.createElement("a");
-    link.download = "whatupb-message.png";
+    link.download = "coinrep-signal.png";
     link.href = shareImageUrl;
     link.click();
     toast("Image saved!");
@@ -222,11 +224,11 @@ export default function MessageList({
     if (!shareImageUrl) return;
     try {
       const blob = await (await fetch(shareImageUrl)).blob();
-      const file = new File([blob], "whatupb-message.png", { type: "image/png" });
+      const file = new File([blob], "coinrep-signal.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file] }); closeShareMenu(); return; }
     } catch { /* Fall through */ }
     const link = document.createElement("a");
-    link.download = "whatupb-message.png";
+    link.download = "coinrep-signal.png";
     link.href = shareImageUrl;
     link.click();
     toast("Image saved! Open Instagram Stories and add it.");
@@ -237,11 +239,11 @@ export default function MessageList({
     if (!shareImageUrl) return;
     try {
       const blob = await (await fetch(shareImageUrl)).blob();
-      const file = new File([blob], "whatupb-message.png", { type: "image/png" });
+      const file = new File([blob], "coinrep-signal.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file] }); closeShareMenu(); return; }
     } catch { /* Fall through */ }
     const link = document.createElement("a");
-    link.download = "whatupb-message.png";
+    link.download = "coinrep-signal.png";
     link.href = shareImageUrl;
     link.click();
     toast("Image saved! Open Snapchat and add it.");
@@ -251,10 +253,10 @@ export default function MessageList({
   async function handleShareX() {
     if (!shareImageUrl) return;
     const link = document.createElement("a");
-    link.download = "whatupb-message.png";
+    link.download = "coinrep-signal.png";
     link.href = shareImageUrl;
     link.click();
-    const tweetText = encodeURIComponent("Someone sent me this on WhatUPB \uD83D\uDC40\nhttps://whatupb.com");
+    const tweetText = encodeURIComponent("Someone sent me this on CoinRep \uD83D\uDC40\nhttps://coinrep.com");
     window.open(`https://x.com/intent/tweet?text=${tweetText}`, "_blank");
     toast("Image saved! Attach it to your post on X.");
     closeShareMenu();
@@ -299,6 +301,49 @@ export default function MessageList({
 
           return (
             <div key={msg.id} className="group" style={msgCard}>
+              {/* Coin + signal badge row */}
+              {(msg.coin_ticker || msg.signal_type) && (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px", flexWrap: "wrap" }}>
+                  {msg.coin_ticker && (
+                    <span style={{
+                      fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em",
+                      padding: "3px 9px", borderRadius: "4px",
+                      background: "rgba(155,142,232,0.1)", border: "1px solid rgba(155,142,232,0.25)",
+                      color: "#9B8EE8", fontFamily: "var(--font-ibm-plex-mono), monospace",
+                    }}>
+                      ${msg.coin_ticker}
+                    </span>
+                  )}
+                  {msg.signal_type === "bullish" && (
+                    <span style={{
+                      fontSize: "11px", fontWeight: 700, padding: "3px 9px", borderRadius: "4px",
+                      background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)",
+                      color: "#22c55e", letterSpacing: "0.06em",
+                    }}>
+                      ▲ BULLISH
+                    </span>
+                  )}
+                  {msg.signal_type === "bearish" && (
+                    <span style={{
+                      fontSize: "11px", fontWeight: 700, padding: "3px 9px", borderRadius: "4px",
+                      background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
+                      color: "#ef4444", letterSpacing: "0.06em",
+                    }}>
+                      ▼ BEARISH
+                    </span>
+                  )}
+                  {msg.signal_type === "chaos" && (
+                    <span style={{
+                      fontSize: "11px", fontWeight: 700, padding: "3px 9px", borderRadius: "4px",
+                      background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.3)",
+                      color: "#f59e0b", letterSpacing: "0.06em",
+                    }}>
+                      ⚡ CHAOS
+                    </span>
+                  )}
+                </div>
+              )}
+
               {/* Message text */}
               <p style={{ color: "var(--ink)", whiteSpace: "pre-wrap", wordBreak: "break-word", marginBottom: "12px", lineHeight: 1.65, fontSize: "15px" }}>
                 {msg.content}
@@ -620,47 +665,4 @@ export default function MessageList({
                   type="button"
                 >
                   {option.label}
-                </button>
-              ))}
-            </div>
-
-            <textarea
-              value={reportDetails}
-              onChange={(e) => setReportDetails(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Escape") { setShowReportModal(false); setReportReason(""); setReportDetails(""); } }}
-              placeholder="Additional details (optional)"
-              maxLength={200}
-              rows={2}
-              style={{ width: "100%", padding: "12px 15px", borderRadius: "12px", border: "1px solid rgba(155,142,232,0.18)", background: "rgba(255,255,255,0.8)", fontFamily: "var(--font-lora), 'Lora', Georgia, serif", fontSize: "14px", color: "#1A1730", outline: "none", resize: "none", minHeight: "60px", marginBottom: "4px" }}
-              disabled={submittingReport}
-            />
-            <span style={{ fontSize: "11px", color: "var(--muted)", display: "block", marginBottom: "16px" }}>{reportDetails.length}/200</span>
-
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
-              <button onClick={() => { setShowReportModal(false); setReportReason(""); setReportDetails(""); }} style={{ fontSize: "13px", color: "var(--muted)", background: "none", border: "none", cursor: "pointer", padding: "6px 12px" }} type="button">Cancel</button>
-              <button
-                onClick={handleReportSubmit}
-                disabled={submittingReport || !reportReason}
-                style={{
-                  background: submittingReport || !reportReason ? "rgba(245,158,11,0.3)" : "#f59e0b",
-                  color: "#fff",
-                  padding: "8px 20px",
-                  fontSize: "13px",
-                  borderRadius: "10px",
-                  fontWeight: 600,
-                  border: "none",
-                  cursor: submittingReport || !reportReason ? "not-allowed" : "pointer",
-                  transition: "all 0.2s",
-                  fontFamily: "var(--font-lora), 'Lora', Georgia, serif",
-                }}
-                type="button"
-              >
-                {submittingReport ? "Reporting\u2026" : "Report & Remove"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
+           
