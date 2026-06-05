@@ -111,9 +111,7 @@ export default async function Home() {
               const bar = scoreBar(coin.rep_score);
               return (
                 <div key={coin.coin_ticker}
-                  style={{ display: "grid", gridTemplateColumns: "36px 72px 1fr 130px 60px 60px 60px 80px", gap: "0 12px", padding: "12px 16px", borderBottom: i < coins.length - 1 ? "1px solid rgba(190,185,215,0.2)" : "none", fontSize: "13px", alignItems: "center", transition: "background 0.1s" }}
-                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(155,142,232,0.04)")}
-                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                  style={{ display: "grid", gridTemplateColumns: "36px 72px 1fr 130px 60px 60px 60px 80px", gap: "0 12px", padding: "12px 16px", borderBottom: i < coins.length - 1 ? "1px solid rgba(190,185,215,0.2)" : "none", fontSize: "13px", alignItems: "center" }}
                 >
                   <span style={{ color: "var(--muted)", fontSize: "11px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{i + 1}</span>
                   <span style={{ color: "var(--lav)", fontWeight: 700, letterSpacing: "0.05em", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{coin.coin_ticker}</span>
