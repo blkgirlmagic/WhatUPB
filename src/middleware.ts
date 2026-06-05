@@ -19,14 +19,14 @@ export async function middleware(request: NextRequest) {
   if (host.includes('vercel.app')) {
     const url = request.nextUrl.clone()
     url.protocol = 'https'
-    url.host = 'coinrep.com'
+    url.host = 'whatupb.com'
     return NextResponse.redirect(url, 308)
   }
 
   // Block cross-origin requests to the messages API
   if (request.nextUrl.pathname === '/api/messages') {
     const origin = request.headers.get('origin')
-    if (origin && origin !== 'https://coinrep.com' && !origin.includes('localhost')) {
+    if (origin && origin !== 'https://whatupb.com' && !origin.includes('localhost')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
   }

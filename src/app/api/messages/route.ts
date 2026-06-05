@@ -117,7 +117,7 @@ async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
 function hashIP(ip: string): string {
   return crypto
     .createHash("sha256")
-    .update(ip + "_coinrep_rate_limit")
+    .update(ip + "_whatupb_rate_limit")
     .digest("hex")
     .substring(0, 16);
 }
@@ -203,7 +203,7 @@ export async function POST(request: NextRequest) {
       // Fire-and-forget: log to blocked_messages table
       logBlockedMessage(politicalResult.reason!, ipHash).catch(() => {});
       return NextResponse.json(
-        { error: "CoinRep is for personal messages only. Political content isn't allowed here." },
+        { error: "WhatUPB is for personal messages only. Political content isn't allowed here." },
         { status: 403 }
       );
     }

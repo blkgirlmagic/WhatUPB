@@ -21,7 +21,7 @@ function calculateAge(month: number, day: number, year: number): number {
 function hashIP(ip: string): string {
   return crypto
     .createHash("sha256")
-    .update(ip + "_coinrep_rate_limit")
+    .update(ip + "_whatupb_rate_limit")
     .digest("hex")
     .substring(0, 16);
 }
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
       email: String(email).trim(),
       password,
       options: {
-        emailRedirectTo: "https://coinrep.com/auth/callback",
+        emailRedirectTo: "https://whatupb.com/auth/callback",
         data: {
           username: trimmedUsername,
           age_verified: true,

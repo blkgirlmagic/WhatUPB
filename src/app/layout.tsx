@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "WhatUPB \u2014 Meme Coin Reputation Terminal",
     description: "Community-powered reputation scores for meme coins. Bullish, bearish, or chaos \u2014 the crowd never lies.",
-    url: "https://coinrep.com",
+    url: "https://whatupb.com",
     siteName: "WhatUPB",
     type: "website",
   },

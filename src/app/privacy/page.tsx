@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Privacy Policy — CoinRep",
-  description: "How CoinRep collects, uses, and protects your data.",
+  title: "Privacy Policy — WhatUPB",
+  description: "How WhatUPB collects, uses, and protects your data.",
 };
 
 export default function PrivacyPolicy() {
@@ -10,7 +10,7 @@ export default function PrivacyPolicy() {
     <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #fdfcfb 0%, #f5f2ed 100%)" }}>
       {/* Nav */}
       <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", maxWidth: 900, margin: "0 auto" }}>
-        <Link href="/" style={{ fontWeight: 700, fontSize: 20, color: "#1a1a2e", textDecoration: "none", fontFamily: "'Playfair Display', serif" }}>CoinRep</Link>
+        <Link href="/" style={{ fontWeight: 700, fontSize: 20, color: "#1a1a2e", textDecoration: "none", fontFamily: "'Playfair Display', serif" }}>WhatUPB</Link>
         <div style={{ display: "flex", gap: 24, alignItems: "center", fontSize: 14 }}>
           <Link href="/terms" style={{ color: "#6b7280", textDecoration: "none", transition: "color 0.2s" }}>Terms</Link>
           <Link href="/safety" style={{ color: "#6b7280", textDecoration: "none", transition: "color 0.2s" }}>Safety</Link>
@@ -21,7 +21,7 @@ export default function PrivacyPolicy() {
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 24px 80px" }}>
         {/* Header */}
         <div style={{ marginBottom: 48 }}>
-          <Link href="/" style={{ fontSize: 13, color: "#8b5cf6", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>&larr; Back to CoinRep</Link>
+          <Link href="/" style={{ fontSize: 13, color: "#8b5cf6", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>&larr; Back to WhatUPB</Link>
           <h1 style={{ fontSize: 32, fontWeight: 700, color: "#1a1a2e", marginTop: 20, letterSpacing: "-0.02em" }}>Privacy Policy</h1>
           <p style={{ color: "#9ca3af", fontSize: 13, marginTop: 8 }}>Effective date: March 8, 2026</p>
         </div>
@@ -30,13 +30,13 @@ export default function PrivacyPolicy() {
         <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
           <section>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
-              CoinRep is operated by Aurora Bridge LLC. This Privacy Policy explains what data we collect, how we use it, and your rights regarding that data. By using CoinRep, you agree to the practices described below.
+              WhatUPB is operated by Aurora Bridge LLC. This Privacy Policy explains what data we collect, how we use it, and your rights regarding that data. By using WhatUPB, you agree to the practices described below.
             </p>
           </section>
 
           <section>
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>1. Information We Collect</h2>
-            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>We collect the following information when you use CoinRep:</p>
+            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>We collect the following information when you use WhatUPB:</p>
             <ul style={{ listStyle: "disc", paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}><strong style={{ color: "#4b5563" }}>Account information:</strong> your email address and username when you create an account.</li>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}><strong style={{ color: "#4b5563" }}>Messages:</strong> anonymous messages sent to and from your profile. Messages sent anonymously cannot be traced back to the sender.</li>
@@ -49,7 +49,7 @@ export default function PrivacyPolicy() {
           <section>
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>2. How We Use Your Information</h2>
             <ul style={{ listStyle: "disc", paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-              <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>To provide and maintain the CoinRep service.</li>
+              <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>To provide and maintain the WhatUPB service.</li>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>To prevent abuse and spam using hashed IP addresses and automated content moderation.</li>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>To process payments and manage subscriptions via Stripe.</li>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>To send important account-related emails (e.g., email confirmation, security alerts).</li>
@@ -60,7 +60,7 @@ export default function PrivacyPolicy() {
           <section>
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>3. Anonymity of Messages</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
-              Messages sent through CoinRep are anonymous. We do not store sender identity information with messages. Recipients cannot see who sent them a message, and we cannot trace anonymous messages back to the sender.
+              Messages sent through WhatUPB are anonymous. We do not store sender identity information with messages. Recipients cannot see who sent them a message, and we cannot trace anonymous messages back to the sender.
             </p>
           </section>
 
@@ -82,7 +82,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>6. Third-Party Services</h2>
-            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>We use the following third-party services to operate CoinRep:</p>
+            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>We use the following third-party services to operate WhatUPB:</p>
             <ul style={{ listStyle: "disc", paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}><strong style={{ color: "#4b5563" }}>Stripe</strong> &mdash; payment processing (<a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: "#8b5cf6", textDecoration: "underline" }}>stripe.com/privacy</a>)</li>
               <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}><strong style={{ color: "#4b5563" }}>Google Perspective API</strong> &mdash; automated content moderation</li>
@@ -117,7 +117,7 @@ export default function PrivacyPolicy() {
             </ul>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginTop: 12 }}>
               To exercise any of these rights, contact us at{" "}
-              <a href="mailto:contact.coinrep@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.coinrep@gmail.com</a>.
+              <a href="mailto:contact.whatupb@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.whatupb@gmail.com</a>.
             </p>
           </section>
 
@@ -125,7 +125,7 @@ export default function PrivacyPolicy() {
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>10. CCPA (California Residents)</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
               If you are a California resident, the California Consumer Privacy Act (CCPA) grants you the right to know what personal information we collect, request its deletion, and opt out of its sale. We do not sell your personal information. To submit a request, email us at{" "}
-              <a href="mailto:contact.coinrep@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.coinrep@gmail.com</a>.
+              <a href="mailto:contact.whatupb@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.whatupb@gmail.com</a>.
             </p>
           </section>
 
@@ -133,14 +133,14 @@ export default function PrivacyPolicy() {
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>11. GDPR (European Residents)</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
               If you are located in the European Economic Area, you have rights under the General Data Protection Regulation (GDPR) including the right to access, rectify, erase, restrict, and port your data. Our legal basis for processing your data is the performance of our contract with you (providing the service) and our legitimate interest in preventing abuse. To exercise your GDPR rights, contact us at{" "}
-              <a href="mailto:contact.coinrep@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.coinrep@gmail.com</a>.
+              <a href="mailto:contact.whatupb@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.whatupb@gmail.com</a>.
             </p>
           </section>
 
           <section>
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>12. Changes to This Policy</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
-              We may update this Privacy Policy from time to time. If we make significant changes, we will notify you by email or through the service. Your continued use of CoinRep after changes are posted constitutes acceptance of the updated policy.
+              We may update this Privacy Policy from time to time. If we make significant changes, we will notify you by email or through the service. Your continued use of WhatUPB after changes are posted constitutes acceptance of the updated policy.
             </p>
           </section>
 
@@ -148,7 +148,7 @@ export default function PrivacyPolicy() {
             <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>13. Contact Us</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
               If you have questions about this Privacy Policy, contact Aurora Bridge LLC at{" "}
-              <a href="mailto:contact.coinrep@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.coinrep@gmail.com</a>.
+              <a href="mailto:contact.whatupb@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.whatupb@gmail.com</a>.
             </p>
           </section>
         </div>

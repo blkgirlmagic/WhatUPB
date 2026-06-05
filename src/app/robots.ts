@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: "/api/",
     },
-    sitemap: "https://coinrep.com/sitemap.xml",
+    sitemap: "https://whatupb.com/sitemap.xml",
   };
 }

@@ -58,7 +58,7 @@ export default async function Inbox() {
 
       {/* NAV */}
       <nav className="landing-nav">
-        <Link href="/" className="nav-logo">CoinRep</Link>
+        <Link href="/" className="nav-logo">WhatUPB</Link>
         <div className="nav-links">
           <Link href="/inbox" style={{ color: "var(--ink)", fontWeight: 500 }}>Signal Feed</Link>
           <Link href="/news">News</Link>
@@ -100,7 +100,7 @@ export default async function Inbox() {
             </p>
             <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(255,255,255,0.6)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.8)", borderRadius: "12px", padding: "10px 16px", marginBottom: "24px" }}>
               <code style={{ fontSize: "14px", fontFamily: "monospace", color: "#9B8EE8" }}>
-                coinrep.com/{profile.username}
+                whatupb.com/{profile.username}
               </code>
             </div>
             <div>

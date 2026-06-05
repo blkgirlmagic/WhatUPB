@@ -130,7 +130,7 @@ function LoginForm() {
       {/* NAV */}
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">
-          CoinRep
+          WhatUPB
         </Link>
         <div className="nav-links">
           <a href="/#how-it-works">How it works</a>
@@ -164,7 +164,7 @@ function LoginForm() {
 
           {/* Wordmark */}
           <div className="anim-1" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 800, fontSize: "20px", color: "#9B8EE8", letterSpacing: "-0.3px", marginBottom: "6px" }}>
-            CoinRep
+            WhatUPB
           </div>
 
           <h1 className="anim-2" style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 800, fontSize: "26px", color: "#1A1730", textAlign: "center", letterSpacing: "-0.5px", marginBottom: "6px" }}>
@@ -257,7 +257,7 @@ function LoginForm() {
         <div className="footer-top">
           <div className="footer-brand">
             <div className="footer-logo-row">
-              <span className="footer-wordmark">CoinRep</span>
+              <span className="footer-wordmark">WhatUPB</span>
             </div>
             <p className="footer-tagline">
               Built for honest conversations.<br />Messages are moderated for safety.
@@ -276,8 +276,8 @@ function LoginForm() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>&copy; 2026 CoinRep. All rights reserved.</span>
-          <span>coinrep.com</span>
+          <span>&copy; 2026 WhatUPB. All rights reserved.</span>
+          <span>whatupb.com</span>
         </div>
       </footer>
     </div>

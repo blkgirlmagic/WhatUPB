@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
             letterSpacing: "-1px",
           }}
         >
-          CoinRep
+          WhatUPB
         </div>
 
         {/* Main CTA */}
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
             letterSpacing: "-0.5px",
           }}
         >
-          coinrep.com/{username}
+          whatupb.com/{username}
         </div>
 
         {/* Trust badge */}

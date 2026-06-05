@@ -89,7 +89,7 @@ export default function MessageList({
       const { error: deleteError } = await supabase.from("messages").delete().eq("id", reportMessageId);
       if (deleteError) { console.error("[report] Delete error:", deleteError.message); }
       setMessages((prev) => prev.filter((m) => m.id !== reportMessageId));
-      toast("Message reported. Thanks for keeping CoinRep safe \uD83D\uDC99");
+      toast("Message reported. Thanks for keeping WhatUPB safe \uD83D\uDC99");
       setShowReportModal(false);
       setReportMessageId(null);
       setReportReason("");
@@ -183,7 +183,7 @@ export default function MessageList({
 
     const brand = document.createElement("div");
     brand.style.cssText = `font-size:36px;font-weight:700;letter-spacing:0.08em;color:rgba(155,142,232,0.5);`;
-    brand.textContent = "CoinRep";
+    brand.textContent = "WhatUPB";
     bottomArea.appendChild(brand);
 
     const tagline = document.createElement("div");
@@ -193,7 +193,7 @@ export default function MessageList({
 
     const url = document.createElement("div");
     url.style.cssText = `font-size:18px;color:rgba(155,142,232,0.2);letter-spacing:0.04em;`;
-    url.textContent = "coinrep.com";
+    url.textContent = "whatupb.com";
     bottomArea.appendChild(url);
 
     card.appendChild(bottomArea);
@@ -213,7 +213,7 @@ export default function MessageList({
   async function handleDownload() {
     if (!shareImageUrl) return;
     const link = document.createElement("a");
-    link.download = "coinrep-signal.png";
+    link.download = "whatupb-signal.png";
     link.href = shareImageUrl;
     link.click();
     toast("Image saved!");
@@ -224,11 +224,11 @@ export default function MessageList({
     if (!shareImageUrl) return;
     try {
       const blob = await (await fetch(shareImageUrl)).blob();
-      const file = new File([blob], "coinrep-signal.png", { type: "image/png" });
+      const file = new File([blob], "whatupb-signal.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file] }); closeShareMenu(); return; }
     } catch { /* Fall through */ }
     const link = document.createElement("a");
-    link.download = "coinrep-signal.png";
+    link.download = "whatupb-signal.png";
     link.href = shareImageUrl;
     link.click();
     toast("Image saved! Open Instagram Stories and add it.");
@@ -239,11 +239,11 @@ export default function MessageList({
     if (!shareImageUrl) return;
     try {
       const blob = await (await fetch(shareImageUrl)).blob();
-      const file = new File([blob], "coinrep-signal.png", { type: "image/png" });
+      const file = new File([blob], "whatupb-signal.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file] }); closeShareMenu(); return; }
     } catch { /* Fall through */ }
     const link = document.createElement("a");
-    link.download = "coinrep-signal.png";
+    link.download = "whatupb-signal.png";
     link.href = shareImageUrl;
     link.click();
     toast("Image saved! Open Snapchat and add it.");
@@ -253,10 +253,10 @@ export default function MessageList({
   async function handleShareX() {
     if (!shareImageUrl) return;
     const link = document.createElement("a");
-    link.download = "coinrep-signal.png";
+    link.download = "whatupb-signal.png";
     link.href = shareImageUrl;
     link.click();
-    const tweetText = encodeURIComponent("Someone sent me this on CoinRep \uD83D\uDC40\nhttps://coinrep.com");
+    const tweetText = encodeURIComponent("Someone sent me this on WhatUPB \uD83D\uDC40\nhttps://whatupb.com");
     window.open(`https://x.com/intent/tweet?text=${tweetText}`, "_blank");
     toast("Image saved! Attach it to your post on X.");
     closeShareMenu();

@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const link = `coinrep.com/${username}`;
-  const fullUrl = `https://coinrep.com/${username}`;
+  const link = `whatupb.com/${username}`;
+  const fullUrl = `https://whatupb.com/${username}`;
   // QR code via external API (no native deps needed on edge)
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(fullUrl)}&bgcolor=000000&color=ffffff&format=png`;
 
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
             display: "flex",
           }}
         >
-          CoinRep
+          WhatUPB
         </div>
 
         <div

@@ -51,7 +51,7 @@ export default function AgeGate({ onVerified }: AgeGateProps) {
   // On mount: check localStorage for previous failed verification
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const isBlocked = localStorage.getItem("coinrep_age_blocked") === "1";
+      const isBlocked = localStorage.getItem("whatupb_age_blocked") === "1";
       if (isBlocked) {
         setBlocked(true);
         setTimeout(() => {
@@ -122,7 +122,7 @@ export default function AgeGate({ onVerified }: AgeGateProps) {
       }, 400);
     } else {
       // Layer 1: localStorage (persists across tabs, survives refresh)
-      localStorage.setItem("coinrep_age_blocked", "1");
+      localStorage.setItem("whatupb_age_blocked", "1");
       // Layer 2: Client cookie (readable by JS, backup for localStorage)
       document.cookie =
         "age_blocked_client=1; path=/; max-age=315360000; SameSite=Strict";
@@ -184,7 +184,7 @@ export default function AgeGate({ onVerified }: AgeGateProps) {
         {/* Header */}
         <div className="animate-fade-in-up mb-3">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-denim-200 to-white bg-clip-text text-transparent">
-            CoinRep is 18+
+            WhatUPB is 18+
           </h1>
         </div>
 

@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     return new NextResponse(
       page(
         "Unsubscribed",
-        "You've been unsubscribed from email notifications. You can re-enable them anytime in your CoinRep settings."
+        "You've been unsubscribed from email notifications. You can re-enable them anytime in your WhatUPB settings."
       ),
       { status: 200, headers: { "Content-Type": "text/html" } }
     );
@@ -48,7 +48,7 @@ function page(title: string, message: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>${title} - CoinRep</title>
+  <title>${title} - WhatUPB</title>
   <style>
     body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0c0c10;color:#ededed;font-family:system-ui,-apple-system,sans-serif}
     .card{max-width:400px;text-align:center;padding:40px 32px;background:#141418;border:1px solid #2a2a35;border-radius:14px}
@@ -62,7 +62,7 @@ function page(title: string, message: string): string {
   <div class="card">
     <h1>${title}</h1>
     <p>${message}</p>
-    <a href="https://coinrep.com/settings">Go to Settings</a>
+    <a href="https://whatupb.com/settings">Go to Settings</a>
   </div>
 </body>
 </html>`;

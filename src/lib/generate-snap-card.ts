@@ -7,8 +7,8 @@ import QRCode from "qrcode";
 export async function generateSnapCard(username: string): Promise<Blob> {
   const W = 1080;
   const H = 1920;
-  const link = `coinrep.com/${username}`;
-  const fullUrl = `https://coinrep.com/${username}`;
+  const link = `whatupb.com/${username}`;
+  const fullUrl = `https://whatupb.com/${username}`;
 
   const canvas = document.createElement("canvas");
   canvas.width = W;
@@ -105,12 +105,12 @@ export async function generateSnapCard(username: string): Promise<Blob> {
   ctx.fillStyle = "#ffffff";
   ctx.fillText(link, W / 2, linkY);
 
-  // --- CoinRep branding ---
+  // --- WhatUPB branding ---
   ctx.shadowColor = "#6A5ACD";
   ctx.shadowBlur = 20;
   ctx.font = "bold 56px system-ui, sans-serif";
   ctx.fillStyle = "#6A5ACD";
-  ctx.fillText("CoinRep", W / 2, 1280);
+  ctx.fillText("WhatUPB", W / 2, 1280);
   ctx.shadowBlur = 0;
 
   // --- Tagline ---

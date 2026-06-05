@@ -15,7 +15,7 @@ const GENERIC_ERROR = {
 function hashIP(ip: string): string {
   return crypto
     .createHash("sha256")
-    .update(ip + "_coinrep_rate_limit")
+    .update(ip + "_whatupb_rate_limit")
     .digest("hex")
     .substring(0, 16);
 }
