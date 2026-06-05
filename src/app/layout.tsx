@@ -19,22 +19,22 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "CoinRep \u2014 Meme Coin Reputation Terminal",
+  title: "WhatUPB \u2014 Meme Coin Reputation Terminal",
   description:
     "Community-powered reputation scores for meme coins. Submit bullish, bearish, or chaos signals. Real-time rep scores.",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "CoinRep" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "WhatUPB" },
   other: { "mobile-web-app-capable": "yes" },
   icons: { apple: "/apple-touch-icon.png" },
   openGraph: {
-    title: "CoinRep \u2014 Meme Coin Reputation Terminal",
+    title: "WhatUPB \u2014 Meme Coin Reputation Terminal",
     description: "Community-powered reputation scores for meme coins. Bullish, bearish, or chaos \u2014 the crowd never lies.",
     url: "https://coinrep.com",
-    siteName: "CoinRep",
+    siteName: "WhatUPB",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "CoinRep \u2014 Meme Coin Reputation Terminal",
+    title: "WhatUPB \u2014 Meme Coin Reputation Terminal",
     description: "Community-powered reputation scores for meme coins. Bullish, bearish, or chaos \u2014 the crowd never lies.",
   },
 };

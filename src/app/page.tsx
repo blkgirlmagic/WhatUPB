@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
+import { DiagonalLines } from "@/components/diagonal-lines";
 
 type CoinRow = {
   coin_ticker: string;
@@ -19,7 +20,7 @@ function scoreColor(score: number): string {
 
 function scoreBar(score: number): string {
   const filled = Math.round(score / 10);
-  return "\u2588".repeat(filled) + "\u2591".repeat(10 - filled);
+  return "█".repeat(filled) + "░".repeat(10 - filled);
 }
 
 export default async function Home() {
@@ -36,111 +37,155 @@ export default async function Home() {
   const now = new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC";
 
   return (
-    <div style={{ minHeight: "100vh", background: "#09090b", color: "#d4d4d8", fontFamily: "var(--font-ibm-plex-mono), \'IBM Plex Mono\', \'Courier New\', monospace" }}>
-      {/* Top bar */}
-      <div style={{ borderBottom: "1px solid #27272a", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#09090b", position: "sticky", top: 0, zIndex: 10 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <span style={{ color: "#22c55e", fontWeight: 700, fontSize: "15px", letterSpacing: "0.08em" }}>{"\u25b6 COINREP"}</span>
-          <span style={{ color: "#52525b", fontSize: "11px" }}>MEME COIN REPUTATION TERMINAL</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+    <div className="landing-page">
+      <div className="bloom" />
+      <DiagonalLines />
+
+      {/* NAV */}
+      <nav className="landing-nav">
+        <Link href="/" className="nav-logo">WhatUPB</Link>
+        <div className="nav-links">
+          <Link href="/news">News</Link>
           {user ? (
             <>
-              <Link href="/news" style={{ color: "#a1a1aa", fontSize: "12px", textDecoration: "none", padding: "5px 12px", border: "1px solid #3f3f46", borderRadius: "4px" }}>News</Link>
-              <Link href="/inbox" style={{ color: "#a1a1aa", fontSize: "12px", textDecoration: "none", padding: "5px 12px", border: "1px solid #3f3f46", borderRadius: "4px" }}>Signal Feed</Link>
-              <Link href="/settings" style={{ color: "#22c55e", fontSize: "12px", textDecoration: "none", padding: "5px 12px", border: "1px solid #22c55e44", borderRadius: "4px" }}>Settings</Link>
+              <Link href="/inbox">Signal Feed</Link>
+              <Link href="/settings" className="nav-cta">Settings</Link>
             </>
           ) : (
             <>
-              <Link href="/news" style={{ color: "#a1a1aa", fontSize: "12px", textDecoration: "none", padding: "5px 12px", border: "1px solid #3f3f46", borderRadius: "4px" }}>News</Link>
-              <Link href="/login" style={{ color: "#a1a1aa", fontSize: "12px", textDecoration: "none", padding: "5px 12px", border: "1px solid #3f3f46", borderRadius: "4px" }}>Login</Link>
-              <Link href="/signup" style={{ color: "#09090b", fontSize: "12px", fontWeight: 700, textDecoration: "none", padding: "5px 14px", background: "#22c55e", borderRadius: "4px" }}>Get Started</Link>
+              <Link href="/login">Log In</Link>
+              <Link href="/signup" className="nav-cta">Get Started</Link>
             </>
           )}
         </div>
-      </div>
+      </nav>
 
-      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "32px 24px" }}>
+      {/* PAGE */}
+      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "110px 24px 80px", position: "relative", zIndex: 10 }}>
+
+        {/* Header */}
         <div style={{ marginBottom: "32px" }}>
-          <div style={{ color: "#52525b", fontSize: "11px", marginBottom: "8px", letterSpacing: "0.1em" }}>$ coinrep --leaderboard --sort=rep_score --limit=20</div>
-          <div style={{ color: "#22c55e", fontSize: "22px", fontWeight: 700, letterSpacing: "0.04em", marginBottom: "4px" }}>MEME COIN REP SCORES</div>
-          <div style={{ color: "#52525b", fontSize: "11px" }}>Last updated: {now} &nbsp;|&nbsp; Community signals: bullish / bearish / chaos</div>
+          <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--muted)", fontSize: "11px", marginBottom: "8px", letterSpacing: "0.1em" }}>
+            $ whatupb --leaderboard --sort=rep_score --limit=20
+          </div>
+          <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", color: "var(--ink)", fontSize: "28px", fontWeight: 800, letterSpacing: "-0.5px", marginBottom: "4px" }}>
+            Meme Coin Rep Scores
+          </div>
+          <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--muted)", fontSize: "11px" }}>
+            Last updated: {now} &nbsp;·&nbsp; Community signals: bullish / bearish / chaos
+          </div>
         </div>
 
-        <div style={{ display: "flex", gap: "20px", marginBottom: "20px", fontSize: "11px" }}>
-          <span><span style={{ color: "#22c55e" }}>{"\u25cf"}</span> BULLISH &ge; 60</span>
-          <span><span style={{ color: "#f59e0b" }}>{"\u25cf"}</span> NEUTRAL 40&ndash;60</span>
-          <span><span style={{ color: "#ef4444" }}>{"\u25cf"}</span> BEARISH &le; 40</span>
+        {/* Legend */}
+        <div style={{ display: "flex", gap: "16px", marginBottom: "20px", fontSize: "11px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>
+          <span><span style={{ color: "#22c55e" }}>●</span> Bullish ≥ 60</span>
+          <span><span style={{ color: "#f59e0b" }}>●</span> Neutral 40–60</span>
+          <span><span style={{ color: "#ef4444" }}>●</span> Bearish ≤ 40</span>
         </div>
 
+        {/* Table */}
         {coins.length === 0 ? (
-          <div style={{ borderTop: "1px solid #27272a", paddingTop: "40px", textAlign: "center" }}>
-            <div style={{ color: "#52525b", fontSize: "13px", marginBottom: "12px" }}>NO SIGNAL DATA YET</div>
-            <div style={{ color: "#3f3f46", fontSize: "11px", marginBottom: "24px" }}>Be the first to submit a signal.</div>
-            <Link href="/signup" style={{ color: "#22c55e", fontSize: "12px", textDecoration: "none", padding: "8px 20px", border: "1px solid #22c55e44", borderRadius: "4px" }}>Create Account &rarr;</Link>
+          <div style={{ borderTop: "1px solid var(--line-col)", paddingTop: "40px", textAlign: "center" }}>
+            <div style={{ color: "var(--muted)", fontSize: "13px", marginBottom: "12px" }}>No signal data yet</div>
+            <div style={{ color: "var(--muted)", fontSize: "11px", marginBottom: "24px", opacity: 0.6 }}>Be the first to submit a signal.</div>
+            <Link href="/signup" style={{ color: "var(--lav)", fontSize: "13px", textDecoration: "none", padding: "8px 20px", border: "1px solid rgba(155,142,232,0.35)", borderRadius: "50px", fontFamily: "var(--font-lora), serif" }}>
+              Create Account →
+            </Link>
           </div>
         ) : (
-          <div style={{ overflowX: "auto" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "36px 72px 1fr 120px 60px 60px 60px 90px", gap: "0 12px", padding: "6px 12px", borderBottom: "1px solid #27272a", fontSize: "10px", color: "#52525b", letterSpacing: "0.12em", textTransform: "uppercase" as const }}>
-              <span>#</span><span>TICKER</span><span>NAME</span><span>SCORE</span>
-              <span style={{ color: "#22c55e" }}>BULL</span>
-              <span style={{ color: "#ef4444" }}>BEAR</span>
-              <span style={{ color: "#f59e0b" }}>CHAOS</span>
-              <span>CHAIN</span>
+          <div style={{ overflowX: "auto", borderRadius: "16px", border: "1px solid rgba(190,185,215,0.45)", background: "#fff", boxShadow: "0 4px 6px rgba(100,90,160,0.06), 0 10px 20px rgba(100,90,160,0.08)" }}>
+            {/* Column headers */}
+            <div style={{ display: "grid", gridTemplateColumns: "36px 72px 1fr 130px 60px 60px 60px 80px", gap: "0 12px", padding: "10px 16px", borderBottom: "1px solid rgba(190,185,215,0.35)", fontSize: "10px", color: "var(--muted)", letterSpacing: "0.12em", textTransform: "uppercase" as const, fontFamily: "var(--font-ibm-plex-mono), monospace" }}>
+              <span>#</span>
+              <span>Ticker</span>
+              <span>Name</span>
+              <span>Score</span>
+              <span style={{ color: "#22c55e" }}>Bull</span>
+              <span style={{ color: "#ef4444" }}>Bear</span>
+              <span style={{ color: "#f59e0b" }}>Chaos</span>
+              <span>Chain</span>
             </div>
+
             {coins.map((coin, i) => {
               const color = scoreColor(coin.rep_score);
               const bar = scoreBar(coin.rep_score);
               return (
                 <div key={coin.coin_ticker}
-                  style={{ display: "grid", gridTemplateColumns: "36px 72px 1fr 120px 60px 60px 60px 90px", gap: "0 12px", padding: "10px 12px", borderBottom: "1px solid #18181b", fontSize: "13px", alignItems: "center", transition: "background 0.1s" }}
-                  onMouseEnter={e => (e.currentTarget.style.background = "#18181b")}
+                  style={{ display: "grid", gridTemplateColumns: "36px 72px 1fr 130px 60px 60px 60px 80px", gap: "0 12px", padding: "12px 16px", borderBottom: i < coins.length - 1 ? "1px solid rgba(190,185,215,0.2)" : "none", fontSize: "13px", alignItems: "center", transition: "background 0.1s" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(155,142,232,0.04)")}
                   onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                 >
-                  <span style={{ color: "#52525b", fontSize: "11px" }}>{i + 1}</span>
-                  <span style={{ color, fontWeight: 700, letterSpacing: "0.05em" }}>{coin.coin_ticker}</span>
-                  <span style={{ color: "#a1a1aa", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{coin.coins?.name ?? "\u2014"}</span>
-                  <div style={{ display: "flex", flexDirection: "column" as const, gap: "2px" }}>
-                    <span style={{ color, fontWeight: 700, fontSize: "13px" }}>{Number(coin.rep_score).toFixed(1)}</span>
-                    <span style={{ color, fontSize: "9px", letterSpacing: "0.05em", opacity: 0.7 }}>{bar}</span>
+                  <span style={{ color: "var(--muted)", fontSize: "11px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{i + 1}</span>
+                  <span style={{ color: "var(--lav)", fontWeight: 700, letterSpacing: "0.05em", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{coin.coin_ticker}</span>
+                  <span style={{ color: "var(--ink2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{coin.coins?.name ?? "—"}</span>
+                  <div style={{ display: "flex", flexDirection: "column" as const, gap: "3px" }}>
+                    <span style={{ color, fontWeight: 700, fontSize: "13px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{Number(coin.rep_score).toFixed(1)}</span>
+                    <span style={{ color, fontSize: "9px", letterSpacing: "0.04em", opacity: 0.65, fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{bar}</span>
                   </div>
-                  <span style={{ color: "#22c55e" }}>{coin.bullish_count.toLocaleString()}</span>
-                  <span style={{ color: "#ef4444" }}>{coin.bearish_count.toLocaleString()}</span>
-                  <span style={{ color: "#f59e0b" }}>{coin.chaos_count.toLocaleString()}</span>
-                  <span style={{ color: "#52525b", fontSize: "11px" }}>{coin.coins?.chain ?? "\u2014"}</span>
+                  <span style={{ color: "#22c55e", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{coin.bullish_count.toLocaleString()}</span>
+                  <span style={{ color: "#ef4444", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{coin.bearish_count.toLocaleString()}</span>
+                  <span style={{ color: "#f59e0b", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{coin.chaos_count.toLocaleString()}</span>
+                  <span style={{ color: "var(--muted)", fontSize: "11px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{coin.coins?.chain ?? "—"}</span>
                 </div>
               );
             })}
           </div>
         )}
 
-        <div style={{ marginTop: "40px", padding: "24px", border: "1px solid #27272a", borderRadius: "6px", background: "#0f0f11" }}>
-          <div style={{ color: "#22c55e", fontSize: "12px", marginBottom: "8px", letterSpacing: "0.08em" }}>$ coinrep --submit-signal</div>
-          <div style={{ color: "#d4d4d8", fontSize: "15px", fontWeight: 600, marginBottom: "6px" }}>Have an opinion on a meme coin?</div>
-          <p style={{ color: "#71717a", fontSize: "13px", marginBottom: "20px", lineHeight: 1.6 }}>
-            Submit a bullish, bearish, or chaos signal. Anonymous and updates rep score in real time.
+        {/* Submit signal CTA */}
+        <div style={{ marginTop: "32px", padding: "28px", border: "1px solid rgba(155,142,232,0.2)", borderRadius: "16px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)" }}>
+          <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--lav)", fontSize: "11px", marginBottom: "8px", letterSpacing: "0.08em" }}>
+            $ whatupb --submit-signal
+          </div>
+          <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", color: "var(--ink)", fontSize: "18px", fontWeight: 700, marginBottom: "6px" }}>
+            Have an opinion on a meme coin?
+          </div>
+          <p style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "20px", lineHeight: 1.6, fontFamily: "var(--font-lora), serif" }}>
+            Submit a bullish, bearish, or chaos signal — anonymous and updates the rep score instantly.
           </p>
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" as const }}>
             {user ? (
-              <Link href="/inbox" style={{ color: "#09090b", fontSize: "13px", fontWeight: 700, textDecoration: "none", padding: "10px 20px", background: "#22c55e", borderRadius: "4px" }}>Go to Signal Feed &rarr;</Link>
+              <Link href="/inbox" className="card-btn-primary" style={{ textDecoration: "none", display: "inline-block" }}>
+                Go to Signal Feed →
+              </Link>
             ) : (
               <>
-                <Link href="/signup" style={{ color: "#09090b", fontSize: "13px", fontWeight: 700, textDecoration: "none", padding: "10px 20px", background: "#22c55e", borderRadius: "4px" }}>Create Account &rarr;</Link>
-                <Link href="/login" style={{ color: "#a1a1aa", fontSize: "13px", textDecoration: "none", padding: "10px 20px", border: "1px solid #3f3f46", borderRadius: "4px" }}>Login</Link>
+                <Link href="/signup" className="card-btn-primary" style={{ textDecoration: "none", display: "inline-block" }}>
+                  Get Your Link — Free →
+                </Link>
+                <Link href="/login" style={{ color: "var(--muted)", fontSize: "14px", textDecoration: "none", padding: "13px 24px", border: "1px solid var(--faint)", borderRadius: "50px", fontFamily: "var(--font-lora), serif", background: "rgba(255,255,255,0.6)" }}>
+                  Log In
+                </Link>
               </>
             )}
           </div>
         </div>
 
-        <div style={{ marginTop: "48px", paddingTop: "20px", borderTop: "1px solid #18181b", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" as const, gap: "8px" }}>
-          <div style={{ display: "flex", gap: "16px", fontSize: "11px" }}>
-            <Link href="/privacy" style={{ color: "#52525b", textDecoration: "none" }}>Privacy</Link>
-            <Link href="/terms" style={{ color: "#52525b", textDecoration: "none" }}>Terms</Link>
-            <Link href="/content-policy" style={{ color: "#52525b", textDecoration: "none" }}>Content Policy</Link>
-            <Link href="/safety" style={{ color: "#52525b", textDecoration: "none" }}>Safety</Link>
+        {/* Footer */}
+        <footer className="landing-footer" style={{ marginTop: "48px" }}>
+          <div className="footer-top">
+            <div className="footer-brand">
+              <div className="footer-logo-row">
+                <span className="footer-wordmark">WhatUPB</span>
+              </div>
+              <p className="footer-tagline">Built for honest conversations.<br />Coin signals are moderated for safety.</p>
+            </div>
+            <div className="footer-links-col">
+              <div className="footer-col-label">Links</div>
+              <div className="footer-links-row">
+                <Link href="/">Home</Link>
+                <Link href="/privacy">Privacy</Link>
+                <Link href="/terms">Terms</Link>
+                <Link href="/content-policy">Content Policy</Link>
+                <Link href="/safety">Safety</Link>
+              </div>
+            </div>
           </div>
-          <span style={{ fontSize: "11px", color: "#3f3f46" }}>&copy; 2026 CoinRep &middot; coinrep.com</span>
-        </div>
+          <div className="footer-bottom">
+            <span>&copy; 2026 WhatUPB. All rights reserved.</span>
+            <span>whatupb.com</span>
+          </div>
+        </footer>
       </div>
     </div>
   );

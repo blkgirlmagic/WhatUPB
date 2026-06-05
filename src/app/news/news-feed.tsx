@@ -122,7 +122,7 @@ export default function NewsFeed({
 
       {/* ── Nav ──────────────────────────────────────────────────────────── */}
       <nav className="landing-nav">
-        <Link href="/" className="nav-logo">CoinRep</Link>
+        <Link href="/" className="nav-logo">WhatUPB</Link>
         <div className="nav-links">
           <Link href="/news" style={{ color: "var(--ink)", fontWeight: 500 }}>News</Link>
           {user ? (
