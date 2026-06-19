@@ -124,10 +124,11 @@ export default function NewsFeed({
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">WhatUPB</Link>
         <div className="nav-links">
-          <Link href="/news" style={{ color: "var(--ink)", fontWeight: 500 }}>News</Link>
+          <Link href="/news" style={{ color: "var(--ink)", fontWeight: 500 }}>Narrative Feed</Link>
+          <Link href="/alerts">Narrative Alerts</Link>
           {user ? (
             <>
-              <Link href="/inbox">Signal Feed</Link>
+              <Link href="/inbox">My Inbox</Link>
               <Link href="/settings" className="nav-cta">Settings</Link>
             </>
           ) : (
@@ -146,7 +147,7 @@ export default function NewsFeed({
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "24px", flexWrap: "wrap", gap: "8px" }}>
           <div>
             <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: "28px", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.5px", marginBottom: "4px" }}>
-              News Feed
+              Narrative Feed
             </div>
             <p style={{ fontSize: "13px", color: "var(--muted)" }}>
               {visible.length} item{visible.length !== 1 ? "s" : ""}

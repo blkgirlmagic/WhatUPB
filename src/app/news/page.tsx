@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase-server";
 import NewsFeed from "./news-feed";
 
 export const metadata: Metadata = {
-  title: "CoinRep — News Feed",
+  title: "WhatUPB — Narrative Feed",
   description: "Latest meme coin news and community signals, updated in real time.",
 };
 

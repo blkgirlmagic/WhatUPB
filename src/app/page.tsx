@@ -2,14 +2,12 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
 import { DiagonalLines } from "@/components/diagonal-lines";
 
-type CoinRow = {
-  coin_ticker: string;
-  rep_score: number;
-  bullish_count: number;
-  bearish_count: number;
-  chaos_count: number;
-  last_calculated: string;
-  coins: { name: string; chain: string } | null;
+type NarrativeRow = {
+  id: string;
+  name: string;
+  score: number;
+  momentum: number;
+  summary: string | null;
 };
 
 function scoreColor(score: number): string {
@@ -23,17 +21,29 @@ function scoreBar(score: number): string {
   return "█".repeat(filled) + "░".repeat(10 - filled);
 }
 
+function momentumColor(momentum: number): string {
+  if (momentum > 0) return "#22c55e";
+  if (momentum < 0) return "#ef4444";
+  return "#71717a";
+}
+
+function momentumArrow(momentum: number): string {
+  if (momentum > 0) return "▲";
+  if (momentum < 0) return "▼";
+  return "●";
+}
+
 export default async function Home() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const { data: rows } = await supabase
-    .from("coin_rep_scores")
-    .select("coin_ticker, rep_score, bullish_count, bearish_count, chaos_count, last_calculated, coins(name, chain)")
-    .order("rep_score", { ascending: false })
-    .limit(20);
+    .from("narratives")
+    .select("id, name, score, momentum, summary")
+    .order("score", { ascending: false })
+    .limit(10);
 
-  const coins: CoinRow[] = (rows ?? []) as unknown as CoinRow[];
+  const narratives: NarrativeRow[] = rows ?? [];
   const now = new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC";
 
   return (
@@ -45,10 +55,11 @@ export default async function Home() {
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">WhatUPB</Link>
         <div className="nav-links">
-          <Link href="/news">News</Link>
+          <Link href="/news">Narrative Feed</Link>
+          <Link href="/alerts">Narrative Alerts</Link>
           {user ? (
             <>
-              <Link href="/inbox">Signal Feed</Link>
+              <Link href="/inbox">My Inbox</Link>
               <Link href="/settings" className="nav-cta">Settings</Link>
             </>
           ) : (
@@ -65,65 +76,62 @@ export default async function Home() {
 
         {/* Header */}
         <div style={{ marginBottom: "32px" }}>
+          <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--lav)", fontSize: "10px", marginBottom: "10px", letterSpacing: "0.12em", fontWeight: 700 }}>
+            NARRATIVE INTELLIGENCE
+          </div>
           <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--muted)", fontSize: "11px", marginBottom: "8px", letterSpacing: "0.1em" }}>
-            $ whatupb --leaderboard --sort=rep_score --limit=20
+            $ whatupb --narratives --sort=score --limit=10
           </div>
           <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", color: "var(--ink)", fontSize: "28px", fontWeight: 800, letterSpacing: "-0.5px", marginBottom: "4px" }}>
-            Meme Coin Rep Scores
+            Narrative Scores
           </div>
           <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--muted)", fontSize: "11px" }}>
-            Last updated: {now} &nbsp;·&nbsp; Community signals: bullish / bearish / chaos
+            Last updated: {now} &nbsp;·&nbsp; Tracking 10 crypto narratives
           </div>
         </div>
 
         {/* Legend */}
         <div style={{ display: "flex", gap: "16px", marginBottom: "20px", fontSize: "11px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>
-          <span><span style={{ color: "#22c55e" }}>●</span> Bullish ≥ 60</span>
+          <span><span style={{ color: "#22c55e" }}>●</span> Strong ≥ 60</span>
           <span><span style={{ color: "#f59e0b" }}>●</span> Neutral 40–60</span>
-          <span><span style={{ color: "#ef4444" }}>●</span> Bearish ≤ 40</span>
+          <span><span style={{ color: "#ef4444" }}>●</span> Weak ≤ 40</span>
         </div>
 
         {/* Table */}
-        {coins.length === 0 ? (
+        {narratives.length === 0 ? (
           <div style={{ borderTop: "1px solid var(--line-col)", paddingTop: "40px", textAlign: "center" }}>
-            <div style={{ color: "var(--muted)", fontSize: "13px", marginBottom: "12px" }}>No signal data yet</div>
-            <div style={{ color: "var(--muted)", fontSize: "11px", marginBottom: "24px", opacity: 0.6 }}>Be the first to submit a signal.</div>
-            <Link href="/signup" style={{ color: "var(--lav)", fontSize: "13px", textDecoration: "none", padding: "8px 20px", border: "1px solid rgba(155,142,232,0.35)", borderRadius: "50px", fontFamily: "var(--font-lora), serif" }}>
-              Create Account →
-            </Link>
+            <div style={{ color: "var(--muted)", fontSize: "13px", marginBottom: "12px" }}>No narrative data yet</div>
           </div>
         ) : (
           <div style={{ overflowX: "auto", borderRadius: "16px", border: "1px solid rgba(190,185,215,0.45)", background: "#fff", boxShadow: "0 4px 6px rgba(100,90,160,0.06), 0 10px 20px rgba(100,90,160,0.08)" }}>
             {/* Column headers */}
-            <div style={{ display: "grid", gridTemplateColumns: "36px 72px 1fr 130px 60px 60px 60px 80px", gap: "0 12px", padding: "10px 16px", borderBottom: "1px solid rgba(190,185,215,0.35)", fontSize: "10px", color: "var(--muted)", letterSpacing: "0.12em", textTransform: "uppercase" as const, fontFamily: "var(--font-ibm-plex-mono), monospace" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "36px 1fr 100px 100px 2fr", gap: "0 12px", padding: "10px 16px", borderBottom: "1px solid rgba(190,185,215,0.35)", fontSize: "10px", color: "var(--muted)", letterSpacing: "0.12em", textTransform: "uppercase" as const, fontFamily: "var(--font-ibm-plex-mono), monospace" }}>
               <span>#</span>
-              <span>Ticker</span>
-              <span>Name</span>
+              <span>Narrative</span>
               <span>Score</span>
-              <span style={{ color: "#22c55e" }}>Bull</span>
-              <span style={{ color: "#ef4444" }}>Bear</span>
-              <span style={{ color: "#f59e0b" }}>Chaos</span>
-              <span>Chain</span>
+              <span>Momentum</span>
+              <span>Summary</span>
             </div>
 
-            {coins.map((coin, i) => {
-              const color = scoreColor(coin.rep_score);
-              const bar = scoreBar(coin.rep_score);
+            {narratives.map((narrative, i) => {
+              const color = scoreColor(narrative.score);
+              const bar = scoreBar(narrative.score);
+              const mColor = momentumColor(narrative.momentum);
+              const mArrow = momentumArrow(narrative.momentum);
               return (
-                <div key={coin.coin_ticker}
-                  style={{ display: "grid", gridTemplateColumns: "36px 72px 1fr 130px 60px 60px 60px 80px", gap: "0 12px", padding: "12px 16px", borderBottom: i < coins.length - 1 ? "1px solid rgba(190,185,215,0.2)" : "none", fontSize: "13px", alignItems: "center" }}
+                <div key={narrative.id}
+                  style={{ display: "grid", gridTemplateColumns: "36px 1fr 100px 100px 2fr", gap: "0 12px", padding: "12px 16px", borderBottom: i < narratives.length - 1 ? "1px solid rgba(190,185,215,0.2)" : "none", fontSize: "13px", alignItems: "center" }}
                 >
                   <span style={{ color: "var(--muted)", fontSize: "11px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{i + 1}</span>
-                  <span style={{ color: "var(--lav)", fontWeight: 700, letterSpacing: "0.05em", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{coin.coin_ticker}</span>
-                  <span style={{ color: "var(--ink2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{coin.coins?.name ?? "—"}</span>
+                  <span style={{ color: "var(--lav)", fontWeight: 700, letterSpacing: "0.02em" }}>{narrative.name}</span>
                   <div style={{ display: "flex", flexDirection: "column" as const, gap: "3px" }}>
-                    <span style={{ color, fontWeight: 700, fontSize: "13px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{Number(coin.rep_score).toFixed(1)}</span>
+                    <span style={{ color, fontWeight: 700, fontSize: "13px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{narrative.score.toFixed(1)}</span>
                     <span style={{ color, fontSize: "9px", letterSpacing: "0.04em", opacity: 0.65, fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{bar}</span>
                   </div>
-                  <span style={{ color: "#22c55e", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{coin.bullish_count.toLocaleString()}</span>
-                  <span style={{ color: "#ef4444", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{coin.bearish_count.toLocaleString()}</span>
-                  <span style={{ color: "#f59e0b", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{coin.chaos_count.toLocaleString()}</span>
-                  <span style={{ color: "var(--muted)", fontSize: "11px", fontFamily: "var(--font-ibm-plex-mono), monospace" }}>{coin.coins?.chain ?? "—"}</span>
+                  <span style={{ color: mColor, fontWeight: 700, fontFamily: "var(--font-ibm-plex-mono), monospace" }}>
+                    {mArrow} {Math.abs(narrative.momentum).toFixed(1)}
+                  </span>
+                  <span style={{ color: "var(--ink2)", fontSize: "12.5px", lineHeight: 1.5 }}>{narrative.summary ?? "—"}</span>
                 </div>
               );
             })}
@@ -144,7 +152,7 @@ export default async function Home() {
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" as const }}>
             {user ? (
               <Link href="/inbox" className="card-btn-primary" style={{ textDecoration: "none", display: "inline-block" }}>
-                Go to Signal Feed →
+                Go to My Inbox →
               </Link>
             ) : (
               <>

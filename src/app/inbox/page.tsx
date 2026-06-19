@@ -60,8 +60,9 @@ export default async function Inbox() {
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">WhatUPB</Link>
         <div className="nav-links">
-          <Link href="/inbox" style={{ color: "var(--ink)", fontWeight: 500 }}>Signal Feed</Link>
-          <Link href="/news">News</Link>
+          <Link href="/inbox" style={{ color: "var(--ink)", fontWeight: 500 }}>My Inbox</Link>
+          <Link href="/news">Narrative Feed</Link>
+          <Link href="/alerts">Narrative Alerts</Link>
           <Link href={`/${profile.username}`}>My Profile</Link>
           <Link href="/settings" className="nav-cta">Settings</Link>
         </div>
@@ -73,7 +74,7 @@ export default async function Inbox() {
         {/* Header */}
         <div className="anim-1" style={{ marginBottom: "28px" }}>
           <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: "28px", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.5px", marginBottom: "6px" }}>
-            Signal Feed
+            My Inbox
           </div>
           {messageCount > 0 ? (
             <p style={{ fontSize: "14px", color: "var(--muted)" }}>

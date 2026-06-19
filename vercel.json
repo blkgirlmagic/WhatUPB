@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/recalculate-rep",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/ingest-geckoterminal",
+      "schedule": "*/10 * * * *"
     }
   ]
 }
