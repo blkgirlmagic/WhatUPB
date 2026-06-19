@@ -27,17 +27,18 @@ import { classifyCoin, type NarrativeForClassification } from "@/lib/narrative-c
 //  narratives.matched_coins / total_volume / total_liquidity and
 //  overwritten each run).
 //
-//  NOTE: GeckoTerminal's response shape (JSON:API — pools in `data[]`,
-//  tokens in `included[]`, cross-referenced via
-//  relationships.base_token.data.id) was not verified against a live call
-//  while building this; outbound network access to api.geckoterminal.com
-//  was blocked in the dev sandbox. Parsing below is defensive (optional
-//  chaining, returns 502 on unexpected shape rather than throwing) — confirm
-//  field names against one real response after deploying and adjust
-//  extractCoins() if they differ.
+//  NOTE: the request includes `?include=base_token,quote_token,dex` — without
+//  it, GeckoTerminal's `included[]` array (where token name/symbol live) is
+//  empty, which silently produces 0 extracted coins even though `data[]` has
+//  pools. extractCoins() also falls back to parsing the pool's own
+//  `attributes.name` (formatted "BASE / QUOTE", e.g. "PEPE / SOL") if the
+//  included-token lookup still misses, and the 0-coins response includes a
+//  `debug` block (pool/included counts + a raw sample) so a future failure
+//  is diagnosable from the response body alone, without needing Vercel logs.
 // ---------------------------------------------------------------------------
 
-const GECKOTERMINAL_URL = "https://api.geckoterminal.com/api/v2/networks/solana/trending_pools";
+const GECKOTERMINAL_URL =
+  "https://api.geckoterminal.com/api/v2/networks/solana/trending_pools?include=base_token,quote_token,dex";
 
 const MOMENTUM_SPIKE_THRESHOLD = 15;  // score points gained in a single run
 const VOLUME_SPIKE_RATIO = 1.5;       // 50%+ increase vs. last run
@@ -102,7 +103,16 @@ function num(value: string | null | undefined): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-function extractCoins(payload: GeckoTerminalResponse): ExtractedCoin[] {
+type ExtractResult = {
+  coins: ExtractedCoin[];
+  poolsSeen: number;
+  includedSeen: number;
+  viaIncludedToken: number;
+  viaPoolNameFallback: number;
+  skipped: number;
+};
+
+function extractCoins(payload: GeckoTerminalResponse): ExtractResult {
   const pools = Array.isArray(payload.data) ? payload.data : [];
   const included = Array.isArray(payload.included) ? payload.included : [];
   const tokensById = new Map(
@@ -112,12 +122,37 @@ function extractCoins(payload: GeckoTerminalResponse): ExtractedCoin[] {
   // Multiple pools (different DEXes) can share a ticker — keep whichever
   // pool has the higher 24h volume.
   const byTicker = new Map<string, ExtractedCoin>();
+  let viaIncludedToken = 0;
+  let viaPoolNameFallback = 0;
+  let skipped = 0;
 
   for (const pool of pools) {
     const tokenId = pool.relationships?.base_token?.data?.id;
     const token = tokenId ? tokensById.get(tokenId) : undefined;
-    const symbol = token?.attributes?.symbol?.trim().toUpperCase();
-    if (!symbol) continue; // can't store/classify without a ticker
+
+    let symbol = token?.attributes?.symbol?.trim().toUpperCase();
+    let name = token?.attributes?.name?.trim();
+
+    if (symbol) {
+      viaIncludedToken++;
+    } else {
+      // Fallback: GeckoTerminal pool names are conventionally formatted
+      // "BASE / QUOTE" (e.g. "PEPE / SOL"), even when the included-token
+      // cross-reference comes back empty (e.g. `include` wasn't honored,
+      // or the relationship id didn't match anything in `included[]`).
+      const poolName = pool.attributes?.name;
+      const base = poolName?.split("/")[0]?.trim();
+      if (base) {
+        symbol = base.toUpperCase();
+        name = name || base;
+        viaPoolNameFallback++;
+      }
+    }
+
+    if (!symbol) {
+      skipped++;
+      continue; // can't store/classify without a ticker
+    }
 
     const volume = num(pool.attributes?.volume_usd?.h24);
     const liquidity = num(pool.attributes?.reserve_in_usd);
@@ -125,7 +160,7 @@ function extractCoins(payload: GeckoTerminalResponse): ExtractedCoin[] {
 
     const coin: ExtractedCoin = {
       ticker: symbol,
-      name: token?.attributes?.name?.trim() || symbol,
+      name: name || symbol,
       contract_address: token?.attributes?.address ?? null,
       pool_address: pool.attributes?.address ?? null,
       volume,
@@ -139,7 +174,14 @@ function extractCoins(payload: GeckoTerminalResponse): ExtractedCoin[] {
     }
   }
 
-  return [...byTicker.values()];
+  return {
+    coins: [...byTicker.values()],
+    poolsSeen: pools.length,
+    includedSeen: included.length,
+    viaIncludedToken,
+    viaPoolNameFallback,
+    skipped,
+  };
 }
 
 // ── Narrative aggregate recompute ───────────────────────────────────────────
@@ -182,25 +224,46 @@ export async function GET(request: NextRequest) {
   const supabase = getServiceClient();
 
   // ── 1. Fetch + parse trending pools (fail soft, never throw) ────────────
-  let coins: ExtractedCoin[];
+  let extraction: ExtractResult;
+  let rawPayload: GeckoTerminalResponse;
   try {
     const res = await fetch(GECKOTERMINAL_URL, {
-      headers: { Accept: "application/json" },
+      headers: {
+        Accept: "application/json;version=20230302",
+      },
       cache: "no-store",
     });
     if (!res.ok) {
       console.error(`[cron] GeckoTerminal returned ${res.status}`);
       return NextResponse.json({ ok: false, error: `GeckoTerminal ${res.status}` }, { status: 502 });
     }
-    const payload = (await res.json()) as GeckoTerminalResponse;
-    coins = extractCoins(payload);
+    rawPayload = (await res.json()) as GeckoTerminalResponse;
+    extraction = extractCoins(rawPayload);
   } catch (err) {
     console.error("[cron] GeckoTerminal fetch/parse failed:", err);
     return NextResponse.json({ ok: false, error: "fetch_failed" }, { status: 502 });
   }
 
+  const coins = extraction.coins;
+
   if (coins.length === 0) {
-    return NextResponse.json({ ok: true, coinsIngested: 0, message: "No pools returned" });
+    console.error(
+      `[cron] extracted 0 coins — poolsSeen=${extraction.poolsSeen} includedSeen=${extraction.includedSeen} viaIncludedToken=${extraction.viaIncludedToken} viaPoolNameFallback=${extraction.viaPoolNameFallback} skipped=${extraction.skipped}`
+    );
+    return NextResponse.json({
+      ok: true,
+      coinsIngested: 0,
+      message: "No coins extracted from response",
+      debug: {
+        poolsSeen: extraction.poolsSeen,
+        includedSeen: extraction.includedSeen,
+        viaIncludedToken: extraction.viaIncludedToken,
+        viaPoolNameFallback: extraction.viaPoolNameFallback,
+        skipped: extraction.skipped,
+        samplePool: rawPayload.data?.[0] ?? null,
+        sampleIncluded: rawPayload.included?.[0] ?? null,
+      },
+    });
   }
 
   // ── 2. Load narratives for classification + diffing ──────────────────────
