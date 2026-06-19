@@ -63,6 +63,7 @@ export default async function Inbox() {
           <Link href="/inbox" style={{ color: "var(--ink)", fontWeight: 500 }}>My Inbox</Link>
           <Link href="/news">Narrative Feed</Link>
           <Link href="/alerts">Narrative Alerts</Link>
+          <Link href="/leaderboard">Leaderboard</Link>
           <Link href={`/${profile.username}`}>My Profile</Link>
           <Link href="/settings" className="nav-cta">Settings</Link>
         </div>

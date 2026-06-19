@@ -114,6 +114,7 @@ export default function AlertsFeed({
         <div className="nav-links">
           <Link href="/news">Narrative Feed</Link>
           <Link href="/alerts" style={{ color: "var(--ink)", fontWeight: 500 }}>Narrative Alerts</Link>
+          <Link href="/leaderboard">Leaderboard</Link>
           {user ? (
             <>
               <Link href="/inbox">My Inbox</Link>
