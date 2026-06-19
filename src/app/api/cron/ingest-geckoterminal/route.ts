@@ -196,6 +196,11 @@ type NarrativeRow = NarrativeForClassification & {
 
 type NarrativeUpdate = {
   id: string;
+  name: string; // narratives.name is NOT NULL with no default — Postgres's
+                // INSERT ... ON CONFLICT DO UPDATE still constructs (and
+                // constraint-checks) the proposed row before it knows a
+                // conflict will redirect it to an UPDATE, so this must
+                // always be supplied even though the value never changes.
   score?: number;
   previous_score?: number;
   momentum?: number;
@@ -321,6 +326,7 @@ export async function GET(request: NextRequest) {
       if (prevMatchedCount !== 0 || prevVolume !== 0) {
         narrativeUpdates.push({
           id: n.id,
+          name: n.name,
           matched_coins: 0,
           total_volume: 0,
           total_liquidity: 0,
@@ -342,6 +348,7 @@ export async function GET(request: NextRequest) {
 
     narrativeUpdates.push({
       id: n.id,
+      name: n.name,
       score: newScore,
       previous_score: prevScore,
       momentum,
