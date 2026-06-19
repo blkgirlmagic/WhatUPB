@@ -62,6 +62,7 @@ type GeckoTokenAttrs = {
 
 type GeckoPoolAttrs = {
   address?: string;
+  name?: string; // e.g. "PEPE / SOL" — used as a fallback ticker source
   volume_usd?: { h24?: string };
   reserve_in_usd?: string;
   market_cap_usd?: string | null;
