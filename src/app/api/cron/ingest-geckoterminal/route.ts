@@ -403,21 +403,42 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // signalsWritten only counts rows Postgres actually confirmed — never the
+  // attempted count. `.select("id")` forces the insert to return the rows it
+  // committed, so a partial/whole failure shows up as a shorter (or empty)
+  // array rather than being assumed successful.
+  let signalsWritten = 0;
+  let signalError: string | null = null;
+
   if (signalInserts.length > 0) {
-    const { error: signalErr } = await supabase.from("narrative_signals").insert(signalInserts);
+    const { data: insertedSignals, error: signalErr } = await supabase
+      .from("narrative_signals")
+      .insert(signalInserts)
+      .select("id");
+
     if (signalErr) {
-      // Coins + scores already saved — don't fail the whole run over this.
+      // Coins + scores already saved — don't fail the whole run over this,
+      // but don't pretend it succeeded either.
       console.error("[cron] Signal insert failed:", signalErr.message);
+      signalError = signalErr.message;
+    } else {
+      signalsWritten = insertedSignals?.length ?? 0;
+      if (signalsWritten !== signalInserts.length) {
+        console.error(
+          `[cron] Signal insert mismatch: attempted ${signalInserts.length}, confirmed ${signalsWritten}`
+        );
+      }
     }
   }
 
   console.log(
-    `[cron] ingest-geckoterminal: ${coinUpserts.length} coins, ${narrativeUpdates.length} narratives updated, ${signalInserts.length} signals written`
+    `[cron] ingest-geckoterminal: ${coinUpserts.length} coins, ${narrativeUpdates.length} narratives updated, ${signalsWritten} signals written`
   );
   return NextResponse.json({
     ok: true,
     coinsIngested: coinUpserts.length,
     narrativesUpdated: narrativeUpdates.length,
-    signalsWritten: signalInserts.length,
+    signalsWritten,
+    ...(signalError ? { signalError } : {}),
   });
 }
