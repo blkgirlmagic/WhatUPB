@@ -189,9 +189,17 @@ function extractCoins(payload: GeckoTerminalResponse): ExtractResult {
 
 type NarrativeRow = NarrativeForClassification & {
   score: number | string;
+  momentum: number | string | null;
   matched_coins: number | null;
   total_volume: number | string | null;
   total_liquidity: number | string | null;
+};
+
+type HistoryInsert = {
+  narrative_id: string;
+  score: number;
+  momentum: number;
+  created_at: string;
 };
 
 type NarrativeUpdate = {
@@ -275,7 +283,7 @@ export async function GET(request: NextRequest) {
   // ── 2. Load narratives for classification + diffing ──────────────────────
   const { data: narrativeRows, error: narrativeErr } = await supabase
     .from("narratives")
-    .select("id, name, keywords, score, matched_coins, total_volume, total_liquidity");
+    .select("id, name, keywords, score, momentum, matched_coins, total_volume, total_liquidity");
 
   if (narrativeErr) {
     console.error("[cron] Failed to load narratives:", narrativeErr.message);
@@ -403,6 +411,46 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // ── 5. Snapshot every narrative into narrative_history ────────────────────
+  // One row per narrative per run, using whatever score/momentum is now
+  // current — freshly recomputed this run if it was touched, otherwise
+  // carried over unchanged from the load in step 2. This runs after the
+  // `narratives` upsert above so the snapshot reflects what was just
+  // persisted, not stale pre-run values.
+  const historyInserts: HistoryInsert[] = narratives.map((n) => {
+    const update = narrativeUpdates.find((u) => u.id === n.id);
+    const score = update?.score ?? Number(n.score);
+    const momentum = update?.momentum ?? Number(n.momentum ?? 0);
+    return {
+      narrative_id: n.id,
+      score,
+      momentum,
+      created_at: now,
+    };
+  });
+
+  let historyWritten = 0;
+  let historyError: string | null = null;
+
+  if (historyInserts.length > 0) {
+    const { data: insertedHistory, error: historyErr } = await supabase
+      .from("narrative_history")
+      .insert(historyInserts)
+      .select("id");
+
+    if (historyErr) {
+      console.error("[cron] History insert failed:", historyErr.message);
+      historyError = historyErr.message;
+    } else {
+      historyWritten = insertedHistory?.length ?? 0;
+      if (historyWritten !== historyInserts.length) {
+        console.error(
+          `[cron] History insert mismatch: attempted ${historyInserts.length}, confirmed ${historyWritten}`
+        );
+      }
+    }
+  }
+
   // signalsWritten only counts rows Postgres actually confirmed — never the
   // attempted count. `.select("id")` forces the insert to return the rows it
   // committed, so a partial/whole failure shows up as a shorter (or empty)
@@ -432,13 +480,15 @@ export async function GET(request: NextRequest) {
   }
 
   console.log(
-    `[cron] ingest-geckoterminal: ${coinUpserts.length} coins, ${narrativeUpdates.length} narratives updated, ${signalsWritten} signals written`
+    `[cron] ingest-geckoterminal: ${coinUpserts.length} coins, ${narrativeUpdates.length} narratives updated, ${historyWritten} history rows, ${signalsWritten} signals written`
   );
   return NextResponse.json({
     ok: true,
     coinsIngested: coinUpserts.length,
     narrativesUpdated: narrativeUpdates.length,
+    historyWritten,
     signalsWritten,
+    ...(historyError ? { historyError } : {}),
     ...(signalError ? { signalError } : {}),
   });
 }
