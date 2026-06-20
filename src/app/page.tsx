@@ -139,61 +139,42 @@ export default async function Home() {
           </div>
         )}
 
-        {/* Submit signal CTA */}
+        {/* Narrative tracking CTA */}
         <div style={{ marginTop: "32px", padding: "28px", border: "1px solid rgba(155,142,232,0.2)", borderRadius: "16px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)" }}>
           <div style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--lav)", fontSize: "11px", marginBottom: "8px", letterSpacing: "0.08em" }}>
-            $ whatupb --submit-signal
+            $ whatupb --track-narratives
           </div>
           <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", color: "var(--ink)", fontSize: "18px", fontWeight: 700, marginBottom: "6px" }}>
-            Have an opinion on a meme coin?
+            Track Crypto Narratives in Real Time
           </div>
           <p style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "20px", lineHeight: 1.6, fontFamily: "var(--font-lora), serif" }}>
-            Submit a bullish, bearish, or chaos signal — anonymous and updates the rep score instantly.
+            Track narrative strength, momentum shifts, emerging crypto narratives, and market-wide trends across crypto.
           </p>
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" as const }}>
-            {user ? (
-              <Link href="/inbox" className="card-btn-primary" style={{ textDecoration: "none", display: "inline-block" }}>
-                Go to My Inbox →
-              </Link>
-            ) : (
-              <>
-                <Link href="/signup" className="card-btn-primary" style={{ textDecoration: "none", display: "inline-block" }}>
-                  Get Your Link — Free →
-                </Link>
-                <Link href="/login" style={{ color: "var(--muted)", fontSize: "14px", textDecoration: "none", padding: "13px 24px", border: "1px solid var(--faint)", borderRadius: "50px", fontFamily: "var(--font-lora), serif", background: "rgba(255,255,255,0.6)" }}>
-                  Log In
-                </Link>
-              </>
-            )}
+            <Link href="/news" className="card-btn-primary" style={{ textDecoration: "none", display: "inline-block" }}>
+              Narrative Feed →
+            </Link>
+            <Link href="/alerts" style={{ color: "var(--muted)", fontSize: "14px", textDecoration: "none", padding: "13px 24px", border: "1px solid var(--faint)", borderRadius: "50px", fontFamily: "var(--font-lora), serif", background: "rgba(255,255,255,0.6)" }}>
+              Narrative Alerts
+            </Link>
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="landing-footer" style={{ marginTop: "48px" }}>
-          <div className="footer-top">
-            <div className="footer-brand">
-              <div className="footer-logo-row">
-                <span className="footer-wordmark">WhatUPB</span>
-              </div>
-              <p className="footer-tagline">Built for honest conversations.<br />Coin signals are moderated for safety.</p>
-            </div>
-            <div className="footer-links-col">
-              <div className="footer-col-label">Links</div>
-              <div className="footer-links-row">
-                <Link href="/">Home</Link>
-                <Link href="/privacy">Privacy</Link>
-                <Link href="/terms">Terms</Link>
-                <Link href="/content-policy">Content Policy</Link>
-                <Link href="/safety">Safety</Link>
-              </div>
-            </div>
+        {/* How It Works */}
+        <div id="how-it-works" style={{ marginTop: "32px", padding: "28px", border: "1px solid rgba(155,142,232,0.2)", borderRadius: "16px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)" }}>
+          <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", color: "var(--ink)", fontSize: "18px", fontWeight: 700, marginBottom: "16px" }}>
+            How It Works
           </div>
-          <div className="footer-bottom">
-            <span>&copy; 2026 WhatUPB. All rights reserved.</span>
-            <span>whatupb.com</span>
-          </div>
-        </footer>
-      </div>
-    </div>
-  );
-}
+          <ol style={{ display: "flex", flexDirection: "column" as const, gap: "10px", paddingLeft: 0, listStyle: "none", margin: 0 }}>
+            {[
+              "GeckoTerminal tracks trending crypto and meme coin activity in real time.",
+              "Coins are grouped into narratives based on shared themes.",
+              "Each narrative is scored using live volume, liquidity, and momentum data.",
+              "Narratives are ranked as they gain or lose strength.",
+              "Alerts flag significant narrative shifts as they happen.",
+            ].map((step, i) => (
+              <li key={i} style={{ display: "flex", gap: "12px", alignItems: "baseline" }}>
+                <span style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--lav)", fontSize: "12px", fontWeight: 700, flexShrink: 0 }}>
+                  {i + 1}.
+                </span>
+                <span style={{ color: "var(--ink2)", fontSize: "14px", line
