@@ -40,9 +40,21 @@ import { classifyCoin, type NarrativeForClassification } from "@/lib/narrative-c
 const GECKOTERMINAL_URL =
   "https://api.geckoterminal.com/api/v2/networks/solana/trending_pools?include=base_token,quote_token,dex";
 
-const MOMENTUM_SPIKE_THRESHOLD = 15;  // score points gained in a single run
-const VOLUME_SPIKE_RATIO = 1.5;       // 50%+ increase vs. last run
-const VOLUME_SPIKE_MIN_USD = 5000;    // ignore noise on tiny pools
+// These were originally tuned without accounting for the actual cron
+// cadence (every 10 min) or for what totalVolume represents (a SUM of each
+// matched coin's 24h-rolling volume_usd.h24, refetched every 10 min — not
+// a 10-minute volume figure). A 24h rolling sum barely moves tick-to-tick
+// under normal conditions, and the score formula below is dominated by the
+// coin-count term (matchedCount * 15, weighted 0.3), so a single coin
+// joining/leaving a narrative's matched set is a ~4.5-point momentum swing
+// on its own. Against the old thresholds (15 points / 50% volume growth in
+// one 10-min tick) neither condition was realistically reachable, which is
+// why signalsWritten stayed at 0 even on runs with real, visible
+// score/volume movement. Lowered to fire on changes an actual person would
+// call "something happened" rather than only on extreme outliers:
+const MOMENTUM_SPIKE_THRESHOLD = 5;   // score points gained in a single run (was 15)
+const VOLUME_SPIKE_RATIO = 1.15;      // 15%+ increase vs. last run (was 1.5 / 50%)
+const VOLUME_SPIKE_MIN_USD = 2000;    // floor to ignore noise on tiny pools (was 5000)
 
 function getServiceClient() {
   return createClient(
