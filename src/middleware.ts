@@ -14,6 +14,17 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Skip middleware entirely for cron routes. Vercel invokes scheduled
+  // cron jobs against the project's *.vercel.app production deployment URL
+  // (not the custom domain), so the vercel.app -> whatupb.com redirect
+  // below would otherwise catch every cron request and 308 it. Vercel cron
+  // jobs do not follow redirects — the invocation is treated as complete
+  // as soon as it gets a 3xx back, so the route handler underneath never
+  // actually runs. This was silently breaking both /api/cron routes.
+  if (request.nextUrl.pathname.startsWith('/api/cron/')) {
+    return NextResponse.next()
+  }
+
   // Redirect vercel.app preview URLs to the production domain
   const host = request.headers.get('host') || ''
   if (host.includes('vercel.app')) {
