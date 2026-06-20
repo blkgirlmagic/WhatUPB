@@ -1475,3 +1475,16 @@ body {
 /* ── Inbox page ──────────────────────────────────────── */
 .inbox-page-wrap { position: relative; z-index: 10; max-width: 640px; margin: 0 auto; padding: 90px 24px 120px; }
 @media (max-width: 640px) { .inbox-page-wrap { padding: 80px 16px 120px; } }
+
+/* ══════════════════════
+   HERO NARRATIVE BUBBLES
+   Scope .chat-float to the hero section only (it's position:fixed
+   globally for the old full-viewport chat layout) so the narrative
+   bubbles scroll away with the hero instead of floating over the
+   rest of the page forever.
+══════════════════════ */
+.hero .chat-float {
+  position: absolute;
+}
+olute;
+}
