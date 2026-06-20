@@ -160,21 +160,55 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* How It Works */}
-        <div id="how-it-works" style={{ marginTop: "32px", padding: "28px", border: "1px solid rgba(155,142,232,0.2)", borderRadius: "16px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)" }}>
-          <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", color: "var(--ink)", fontSize: "18px", fontWeight: 700, marginBottom: "16px" }}>
-            How It Works
-          </div>
-          <ol style={{ display: "flex", flexDirection: "column" as const, gap: "10px", paddingLeft: 0, listStyle: "none", margin: 0 }}>
-            {[
-              "GeckoTerminal tracks trending crypto and meme coin activity in real time.",
-              "Coins are grouped into narratives based on shared themes.",
-              "Each narrative is scored using live volume, liquidity, and momentum data.",
-              "Narratives are ranked as they gain or lose strength.",
-              "Alerts flag significant narrative shifts as they happen.",
-            ].map((step, i) => (
-              <li key={i} style={{ display: "flex", gap: "12px", alignItems: "baseline" }}>
-                <span style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--lav)", fontSize: "12px", fontWeight: 700, flexShrink: 0 }}>
-                  {i + 1}.
-                </span>
-                <span style={{ color: "var(--ink2)", fontSize: "14px", line
+       {/* How It Works */}
+<div id="how-it-works" style={{ marginTop: "32px", padding: "28px", border: "1px solid rgba(139, 117, 255, 0.18)", borderRadius: "24px" }}>
+  <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", color: "var(--ink)", fontSize: "28px", marginBottom: "16px" }}>
+    How It Works
+  </div>
+  <ol style={{ display: "flex", flexDirection: "column" as const, gap: "10px", paddingLeft: 0, listStyle: "none" }}>
+    {[
+      "GeckoTerminal tracks trending crypto and meme coin activity in real time.",
+      "Coins are grouped into narratives based on shared themes.",
+      "Each narrative is scored using live volume, liquidity, and momentum data.",
+      "Narratives are ranked as they gain or lose strength.",
+      "Alerts flag significant narrative shifts as they happen.",
+    ].map((step, i) => (
+      <li key={i} style={{ display: "flex", gap: "12px", alignItems: "baseline" }}>
+        <span style={{ fontFamily: "var(--font-ibm-plex-mono), monospace", color: "var(--lav)" }}>
+          {i + 1}.
+        </span>
+        <span style={{ color: "var(--ink2)", fontSize: "14px", lineHeight: 1.6 }}>
+          {step}
+        </span>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<footer
+  style={{
+    marginTop: "48px",
+    padding: "32px 0",
+    borderTop: "1px solid  rba(190,185,215,0.35)",
+  }}
+>
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      gap: "16px",
+      flexWrap: "wrap",
+      color: "var(--muted)",
+      fontSize: "12px",
+    }}
+  >
+    <span>&copy; 2026 WhatUPB. All rights reserved.</span>
+    <span>whatupb.com</span>
+  </div>
+</footer>
+
+      </div>
+    </div>
+  );
+}
+

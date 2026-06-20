@@ -110,4 +110,9 @@ export default async function Studios() {
         <div className="footer-bottom">
           <span>&copy; 2026 WhatUPB. All rights reserved.</span>
           <span>whatupb.com</span>
+      </div>
+    </footer>
+  </div>
+);
+}
      
