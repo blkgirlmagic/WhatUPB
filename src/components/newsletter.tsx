@@ -228,19 +228,16 @@ const DISMISS_TTL = 30 * 24 * 60 * 60 * 1000; // 30 days ms
 function shouldShowPopup(): boolean {
   try {
     if (localStorage.getItem(SUBSCRIBED_KEY) === "true") {
-      console.log("[WB Newsletter] Suppressed: subscribed");
       return false;
     }
     const raw = localStorage.getItem(DISMISS_KEY);
     if (raw) {
       const ts = parseInt(raw, 10);
       if (!isNaN(ts) && Date.now() - ts < DISMISS_TTL) {
-        console.log("[WB Newsletter] Suppressed: dismissed (within 30 days)");
         return false;
       }
     }
   } catch {
-    console.log("[WB Newsletter] Suppressed: localStorage unavailable");
     return false;
   }
   return true;
@@ -254,25 +251,18 @@ function dismissPopup() {
 
 export function NewsletterPopup() {
   const [visible, setVisible] = useState(false);
-  const [result, setResult] = useState<SubscribeResult | null>(null);
   const triggered = useRef(false);
 
   useEffect(() => {
-    console.log("[WB Newsletter] Mounted");
-
     if (!shouldShowPopup()) return;
-
-    console.log("[WB Newsletter] Timer started (5s for testing)");
 
     function trigger() {
       if (triggered.current) return;
       triggered.current = true;
-      console.log("[WB Newsletter] Popup opening");
       setVisible(true);
     }
 
-    // ⚠️ 5 seconds for testing — change to 35000 for production
-    const timer = setTimeout(trigger, 5000);
+    const timer = setTimeout(trigger, 35000);
 
     // OR trigger after 40% scroll depth
     function onScroll() {
@@ -296,9 +286,10 @@ export function NewsletterPopup() {
     setVisible(false);
   }
 
-  function handleSuccess(r: SubscribeResult) {
-    // localStorage is set inside NewsletterForm only after Supabase confirms
-    setResult(r);
+  function handleSuccess(_r: SubscribeResult) {
+    // localStorage already set inside NewsletterForm after API confirms;
+    // just close the popup — the subscribed flag prevents it from returning.
+    setVisible(false);
   }
 
   if (!visible) return null;
@@ -313,28 +304,18 @@ export function NewsletterPopup() {
         ✕
       </button>
 
-      {result ? (
-        <SuccessState
-          onClose={handleClose}
-          alreadySubscribed={result.alreadySubscribed}
-          compact
-        />
-      ) : (
-        <>
-          <div className="wb-popup-tag">FREE NEWSLETTER</div>
-          <div className="wb-popup-title">Get the WhatUPB Brief</div>
-          <p className="wb-popup-sub">
-            Weekly intelligence on government disclosures, crypto policy, and
-            blockchain activity.
-          </p>
-          <NewsletterForm
-            onSuccess={handleSuccess}
-            source="homepage_popup"
-            compact
-          />
-          <p className="wb-popup-fine">Free. No trading calls. Unsubscribe anytime.</p>
-        </>
-      )}
+      <div className="wb-popup-tag">FREE NEWSLETTER</div>
+      <div className="wb-popup-title">Get the WhatUPB Brief</div>
+      <p className="wb-popup-sub">
+        Weekly intelligence on government disclosures, crypto policy, and
+        blockchain activity.
+      </p>
+      <NewsletterForm
+        onSuccess={handleSuccess}
+        source="homepage_popup"
+        compact
+      />
+      <p className="wb-popup-fine">Free. No trading calls. Unsubscribe anytime.</p>
     </div>
   );
 }
