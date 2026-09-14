@@ -14,29 +14,25 @@ const navLinks = [
   { href: "/about", label: "About" },
 ];
 
-const tickerItems = [
-  { sym: "SPY", val: "+0.4%", up: true },
-  { sym: "S&P 500", val: "5,612", up: true },
-  { sym: "BTC", val: "+2.1%", up: true },
-  { sym: "ETH", val: "+1.7%", up: true },
-  { sym: "SOL", val: "+3.4%", up: true },
-  { sym: "NASDAQ", val: "+0.6%", up: true },
-  { sym: "DXY", val: "−0.3%", up: false },
-  { sym: "Gold", val: "+0.8%", up: true },
-  { sym: "10Y Yield", val: "4.38%", up: false },
-  { sym: "BNB", val: "+1.2%", up: true },
-  // duplicate set for seamless infinite loop
-  { sym: "SPY", val: "+0.4%", up: true },
-  { sym: "S&P 500", val: "5,612", up: true },
-  { sym: "BTC", val: "+2.1%", up: true },
-  { sym: "ETH", val: "+1.7%", up: true },
-  { sym: "SOL", val: "+3.4%", up: true },
-  { sym: "NASDAQ", val: "+0.6%", up: true },
-  { sym: "DXY", val: "−0.3%", up: false },
-  { sym: "Gold", val: "+0.8%", up: true },
-  { sym: "10Y Yield", val: "4.38%", up: false },
-  { sym: "BNB", val: "+1.2%", up: true },
+// Single sequence — duplicated below for seamless CSS -50% loop
+const TICKER_SEQUENCE = [
+  { sym: "SPY",      val: "+0.4%",  up: true  },
+  { sym: "S&P 500",  val: "5,612",  up: true  },
+  { sym: "NASDAQ",   val: "+0.6%",  up: true  },
+  { sym: "DXY",      val: "−0.3%",  up: false },
+  { sym: "Gold",     val: "+0.8%",  up: true  },
+  { sym: "10Y Yield",val: "4.38%",  up: false },
+  { sym: "BTC",      val: "+2.1%",  up: true  },
+  { sym: "ETH",      val: "+1.7%",  up: true  },
+  { sym: "SOL",      val: "+3.4%",  up: true  },
+  { sym: "BNB",      val: "+1.2%",  up: true  },
+  { sym: "XRP",      val: "+0.9%",  up: true  },
+  { sym: "DOGE",     val: "+1.5%",  up: true  },
+  { sym: "ADA",      val: "+0.7%",  up: true  },
 ];
+
+// Duplicate sequence so CSS translateX(-50%) produces a seamless loop
+const tickerItems = [...TICKER_SEQUENCE, ...TICKER_SEQUENCE];
 
 export default function MainNav() {
   const pathname = usePathname();

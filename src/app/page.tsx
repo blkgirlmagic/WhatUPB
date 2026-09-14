@@ -66,36 +66,6 @@ export default async function Home() {
 
       <MainNav />
 
-      {/* TradingView Ticker Tape */}
-      <div className="wb-ticker-wrap">
-        <div className="wb-ticker-scroll">
-          {[
-            { sym: "SPY", val: "+0.4%", up: true },
-            { sym: "S&P 500", val: "5,612", up: true },
-            { sym: "BTC", val: "+2.1%", up: true },
-            { sym: "ETH", val: "+1.7%", up: true },
-            { sym: "SOL", val: "+3.4%", up: true },
-            { sym: "NASDAQ", val: "+0.6%", up: true },
-            { sym: "DXY", val: "−0.3%", up: false },
-            { sym: "Gold", val: "+0.8%", up: true },
-            { sym: "10Y Yield", val: "4.38%", up: false },
-            { sym: "BNB", val: "+1.2%", up: true },
-            { sym: "SPY", val: "+0.4%", up: true },
-            { sym: "S&P 500", val: "5,612", up: true },
-            { sym: "BTC", val: "+2.1%", up: true },
-            { sym: "ETH", val: "+1.7%", up: true },
-            { sym: "SOL", val: "+3.4%", up: true },
-          ].map((item, i) => (
-            <span key={i} className="wb-ticker-item">
-              <span className="wb-ticker-sym">{item.sym}</span>
-              <span className={`wb-ticker-val ${item.up ? "up" : "down"}`}>
-                {item.val}
-              </span>
-            </span>
-          ))}
-        </div>
-      </div>
-
       {/* Hero */}
       <section className="wb-hero">
         <div className="wb-hero-inner">
@@ -209,7 +179,7 @@ export default async function Home() {
           </div>
         </div>
         <div className="wb-footer-bottom">
-          <span>© 2025 WhatUPB. All rights reserved.</span>
+          <span>© 2026 WhatUPB. All Rights Reserved.</span>
           <span className="wb-footer-disc">
             For informational purposes only. Not financial advice.
           </span>
