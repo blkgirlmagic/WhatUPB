@@ -93,7 +93,7 @@ export default function AgeGate({ children }: { children: React.ReactNode }) {
           {/* Logo */}
           <h1 className="text-3xl font-bold tracking-tight mb-8">
             <span className="bg-gradient-to-r from-denim-200 via-denim-100 to-white bg-clip-text text-transparent">
-              WhatUPB
+              CoinRep
             </span>
           </h1>
 

@@ -75,8 +75,9 @@ export default async function Studios() {
             lineHeight: 1.6,
             maxWidth: "420px",
           }}>
-            Original video series from WhatUPB Studios. Whimsy, mystery,
-            and anime \u2014 all on TikTok @GetWhatUPB.
+            A future hub for crypto shorts, narrative breakdowns, market
+            investigations, meme coin reviews, educational content, and
+            promotional videos.
           </p>
         </div>
 
@@ -91,7 +92,7 @@ export default async function Studios() {
               <span className="footer-wordmark">WhatUPB</span>
             </div>
             <p className="footer-tagline">
-              Built for honest conversations.<br />No human review of messages &mdash; ever.
+              Built for honest conversations.<br />Messages are moderated for safety.
             </p>
           </div>
           <div className="footer-links-col">
@@ -107,10 +108,11 @@ export default async function Studios() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>&copy; 2025 WhatUPB. All rights reserved.</span>
+          <span>&copy; 2026 WhatUPB. All rights reserved.</span>
           <span>whatupb.com</span>
-        </div>
-      </footer>
-    </div>
-  );
+      </div>
+    </footer>
+  </div>
+);
 }
+     

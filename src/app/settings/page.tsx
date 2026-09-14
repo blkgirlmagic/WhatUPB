@@ -91,7 +91,7 @@ export default async function Settings() {
       {/* NAV */}
       <nav className="landing-nav">
         <Link href="/" className="nav-logo">
-          WhatUPB
+          CoinRep
         </Link>
         <div className="nav-links">
           <Link href="/inbox">Inbox</Link>

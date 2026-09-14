@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-//  Hardcoded keyword fallback for WhatUPB content moderation.
+//  Hardcoded keyword fallback for CoinRep content moderation.
 //
 //  This file provides a FALLBACK safety net when the primary Hive Text
 //  Moderation API is unreachable.  It matches messages against hardcoded
@@ -221,7 +221,7 @@ export const CRISIS_MESSAGE =
   "Call or text 988 (Suicide & Crisis Lifeline) \u2014 free and confidential \uD83D\uDC99";
 
 export const ABUSE_MESSAGE =
-  "This message was blocked. WhatUPB is for honest, uplifting anonymous messages \u2014 not harm.";
+  "This message was blocked. CoinRep is for honest, uplifting anonymous messages \u2014 not harm.";
 
 // ── Public API ──────────────────────────────────────────────────────────────
 

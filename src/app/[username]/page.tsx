@@ -38,14 +38,22 @@ export default async function PublicProfile({
   } = await supabase.auth.getUser();
   const isOwner = user?.id === profile.id;
 
+  // Count messages sent to this profile in the last 24 hours
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { count: todayCount } = await supabase
+    .from("messages")
+    .select("id", { count: "exact", head: true })
+    .eq("recipient_id", profile.id)
+    .gte("created_at", twentyFourHoursAgo);
+  const messagesToday = todayCount ?? 0;
+
   const prof = profile as Record<string, unknown>;
   const promptOfDay = (prof.prompt_of_day as string) ?? null;
   const moodStatus = (prof.mood_status as string) ?? null;
-
-  const { vars: themeVars } = resolveTheme(profile.link_theme);
+  const { name: themeName, vars: themeVars } = resolveTheme(profile.link_theme);
 
   return (
-    <div className="landing-page" style={themeVars as React.CSSProperties}>
+    <div className="landing-page" data-theme={themeName} style={themeVars as React.CSSProperties}>
       {/* Bloom */}
       <div className="bloom" />
       <DiagonalLines />
@@ -94,6 +102,47 @@ export default async function PublicProfile({
           prompt={promptOfDay ?? undefined}
         />
 
+        {/* Social proof counter + viral CTA */}
+        <div className="anim-3" style={{ textAlign: "center", marginTop: "16px", marginBottom: "20px", width: "min(520px, 100%)" }}>
+          <p style={{
+            fontFamily: "var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace",
+            fontSize: "12px",
+            color: "#c9a84c",
+            fontWeight: 500,
+            letterSpacing: "0.3px",
+            marginBottom: "14px",
+          }}>
+            {messagesToday === 0
+              ? "Be the first to send something today \u{1F5A4}"
+              : messagesToday <= 5
+                ? `\u{1F5A4} ${messagesToday} ${messagesToday === 1 ? "person" : "people"} sent something today`
+                : `\u{1F5A4} ${messagesToday} people have already said something \u{2014} don\u{2019}t be the last.`}
+          </p>
+          {!isOwner && (
+            <Link
+              href="/signup"
+              style={{
+                display: "block",
+                width: "100%",
+                padding: "14px",
+                borderRadius: "50px",
+                border: "none",
+                textDecoration: "none",
+                fontSize: "15px",
+                fontWeight: 700,
+                color: "#fff",
+                textAlign: "center",
+                background: "#6b5ce7",
+                boxShadow: "0 4px 16px rgba(107,92,231,0.35)",
+                fontFamily: "var(--font-lora), 'Lora', Georgia, serif",
+                transition: "all 0.2s",
+              }}
+            >
+              Get your own link &rarr;
+            </Link>
+          )}
+        </div>
+
         <ReactionsFeed reactions={reactions ?? []} isOwner={isOwner} />
       </div>
 
@@ -105,7 +154,7 @@ export default async function PublicProfile({
               <span className="footer-wordmark">WhatUPB</span>
             </div>
             <p className="footer-tagline">
-              Built for honest conversations.<br />No human review of messages &mdash; ever.
+              Built for honest conversations.<br />Messages are moderated for safety.
             </p>
           </div>
           <div className="footer-links-col">
@@ -121,7 +170,7 @@ export default async function PublicProfile({
           </div>
         </div>
         <div className="footer-bottom">
-          <span>&copy; 2025 WhatUPB. All rights reserved.</span>
+          <span>&copy; 2026 WhatUPB. All rights reserved.</span>
           <span>whatupb.com</span>
         </div>
       </footer>

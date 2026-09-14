@@ -2,9 +2,26 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Let search-engine crawlers through without age gate or auth checks
+  const ua = request.headers.get('user-agent') || ''
+  if (/googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebot|twitterbot|linkedinbot|crawler|spider|bot\b/i.test(ua)) {
+    return NextResponse.next()
+  }
+
   // Skip middleware entirely for webhook routes — they need the raw body
   // untouched for signature verification and have no auth cookies.
   if (request.nextUrl.pathname.startsWith('/api/webhooks/')) {
+    return NextResponse.next()
+  }
+
+  // Skip middleware entirely for cron routes. Vercel invokes scheduled
+  // cron jobs against the project's *.vercel.app production deployment URL
+  // (not the custom domain), so the vercel.app -> whatupb.com redirect
+  // below would otherwise catch every cron request and 308 it. Vercel cron
+  // jobs do not follow redirects — the invocation is treated as complete
+  // as soon as it gets a 3xx back, so the route handler underneath never
+  // actually runs. This was silently breaking both /api/cron routes.
+  if (request.nextUrl.pathname.startsWith('/api/cron/')) {
     return NextResponse.next()
   }
 

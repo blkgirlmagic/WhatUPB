@@ -10,6 +10,8 @@ type Message = {
   id: string;
   content: string;
   created_at: string;
+  coin_ticker: string | null;
+  signal_type: "bullish" | "bearish" | "chaos" | null;
 };
 
 const REPORT_REASONS = [
@@ -24,10 +26,12 @@ export default function MessageList({
   initialMessages,
   isPremium,
   totalCount,
+  freeVisible = 5,
 }: {
   initialMessages: Message[];
   isPremium: boolean;
   totalCount: number;
+  freeVisible?: number;
 }) {
   const [mounted, setMounted] = useState(false);
   const [messages, setMessages] = useState(initialMessages);
@@ -184,7 +188,7 @@ export default function MessageList({
 
     const tagline = document.createElement("div");
     tagline.style.cssText = `font-size:22px;color:rgba(155,142,232,0.3);letter-spacing:0.04em;`;
-    tagline.textContent = "anonymous messages";
+    tagline.textContent = "meme coin reputation";
     bottomArea.appendChild(tagline);
 
     const url = document.createElement("div");
@@ -209,7 +213,7 @@ export default function MessageList({
   async function handleDownload() {
     if (!shareImageUrl) return;
     const link = document.createElement("a");
-    link.download = "whatupb-message.png";
+    link.download = "whatupb-signal.png";
     link.href = shareImageUrl;
     link.click();
     toast("Image saved!");
@@ -220,11 +224,11 @@ export default function MessageList({
     if (!shareImageUrl) return;
     try {
       const blob = await (await fetch(shareImageUrl)).blob();
-      const file = new File([blob], "whatupb-message.png", { type: "image/png" });
+      const file = new File([blob], "whatupb-signal.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file] }); closeShareMenu(); return; }
     } catch { /* Fall through */ }
     const link = document.createElement("a");
-    link.download = "whatupb-message.png";
+    link.download = "whatupb-signal.png";
     link.href = shareImageUrl;
     link.click();
     toast("Image saved! Open Instagram Stories and add it.");
@@ -235,11 +239,11 @@ export default function MessageList({
     if (!shareImageUrl) return;
     try {
       const blob = await (await fetch(shareImageUrl)).blob();
-      const file = new File([blob], "whatupb-message.png", { type: "image/png" });
+      const file = new File([blob], "whatupb-signal.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file] }); closeShareMenu(); return; }
     } catch { /* Fall through */ }
     const link = document.createElement("a");
-    link.download = "whatupb-message.png";
+    link.download = "whatupb-signal.png";
     link.href = shareImageUrl;
     link.click();
     toast("Image saved! Open Snapchat and add it.");
@@ -249,7 +253,7 @@ export default function MessageList({
   async function handleShareX() {
     if (!shareImageUrl) return;
     const link = document.createElement("a");
-    link.download = "whatupb-message.png";
+    link.download = "whatupb-signal.png";
     link.href = shareImageUrl;
     link.click();
     const tweetText = encodeURIComponent("Someone sent me this on WhatUPB \uD83D\uDC40\nhttps://whatupb.com");
@@ -258,7 +262,10 @@ export default function MessageList({
     closeShareMenu();
   }
 
-  const isCapped = !isPremium && totalCount > messages.length;
+  const isCapped = !isPremium && totalCount > freeVisible;
+  const visibleMessages = isPremium ? messages : messages.slice(0, freeVisible);
+  const blurredMessages = isPremium ? [] : messages.slice(freeVisible);
+  const hiddenCount = isCapped ? totalCount - freeVisible : 0;
 
   /* ── inline style helpers ──────────────────────────────── */
   const msgCard: React.CSSProperties = {
@@ -288,26 +295,55 @@ export default function MessageList({
   return (
     <>
       <div style={{ display: "flex", flexDirection: "column", gap: "0px" }}>
-        {/* Upgrade banner */}
-        {isCapped && (
-          <div style={{ background: "rgba(255,255,255,0.8)", backdropFilter: "blur(20px)", borderRadius: "16px", border: "1px solid rgba(155,142,232,0.2)", textAlign: "center", padding: "24px 20px", marginBottom: "16px", boxShadow: "0 4px 16px rgba(100,90,160,0.08)" }}>
-            <p style={{ color: "var(--ink)", fontWeight: 600, fontSize: "15px", marginBottom: "4px" }}>
-              You have {totalCount - messages.length} more message{totalCount - messages.length !== 1 ? "s" : ""} waiting.
-            </p>
-            <p style={{ color: "var(--muted)", fontSize: "13px", marginBottom: "16px" }}>
-              Upgrade to Premium to unlock your full inbox.
-            </p>
-            <Link href="/settings" className="card-btn-primary" style={{ maxWidth: "100%" }}>
-              Upgrade to Premium
-            </Link>
-          </div>
-        )}
-
-        {messages.map((msg) => {
+        {/* ── Visible (readable) messages ── */}
+        {visibleMessages.map((msg) => {
           const isCrisis = detectCrisis(msg.content);
 
           return (
             <div key={msg.id} className="group" style={msgCard}>
+              {/* Coin + signal badge row */}
+              {(msg.coin_ticker || msg.signal_type) && (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px", flexWrap: "wrap" }}>
+                  {msg.coin_ticker && (
+                    <span style={{
+                      fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em",
+                      padding: "3px 9px", borderRadius: "4px",
+                      background: "rgba(155,142,232,0.1)", border: "1px solid rgba(155,142,232,0.25)",
+                      color: "#9B8EE8", fontFamily: "var(--font-ibm-plex-mono), monospace",
+                    }}>
+                      ${msg.coin_ticker}
+                    </span>
+                  )}
+                  {msg.signal_type === "bullish" && (
+                    <span style={{
+                      fontSize: "11px", fontWeight: 700, padding: "3px 9px", borderRadius: "4px",
+                      background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)",
+                      color: "#22c55e", letterSpacing: "0.06em",
+                    }}>
+                      ▲ BULLISH
+                    </span>
+                  )}
+                  {msg.signal_type === "bearish" && (
+                    <span style={{
+                      fontSize: "11px", fontWeight: 700, padding: "3px 9px", borderRadius: "4px",
+                      background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
+                      color: "#ef4444", letterSpacing: "0.06em",
+                    }}>
+                      ▼ BEARISH
+                    </span>
+                  )}
+                  {msg.signal_type === "chaos" && (
+                    <span style={{
+                      fontSize: "11px", fontWeight: 700, padding: "3px 9px", borderRadius: "4px",
+                      background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.3)",
+                      color: "#f59e0b", letterSpacing: "0.06em",
+                    }}>
+                      ⚡ CHAOS
+                    </span>
+                  )}
+                </div>
+              )}
+
               {/* Message text */}
               <p style={{ color: "var(--ink)", whiteSpace: "pre-wrap", wordBreak: "break-word", marginBottom: "12px", lineHeight: 1.65, fontSize: "15px" }}>
                 {msg.content}
@@ -375,6 +411,139 @@ export default function MessageList({
             </div>
           );
         })}
+
+        {/* ── Blurred messages + paywall ── */}
+        {isCapped && blurredMessages.length > 0 && (
+          <div style={{ position: "relative", marginTop: "4px" }}>
+            {/* Blurred message cards — visible but unreadable */}
+            <div style={{ filter: "blur(7px)", WebkitFilter: "blur(7px)", pointerEvents: "none", userSelect: "none" }} aria-hidden="true">
+              {blurredMessages.map((msg) => (
+                <div key={msg.id} style={{ ...msgCard, opacity: 0.7 }}>
+                  <p style={{ color: "var(--ink)", whiteSpace: "pre-wrap", wordBreak: "break-word", marginBottom: "12px", lineHeight: 1.65, fontSize: "15px" }}>
+                    {msg.content}
+                  </p>
+                  <span style={{ fontSize: "12px", color: "var(--muted)" }}>{formatDate(msg.created_at)}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Paywall overlay — centered over blurred area */}
+            <div style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "center",
+              paddingTop: "32px",
+              background: "linear-gradient(180deg, rgba(240,234,255,0.1) 0%, rgba(240,234,255,0.85) 60%, rgba(240,234,255,0.98) 100%)",
+              zIndex: 5,
+            }}>
+              <div style={{
+                width: "100%",
+                maxWidth: "360px",
+                textAlign: "center",
+                padding: "28px 24px",
+                borderRadius: "20px",
+                background: "rgba(255,255,255,0.92)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: "1px solid rgba(155,142,232,0.2)",
+                boxShadow: "0 8px 32px rgba(100,90,160,0.12), 0 2px 8px rgba(100,90,160,0.06)",
+              }}>
+                {/* Lock icon */}
+                <div style={{
+                  width: "48px", height: "48px", borderRadius: "50%",
+                  background: "linear-gradient(135deg, rgba(155,142,232,0.12), rgba(155,142,232,0.06))",
+                  border: "1px solid rgba(155,142,232,0.2)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  margin: "0 auto 14px",
+                }}>
+                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#9B8EE8" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                  </svg>
+                </div>
+
+                {/* Count */}
+                <p style={{
+                  fontFamily: "var(--font-playfair), 'Playfair Display', serif",
+                  fontSize: "20px", fontWeight: 800, color: "var(--ink)",
+                  letterSpacing: "-0.3px", marginBottom: "6px",
+                }}>
+                  {hiddenCount} more message{hiddenCount !== 1 ? "s" : ""} waiting for you
+                </p>
+
+                {/* Tagline */}
+                <p style={{
+                  fontSize: "14px", color: "var(--muted)", lineHeight: 1.5,
+                  marginBottom: "20px", maxWidth: "280px", margin: "0 auto 20px",
+                }}>
+                  Your people have more to say. Unlock them all.
+                </p>
+
+                {/* Pricing chips */}
+                <div style={{
+                  display: "flex", justifyContent: "center", gap: "6px",
+                  flexWrap: "wrap", marginBottom: "18px",
+                }}>
+                  <span style={{
+                    padding: "5px 12px", borderRadius: "50px", fontSize: "12px", fontWeight: 600,
+                    background: "rgba(155,142,232,0.08)", border: "1px solid rgba(155,142,232,0.18)",
+                    color: "#6b5ce7",
+                  }}>$0.99/week</span>
+                  <span style={{
+                    padding: "5px 12px", borderRadius: "50px", fontSize: "12px", fontWeight: 600,
+                    background: "rgba(155,142,232,0.08)", border: "1px solid rgba(155,142,232,0.18)",
+                    color: "#6b5ce7",
+                  }}>$4.99/month</span>
+                  <span style={{
+                    padding: "5px 14px", borderRadius: "50px", fontSize: "12px", fontWeight: 700,
+                    background: "linear-gradient(135deg, #9B8EE8, #7C6FCC)",
+                    color: "#fff", border: "none",
+                  }}>$39.99/year</span>
+                </div>
+
+                {/* CTA button */}
+                <Link href="/settings" style={{
+                  display: "block", width: "100%", padding: "14px",
+                  borderRadius: "14px", border: "none", textDecoration: "none",
+                  fontSize: "15px", fontWeight: 700, color: "#fff", textAlign: "center",
+                  background: "linear-gradient(135deg, #9B8EE8 0%, #7C6FCC 100%)",
+                  boxShadow: "0 4px 16px rgba(124,111,204,0.4), inset 0 1px 0 rgba(255,255,255,0.2)",
+                  fontFamily: "var(--font-lora), 'Lora', Georgia, serif",
+                }}>
+                  Unlock All Messages
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Show paywall card even when no blurred messages to show (fewer than 6 total but still capped) */}
+        {isCapped && blurredMessages.length === 0 && (
+          <div style={{
+            textAlign: "center", padding: "28px 24px", marginTop: "12px",
+            borderRadius: "20px", background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px)",
+            border: "1px solid rgba(155,142,232,0.2)", boxShadow: "0 4px 16px rgba(100,90,160,0.08)",
+          }}>
+            <p style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: "18px", fontWeight: 700, color: "var(--ink)", marginBottom: "6px" }}>
+              {hiddenCount} more message{hiddenCount !== 1 ? "s" : ""} waiting for you
+            </p>
+            <p style={{ fontSize: "13px", color: "var(--muted)", marginBottom: "16px" }}>
+              Your people have more to say. Unlock them all.
+            </p>
+            <div style={{ display: "flex", justifyContent: "center", gap: "6px", flexWrap: "wrap", marginBottom: "16px" }}>
+              <span style={{ padding: "4px 10px", borderRadius: "50px", fontSize: "11px", fontWeight: 600, background: "rgba(155,142,232,0.08)", border: "1px solid rgba(155,142,232,0.18)", color: "#6b5ce7" }}>$0.99/week</span>
+              <span style={{ padding: "4px 10px", borderRadius: "50px", fontSize: "11px", fontWeight: 600, background: "rgba(155,142,232,0.08)", border: "1px solid rgba(155,142,232,0.18)", color: "#6b5ce7" }}>$4.99/month</span>
+              <span style={{ padding: "4px 12px", borderRadius: "50px", fontSize: "11px", fontWeight: 700, background: "linear-gradient(135deg, #9B8EE8, #7C6FCC)", color: "#fff" }}>$39.99/year</span>
+            </div>
+            <Link href="/settings" className="card-btn-primary" style={{ maxWidth: "100%" }}>
+              Unlock All Messages
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* ── Reaction modal ──────────────────────────────────── */}

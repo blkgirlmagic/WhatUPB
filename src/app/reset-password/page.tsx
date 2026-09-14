@@ -135,7 +135,7 @@ function ResetPasswordForm() {
               href="/"
               className="text-2xl font-bold bg-gradient-to-r from-denim-200 to-white bg-clip-text text-transparent"
             >
-              WhatUPB
+              CoinRep
             </Link>
           </div>
           <div className="flex items-start gap-3 bg-red-500/5 border border-red-500/20 text-red-300 px-4 py-3 rounded-xl mb-6 text-sm text-left">
@@ -168,7 +168,7 @@ function ResetPasswordForm() {
             href="/"
             className="text-2xl font-bold bg-gradient-to-r from-denim-200 to-white bg-clip-text text-transparent"
           >
-            WhatUPB
+            CoinRep
           </Link>
         </div>
 

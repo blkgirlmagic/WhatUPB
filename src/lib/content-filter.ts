@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-//  Pre-moderation content filter for WhatUPB anonymous messages.
+//  Pre-moderation content filter for CoinRep anonymous messages.
 //
 //  Runs BEFORE the Perspective API call to catch PII, spam, URLs, and
 //  doxxing patterns instantly — saving API quota on obvious violations.

@@ -2,31 +2,22 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import MessageList from "./message-list";
-
 import { DiagonalLines } from "@/components/diagonal-lines";
 
 export default async function Inbox() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
 
-  // Get username
   const { data: profile } = await supabase
     .from("profiles")
     .select("username")
     .eq("id", user.id)
     .single();
 
-  if (!profile) {
-    redirect("/login");
-  }
+  if (!profile) redirect("/login");
 
-  // Try to get premium status
   const { data: premiumData } = await supabase
     .from("profiles")
     .select("is_premium")
@@ -35,10 +26,10 @@ export default async function Inbox() {
 
   const isPremium = premiumData?.is_premium ?? false;
 
-  const MESSAGE_CAP = 15;
+  const FREE_VISIBLE = 5;
+  const FREE_BLUR_EXTRA = 10;
   const PREMIUM_PAGE_SIZE = 100;
 
-  // Get total count for free users
   let totalCount = 0;
   if (!isPremium) {
     const { count } = await supabase
@@ -48,14 +39,13 @@ export default async function Inbox() {
     totalCount = count ?? 0;
   }
 
-  // Free users: cap at 15 most recent. Premium: 100.
   let query = supabase
     .from("messages")
-    .select("*")
+    .select("id, content, created_at, coin_ticker, signal_type")
     .eq("recipient_id", user.id)
     .order("created_at", { ascending: false });
 
-  query = query.limit(isPremium ? PREMIUM_PAGE_SIZE : MESSAGE_CAP);
+  query = query.limit(isPremium ? PREMIUM_PAGE_SIZE : FREE_VISIBLE + FREE_BLUR_EXTRA);
 
   const { data } = await query;
   const messages = data;
@@ -68,11 +58,12 @@ export default async function Inbox() {
 
       {/* NAV */}
       <nav className="landing-nav">
-        <Link href="/" className="nav-logo">
-          WhatUPB
-        </Link>
+        <Link href="/" className="nav-logo">WhatUPB</Link>
         <div className="nav-links">
-          <Link href="/inbox" style={{ color: "var(--ink)", fontWeight: 500 }}>Inbox</Link>
+          <Link href="/inbox" style={{ color: "var(--ink)", fontWeight: 500 }}>My Inbox</Link>
+          <Link href="/news">Narrative Feed</Link>
+          <Link href="/alerts">Narrative Alerts</Link>
+          <Link href="/leaderboard">Leaderboard</Link>
           <Link href={`/${profile.username}`}>My Profile</Link>
           <Link href="/settings" className="nav-cta">Settings</Link>
         </div>
@@ -80,19 +71,20 @@ export default async function Inbox() {
 
       {/* PAGE */}
       <div className="inbox-page-wrap">
+
         {/* Header */}
         <div className="anim-1" style={{ marginBottom: "28px" }}>
           <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: "28px", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.5px", marginBottom: "6px" }}>
-            Inbox
+            My Inbox
           </div>
           {messageCount > 0 ? (
             <p style={{ fontSize: "14px", color: "var(--muted)" }}>
               {isPremium
-                ? `${messageCount} anonymous message${messageCount !== 1 ? "s" : ""}`
-                : `${messageCount} of ${totalCount} message${totalCount !== 1 ? "s" : ""}`}
+                ? `${messageCount} signal${messageCount !== 1 ? "s" : ""} received`
+                : `${Math.min(messageCount, FREE_VISIBLE)} of ${totalCount} signal${totalCount !== 1 ? "s" : ""}`}
             </p>
           ) : (
-            <p style={{ fontSize: "14px", color: "var(--muted)" }}>Waiting for messages&hellip;</p>
+            <p style={{ fontSize: "14px", color: "var(--muted)" }}>Waiting for signals&hellip;</p>
           )}
         </div>
 
@@ -104,16 +96,16 @@ export default async function Inbox() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
               </svg>
             </div>
-            <p style={{ color: "var(--ink)", fontWeight: 600, fontSize: "16px", marginBottom: "6px" }}>No messages yet</p>
-            <p style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "24px", maxWidth: "280px", margin: "0 auto 24px", lineHeight: 1.6 }}>
-              Share your link to start receiving anonymous messages.
+            <p style={{ color: "var(--ink)", fontWeight: 600, fontSize: "16px", marginBottom: "6px" }}>No signals yet</p>
+            <p style={{ color: "var(--muted)", fontSize: "14px", maxWidth: "280px", margin: "0 auto 24px", lineHeight: 1.6 }}>
+              Share your link to start receiving coin signals.
             </p>
             <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(255,255,255,0.6)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.8)", borderRadius: "12px", padding: "10px 16px", marginBottom: "24px" }}>
               <code style={{ fontSize: "14px", fontFamily: "monospace", color: "#9B8EE8" }}>
                 whatupb.com/{profile.username}
               </code>
             </div>
-            <div style={{ display: "block" }}>
+            <div>
               <Link href="/settings" className="card-btn-primary" style={{ maxWidth: "240px", margin: "0 auto" }}>
                 Share Your Link
               </Link>
@@ -125,6 +117,7 @@ export default async function Inbox() {
               initialMessages={messages}
               isPremium={isPremium}
               totalCount={isPremium ? (messages?.length ?? 0) : totalCount}
+              freeVisible={FREE_VISIBLE}
             />
           </div>
         )}
@@ -136,7 +129,7 @@ export default async function Inbox() {
           <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M12 3v8.25m0 0l-3-3m3 3l3-3" />
           </svg>
-          Inbox
+          Feed
         </Link>
         <Link href={`/${profile.username}`} className="settings-bar-btn">
           <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
