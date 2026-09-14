@@ -3,7 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Playfair_Display, IBM_Plex_Mono, Lora } from "next/font/google";
 import { ToastProvider } from "@/components/toast";
 import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
+import { NewsletterPopup } from "@/components/newsletter";
 import "./globals.css";
+import "./wb-intelligence.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,9 +44,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "WhatUPB — Say What You Really Think",
+  title: "WhatUPB — Crypto Intelligence & Public Data",
   description:
-    "Get honest, anonymous messages from friends and followers. Share your link, get real talk. Abuse automatically blocked.",
+    "WhatUPB tracks government financial disclosures, crypto policy, blockchain activity, and emerging digital assets — connecting the signals behind the market.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -57,18 +59,18 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "WhatUPB — Anonymous Messages",
+    title: "WhatUPB — Crypto Intelligence & Public Data",
     description:
-      "Send and receive anonymous messages. Safe, private, and abuse-free.",
+      "Government disclosures, crypto policy and blockchain activity — connected in one place.",
     url: "https://whatupb.com",
     siteName: "WhatUPB",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "WhatUPB — Anonymous Messages",
+    title: "WhatUPB — Crypto Intelligence & Public Data",
     description:
-      "Send and receive anonymous messages. Safe, private, and abuse-free.",
+      "Government disclosures, crypto policy and blockchain activity — connected in one place.",
   },
 };
 
@@ -84,6 +86,7 @@ export default function RootLayout({
       >
         <ToastProvider>{children}</ToastProvider>
         <ServiceWorkerRegistrar />
+        <NewsletterPopup />
       </body>
     </html>
   );

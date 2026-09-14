@@ -1,244 +1,218 @@
 import Link from "next/link";
+import { DiagonalLines } from "@/components/diagonal-lines";
+import MainNav from "@/components/main-nav";
 import { createClient } from "@/lib/supabase-server";
 
-import { DiagonalLines } from "@/components/diagonal-lines";
-import { ChatParallax } from "@/components/chat-parallax";
+const intelCards = [
+  { label: "ETH Fees", value: "+14%", trend: "up" },
+  { label: "CLARITY Act", value: "Updated", trend: "neutral" },
+  { label: "New Disclosures", value: "3 Today", trend: "neutral" },
+  { label: "SOL DEX Volume", value: "+18%", trend: "up" },
+  { label: "New Token Launches", value: "12 This Week", trend: "neutral" },
+  { label: "BTC Dominance", value: "54.2%", trend: "up" },
+  { label: "SEC Comment Period", value: "Closes in 6d", trend: "down" },
+  { label: "Base Activity", value: "+31%", trend: "up" },
+];
+
+const sectionCards = [
+  {
+    slug: "/capitol",
+    tag: "Capitol",
+    headline: "Government Financial Disclosures",
+    body: "Stocks, ETFs, options, and crypto transactions reported by Congress and federal officials — tracked and searchable.",
+    stat: "12 new disclosures this week",
+  },
+  {
+    slug: "/policy",
+    tag: "Policy",
+    headline: "CLARITY Act & Crypto Regulation",
+    body: "CLARITY Act, SEC rulemaking, CFTC jurisdiction, DeFi legislation and stablecoin frameworks — mapped in real time.",
+    stat: "2 bills updated yesterday",
+  },
+  {
+    slug: "/chains",
+    tag: "Chains",
+    headline: "Blockchain Network Activity",
+    body: "Live metrics across Ethereum, Solana, Bitcoin, Base, Arbitrum and more — fees, volume, TVL, and stablecoin flows.",
+    stat: "7 chains tracked",
+  },
+  {
+    slug: "/tokens",
+    tag: "Tokens",
+    headline: "Digital Asset Intelligence",
+    body: "Infrastructure, DeFi, AI, DePIN, gaming, and new token launches — with funding, chain, category, and risk context.",
+    stat: "8 launches this week",
+  },
+  {
+    slug: "/signals",
+    tag: "Signals",
+    headline: "Cross-Data Intelligence",
+    body: "Where market activity, blockchain data, government disclosures, and policy news intersect — the connections others miss.",
+    stat: "4 signals active",
+  },
+];
 
 export default async function Home() {
+  // Auth check is preserved but we don't gate the landing page on it
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   return (
-    <div className="landing-page">
+    <div className="wb-page">
       <div className="bloom" />
       <DiagonalLines />
-      <ChatParallax />
 
-      {/* Decorative watermark */}
-      <div className="watermark-qb" aria-hidden="true">?B?</div>
+      <MainNav />
 
-      {/* Floating chat messages */}
-      <div className="chat-float cf1">
-        <div className="msg">&ldquo;I&rsquo;ve never told you this but you saved me that year.&rdquo;</div>
-      </div>
-      <div className="chat-float cf2">
-        <div className="msg">&ldquo;You&rsquo;re the only person I trust completely.&rdquo;</div>
-      </div>
-      <div className="chat-float cf3">
-        <div className="msg">&ldquo;That meeting could&rsquo;ve been an email.&rdquo;</div>
-      </div>
-      <div className="chat-float cf4">
-        <div className="msg">&ldquo;I think about our conversation every single day.&rdquo;</div>
-      </div>
-      <div className="chat-float cf5">
-        <div className="msg">&ldquo;You deserved better than what they gave you.&rdquo;</div>
-      </div>
-      <div className="chat-float cf6">
-        <div className="msg">&ldquo;I was wrong. I should have said that sooner.&rdquo;</div>
-      </div>
-      <div className="chat-float cf7">
-        <div className="msg">&ldquo;Watching you succeed from a distance makes me proud.&rdquo;</div>
-      </div>
-      <div className="chat-float cf8">
-        <div className="msg">&ldquo;I&rsquo;ve never met anyone who makes people feel seen the way you do.&rdquo;</div>
-      </div>
-
-      {/* Nav */}
-      <nav className="landing-nav">
-        <Link href="/" className="nav-logo">
-          WhatUPB
-        </Link>
-        <div className="nav-links">
-          <a href="#how-it-works">How it works</a>
-          <Link href="/safety">Safety</Link>
-          <Link href="/studios">Studios</Link>
-          {user ? (
-            <Link href="/inbox" className="nav-cta">
-              Go to Inbox
-            </Link>
-          ) : (
-            <Link href="/signup" className="nav-cta">
-              Create Account
-            </Link>
-          )}
+      {/* TradingView Ticker Tape */}
+      <div className="wb-ticker-wrap">
+        <div className="wb-ticker-scroll">
+          {[
+            { sym: "SPY", val: "+0.4%", up: true },
+            { sym: "S&P 500", val: "5,612", up: true },
+            { sym: "BTC", val: "+2.1%", up: true },
+            { sym: "ETH", val: "+1.7%", up: true },
+            { sym: "SOL", val: "+3.4%", up: true },
+            { sym: "NASDAQ", val: "+0.6%", up: true },
+            { sym: "DXY", val: "−0.3%", up: false },
+            { sym: "Gold", val: "+0.8%", up: true },
+            { sym: "10Y Yield", val: "4.38%", up: false },
+            { sym: "BNB", val: "+1.2%", up: true },
+            { sym: "SPY", val: "+0.4%", up: true },
+            { sym: "S&P 500", val: "5,612", up: true },
+            { sym: "BTC", val: "+2.1%", up: true },
+            { sym: "ETH", val: "+1.7%", up: true },
+            { sym: "SOL", val: "+3.4%", up: true },
+          ].map((item, i) => (
+            <span key={i} className="wb-ticker-item">
+              <span className="wb-ticker-sym">{item.sym}</span>
+              <span className={`wb-ticker-val ${item.up ? "up" : "down"}`}>
+                {item.val}
+              </span>
+            </span>
+          ))}
         </div>
-      </nav>
+      </div>
 
       {/* Hero */}
-      <section className="hero">
-        <div className="hero-wordmark">WhatUPB</div>
-        <p className="hero-sub">
-          Say what people <em>really</em> think — anonymously.
-          <br />
-          No handles. No trace. Just honest vibes.
-        </p>
-
-        <div className="cta-row">
-          {user ? (
-            <>
-              <Link href="/inbox" className="btn-ghost">
-                Go to Inbox <span className="arrow">↗</span>
-              </Link>
-              <Link href="/settings" className="btn-filled">
-                Settings <span className="arrow">↗</span>
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className="btn-ghost">
-                Log In <span className="arrow">↗</span>
-              </Link>
-              <Link href="/signup" className="btn-filled">
-                Get Your Link — Free <span className="arrow">↗</span>
-              </Link>
-            </>
-          )}
-        </div>
-
-        {/* Glass card */}
-        <div className="glass-card">
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <div className="card-label">Your anonymous link</div>
-            <div className="card-headline">
-              Hear the truth people
-              <br />
-              never say out loud.
-            </div>
-            <p className="card-body">
-              Share your link anywhere. Friends send honest thoughts — zero
-              fear, zero trace. AI blocks every abusive message before you ever
-              see it.
-            </p>
-            <Link href="/signup">
-              <button className="card-btn-primary">
-                Get Your Link — Free
-              </button>
+      <section className="wb-hero">
+        <div className="wb-hero-inner">
+          <div className="wb-hero-eyebrow">Crypto Intelligence · Public Data</div>
+          <h1 className="wb-hero-headline">
+            Follow the Money.
+            <br />
+            Follow the Policy.
+            <br />
+            Follow the Chain.
+          </h1>
+          <p className="wb-hero-sub">
+            WhatUPB tracks government disclosures, crypto policy, blockchain
+            activity and emerging digital assets — connecting the signals behind
+            the market.
+          </p>
+          <div className="wb-hero-ctas">
+            <Link href="/signals" className="wb-btn-primary">
+              Explore Signals <span className="wb-arrow">↗</span>
             </Link>
-            <Link href="/login">
-              <button className="card-btn-secondary">Log In</button>
+            <Link href="/capitol" className="wb-btn-ghost">
+              View Capitol Disclosures <span className="wb-arrow">↗</span>
             </Link>
-            <div className="trust-row">
-              <div className="trust-item">
-                <div className="t-check">✓</div>
-                <span>Abuse auto-blocked</span>
-              </div>
-              <div className="trust-item">
-                <div className="t-check">✓</div>
-                <span>Fully anonymous</span>
-              </div>
-              <div className="trust-item">
-                <div className="t-check">✓</div>
-                <span>30 seconds</span>
-              </div>
-            </div>
           </div>
-        </div>
 
-        <div className="scroll-hint">
-          <div className="scroll-line" />
+          {/* Intelligence cards strip */}
+          <div className="wb-intel-strip">
+            {intelCards.map((card, i) => (
+              <div key={i} className={`wb-intel-card trend-${card.trend}`}>
+                <span className="wb-intel-label">{card.label}</span>
+                <span className="wb-intel-value">{card.value}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Stats */}
-      <div className="stats-strip">
-        <div className="stat">
-          <div className="stat-num">50K+</div>
-          <div className="stat-label">Messages sent</div>
-        </div>
-        <div className="stat-sep" />
-        <div className="stat">
-          <div className="stat-num">12K+</div>
-          <div className="stat-label">Links created</div>
-        </div>
-        <div className="stat-sep" />
-        <div className="stat">
-          <div className="stat-num">99%</div>
-          <div className="stat-label">Abuse blocked</div>
-        </div>
-        <div className="stat-sep" />
-        <div className="stat">
-          <div className="stat-num">Zero</div>
-          <div className="stat-label">Identity leaks</div>
-        </div>
+      {/* Today's brief banner */}
+      <div className="wb-today-banner">
+        <span className="wb-today-tag">Today on WhatUPB</span>
+        <span className="wb-today-sep">—</span>
+        <span className="wb-today-text">
+          12 new congressional disclosures · CLARITY Act update · Ethereum fees
+          +14% · 8 new token launches
+        </span>
       </div>
 
-      {/* How it works */}
-      <div id="how-it-works" className="section">
-        <div className="s-eyebrow">How It Works</div>
-        <div className="s-title">Three steps to real talk.</div>
-        <div className="steps-grid">
-          <div className="step-card">
-            <div className="step-num">01</div>
-            <div className="step-title">Create Your Link</div>
-            <p className="step-body">
-              Get your unique WhatUPB link in under 30 seconds. No card, no
-              setup.
-            </p>
-          </div>
-          <div className="step-card">
-            <div className="step-num">02</div>
-            <div className="step-title">Share Everywhere</div>
-            <p className="step-body">
-              Drop it in your bio, story, WhatsApp. Let people know the door
-              is open.
-            </p>
-          </div>
-          <div className="step-card">
-            <div className="step-num">03</div>
-            <div className="step-title">Read the Truth</div>
-            <p className="step-body">
-              Messages come in moderated by AI in real time. No hate — just
-              honest feedback.
-            </p>
-          </div>
+      {/* Section cards */}
+      <section className="wb-sections">
+        <div className="wb-sections-inner">
+          {sectionCards.map((card) => (
+            <Link key={card.slug} href={card.slug} className="wb-section-card">
+              <div className="wb-section-tag">{card.tag}</div>
+              <div className="wb-section-headline">{card.headline}</div>
+              <p className="wb-section-body">{card.body}</p>
+              <div className="wb-section-footer">
+                <span className="wb-section-stat">{card.stat}</span>
+                <span className="wb-section-arrow">→</span>
+              </div>
+            </Link>
+          ))}
         </div>
-      </div>
+      </section>
 
       {/* Bottom CTA */}
-      <div className="bottom-cta">
-        <div className="bc-title">
-          Ready for honest
+      <div className="wb-bottom-cta">
+        <div className="wb-bc-title">
+          Intelligence at the intersection of
           <br />
-          conversations?
+          markets, policy, and the chain.
         </div>
-        <p className="bc-sub">
-          Join thousands already hearing what people really think.
+        <p className="wb-bc-sub">
+          Built for investors, researchers, and anyone who wants to understand
+          where digital assets and government oversight are heading.
         </p>
-        <Link href="/signup" className="bc-btn">
-          Create Your Free Link <span className="arrow">↗</span>
+        <Link href="/signals" className="wb-bc-btn">
+          Explore Signals <span className="wb-arrow">↗</span>
         </Link>
       </div>
 
       {/* Footer */}
-      <footer className="landing-footer">
-        <div className="footer-top">
-          <div className="footer-brand">
-            <div className="footer-logo-row">
-              <span className="footer-wordmark">WhatUPB</span>
-            </div>
-            <p className="footer-tagline">
-              Built for honest conversations.
+      <footer className="wb-footer">
+        <div className="wb-footer-top">
+          <div className="wb-footer-brand">
+            <span className="wb-footer-wordmark">WhatUPB</span>
+            <p className="wb-footer-tagline">
+              Government disclosures, crypto policy,
               <br />
-              No human review of messages — ever.
+              and blockchain activity — connected.
             </p>
           </div>
-          <div className="footer-links-col">
-            <div className="footer-col-label">Links</div>
-            <div className="footer-links-row">
-              <Link href="/">Home</Link>
+          <div className="wb-footer-links-col">
+            <div className="wb-footer-col-label">Navigate</div>
+            <div className="wb-footer-links-row">
+              <Link href="/capitol">Capitol</Link>
+              <Link href="/policy">Policy</Link>
+              <Link href="/chains">Chains</Link>
+              <Link href="/tokens">Tokens</Link>
+              <Link href="/signals">Signals</Link>
+              <Link href="/about">About</Link>
+            </div>
+          </div>
+          <div className="wb-footer-links-col">
+            <div className="wb-footer-col-label">Legal</div>
+            <div className="wb-footer-links-row">
               <Link href="/privacy">Privacy</Link>
               <Link href="/terms">Terms</Link>
               <Link href="/content-policy">Content Policy</Link>
-              <Link href="/safety">Safety</Link>
               <Link href="/support">Support</Link>
             </div>
           </div>
         </div>
-        <div className="footer-bottom">
+        <div className="wb-footer-bottom">
           <span>© 2025 WhatUPB. All rights reserved.</span>
-          <span>whatupb.com</span>
+          <span className="wb-footer-disc">
+            For informational purposes only. Not financial advice.
+          </span>
         </div>
       </footer>
     </div>
