@@ -292,30 +292,48 @@ export function NewsletterPopup() {
     setVisible(false);
   }
 
+  // ESC to dismiss
+  useEffect(() => {
+    if (!visible) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") handleClose();
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [visible]);
+
   if (!visible) return null;
 
   return (
-    <div className="wb-popup" role="complementary" aria-label="Newsletter signup">
-      <button
-        className="wb-popup-close"
-        onClick={handleClose}
-        aria-label="Dismiss newsletter popup"
-      >
-        ✕
-      </button>
+    <div
+      className="wb-popup-overlay"
+      onClick={handleClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Newsletter signup"
+    >
+      <div className="wb-popup" onClick={(e) => e.stopPropagation()}>
+        <button
+          className="wb-popup-close"
+          onClick={handleClose}
+          aria-label="Dismiss newsletter popup"
+        >
+          ✕
+        </button>
 
-      <div className="wb-popup-tag">FREE NEWSLETTER</div>
-      <div className="wb-popup-title">Get the WhatUPB Brief</div>
-      <p className="wb-popup-sub">
-        Weekly intelligence on government disclosures, crypto policy, and
-        blockchain activity.
-      </p>
-      <NewsletterForm
-        onSuccess={handleSuccess}
-        source="homepage_popup"
-        compact
-      />
-      <p className="wb-popup-fine">Free. No trading calls. Unsubscribe anytime.</p>
+        <div className="wb-popup-tag">FREE NEWSLETTER</div>
+        <div className="wb-popup-title">Get the WhatUPB Brief</div>
+        <p className="wb-popup-sub">
+          Weekly intelligence on government disclosures, crypto policy, and
+          blockchain activity.
+        </p>
+        <NewsletterForm
+          onSuccess={handleSuccess}
+          source="homepage_popup"
+          compact
+        />
+        <p className="wb-popup-fine">Free. No trading calls. Unsubscribe anytime.</p>
+      </div>
     </div>
   );
 }
