@@ -2,6 +2,7 @@ import Link from "next/link";
 import { DiagonalLines } from "@/components/diagonal-lines";
 import MainNav from "@/components/main-nav";
 import { createClient } from "@/lib/supabase-server";
+import { intelligenceReports } from "@/lib/intelligence-reports";
 
 const intelCards = [
   { label: "ETH Fees", value: "+14%", trend: "up" },
@@ -129,6 +130,51 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {/* Intelligence Editorial Module */}
+      {intelligenceReports.filter((r) => r.status === "available").length > 0 && (
+        <section className="wb-home-intel">
+          <div className="wb-home-intel-inner">
+            <div className="wb-home-intel-label">WhatUPB Intelligence</div>
+            <div className="wb-home-intel-cards">
+              {intelligenceReports
+                .filter((r) => r.status === "available")
+                .map((report) => (
+                  <Link
+                    key={report.slug}
+                    href={`/intelligence/${report.slug}`}
+                    className="wb-home-intel-card"
+                  >
+                    <div className="wb-home-intel-card-number">
+                      Brief {report.briefNumber}
+                    </div>
+                    <div className="wb-home-intel-card-title">{report.title}</div>
+                    <p className="wb-home-intel-card-sub">{report.teaser}</p>
+                    <div className="wb-home-intel-card-footer">
+                      <span className="wb-home-intel-card-price">
+                        ${report.price.toFixed(2)} · PDF
+                      </span>
+                      <span className="wb-home-intel-card-cta">Read Brief →</span>
+                    </div>
+                  </Link>
+                ))}
+              <div className="wb-home-intel-cta-col">
+                <div className="wb-home-intel-cta-eyebrow">New</div>
+                <div className="wb-home-intel-cta-title">
+                  Paid research briefs.<br />Primary signals only.
+                </div>
+                <p className="wb-home-intel-cta-body">
+                  Concise intelligence reports on the policy shifts, government
+                  disclosures, and on-chain data that move digital asset markets.
+                </p>
+                <Link href="/intelligence" className="wb-btn-ghost">
+                  Browse Briefs ↗
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Bottom CTA */}
       <div className="wb-bottom-cta">

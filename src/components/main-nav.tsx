@@ -11,6 +11,7 @@ const navLinks = [
   { href: "/chains", label: "Chains" },
   { href: "/tokens", label: "Tokens" },
   { href: "/signals", label: "Signals" },
+  { href: "/intelligence", label: "Intelligence" },
   { href: "/about", label: "About" },
 ];
 
