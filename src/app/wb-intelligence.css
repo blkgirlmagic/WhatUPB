@@ -1505,6 +1505,23 @@
 .wb-support-email:hover {
   color: var(--lav);
 }
+.wb-support-link {
+  color: var(--lav); text-decoration: underline; text-underline-offset: 2px;
+}
+.wb-support-link:hover { opacity: 0.75; }
+.wb-support-body--list {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.wb-support-list-item {
+  display: block;
+  font-size: 15px; color: var(--muted); line-height: 1.6;
+  padding-left: 16px; position: relative;
+}
+.wb-support-list-item::before {
+  content: "—";
+  position: absolute; left: 0;
+  color: var(--lav); opacity: 0.7;
+}
 .wb-support-section--security {
   background: rgba(155,142,232,0.05);
   border: 1px solid rgba(155,142,232,0.14);
