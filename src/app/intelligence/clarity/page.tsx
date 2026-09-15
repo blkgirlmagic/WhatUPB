@@ -103,6 +103,14 @@ export default function ClarityPage() {
                 Secure checkout via Stripe. PDF delivered immediately after
                 payment. No subscription required.
               </p>
+              <p className="wb-brief-purchase-refund">
+                Digital product. All sales are final once access to the
+                Intelligence Brief has been provided.{" "}
+                <Link href="/terms#digital-products-refunds">
+                  Refund Policy
+                </Link>
+                .
+              </p>
             </div>
           </div>
         </div>

@@ -53,6 +53,12 @@ export default function SupportPage() {
                 by Stripe. For questions about a WhatUPB purchase, include the
                 purchase date and email address used at checkout.
               </p>
+              <p className="wb-support-body" style={{ marginTop: "12px" }}>
+                WhatUPB Intelligence Briefs are digital products and sales are
+                final once access has been provided. See our{" "}
+                <Link href="/terms#digital-products-refunds">Terms</Link> for
+                the complete Digital Products &amp; Refunds policy.
+              </p>
             </section>
 
             <section className="wb-support-section">

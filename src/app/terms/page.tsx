@@ -90,43 +90,55 @@ export default function TermsOfService() {
             </ul>
           </section>
 
+          <section id="digital-products-refunds">
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>7. Digital Products &amp; Refunds</h2>
+            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
+              WhatUPB Intelligence Briefs are digital products delivered electronically. Because access to a purchased Intelligence Brief is provided following successful payment, all sales are final once access to the digital product has been provided. Refunds will not be provided because a purchaser changes their mind after receiving access to a report.
+            </p>
+            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginTop: 12 }}>
+              If you were charged more than once for the same purchase, did not receive access to the product you purchased, received a defective or inaccessible file, or believe there has been a billing error, contact{" "}
+              <Link href="/support" style={{ color: "#8b5cf6", textDecoration: "underline" }}>WhatUPB Support</Link>.
+              {" "}WhatUPB may issue a refund or replacement where appropriate or where required by applicable law.
+            </p>
+          </section>
+
           <section>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>7. Limitation of Liability</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>8. Limitation of Liability</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
               To the maximum extent permitted by law, Aurora Bridge LLC and its officers, employees, and affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of data, revenue, or profits, arising out of or related to your use of WhatUPB. Our total liability for any claim related to the service shall not exceed the amount you have paid us in the twelve (12) months preceding the claim.
             </p>
           </section>
 
           <section>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>8. Disclaimer</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>9. Disclaimer</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
               WhatUPB is provided &quot;as is&quot; and &quot;as available&quot; without warranties of any kind, either express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, and non-infringement. We do not guarantee that the service will be uninterrupted, secure, or error-free.
             </p>
           </section>
 
           <section>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>9. Indemnification</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>10. Indemnification</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
               You agree to indemnify, defend, and hold harmless Aurora Bridge LLC and its officers, employees, and affiliates from any claims, damages, losses, liabilities, and expenses (including reasonable legal fees) arising from your use of the service, your violation of these Terms, or your violation of any third-party rights.
             </p>
           </section>
 
           <section>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>10. Governing Law</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>11. Governing Law</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
               These Terms shall be governed by and construed in accordance with the laws of the United States. Any disputes arising under these Terms shall be resolved in the courts of competent jurisdiction.
             </p>
           </section>
 
           <section>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>11. Changes to These Terms</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>12. Changes to These Terms</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
               We may update these Terms of Service from time to time. If we make significant changes, we will notify you by email or through the service. Your continued use of WhatUPB after changes are posted constitutes acceptance of the updated terms.
             </p>
           </section>
 
           <section>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>12. Contact Us</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>13. Contact Us</h2>
             <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
               If you have questions about these Terms of Service, contact Aurora Bridge LLC at{" "}
               <a href="mailto:contact.whatupb@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.whatupb@gmail.com</a>.
