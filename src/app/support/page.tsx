@@ -1,84 +1,143 @@
 import Link from "next/link";
+import MainNav from "@/components/main-nav";
+import { DiagonalLines } from "@/components/diagonal-lines";
 
 export const metadata = {
-  title: "Support — WhatUPB",
+  title: "Support | WhatUPB",
   description:
-    "Get help with your WhatUPB account, subscription, or platform questions.",
+    "Get help with WhatUPB Intelligence Briefs, the WhatUPB Brief newsletter, billing, corrections, and technical issues.",
 };
 
-export default function Support() {
+export default function SupportPage() {
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #fdfcfb 0%, #f5f2ed 100%)" }}>
-      {/* Nav */}
-      <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", maxWidth: 900, margin: "0 auto" }}>
-        <Link href="/" style={{ fontWeight: 700, fontSize: 20, color: "#1a1a2e", textDecoration: "none", fontFamily: "'Playfair Display', serif" }}>WhatUPB</Link>
-        <div style={{ display: "flex", gap: 24, alignItems: "center", fontSize: 14 }}>
-          <Link href="/privacy" style={{ color: "#6b7280", textDecoration: "none" }}>Privacy</Link>
-          <Link href="/terms" style={{ color: "#6b7280", textDecoration: "none" }}>Terms</Link>
-          <Link href="/safety" style={{ color: "#6b7280", textDecoration: "none" }}>Safety</Link>
-        </div>
-      </nav>
+    <div className="wb-page">
+      <div className="bloom" />
+      <DiagonalLines />
+      <MainNav />
 
-      <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 24px 80px" }}>
-        {/* Header */}
-        <div style={{ marginBottom: 48 }}>
-          <Link href="/" style={{ fontSize: 13, color: "#8b5cf6", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>&larr; Back to WhatUPB</Link>
-          <h1 style={{ fontSize: 32, fontWeight: 700, color: "#1a1a2e", marginTop: 20, letterSpacing: "-0.02em" }}>Support</h1>
-          <p style={{ color: "#9ca3af", fontSize: 13, marginTop: 8 }}>Last updated: March 2026</p>
-        </div>
+      <div className="wb-support-wrap">
+        <div className="wb-support-inner">
 
-        {/* Content */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
-          <section>
-            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
-              Welcome to the WhatUPB Support Center. If you need help with your account, subscription, or have questions about using the platform, please contact our support team.
+          {/* Back link */}
+          <Link href="/" className="wb-intel-bc-link">← Back to WhatUPB</Link>
+
+          {/* Header */}
+          <div className="wb-support-header">
+            <div className="wb-intel-header-eyebrow">WhatUPB</div>
+            <h1 className="wb-support-title">Support</h1>
+            <p className="wb-support-lead">
+              Need help with WhatUPB? Get assistance with Intelligence Brief
+              purchases and downloads, the WhatUPB Brief newsletter, billing
+              questions, corrections, or technical issues.
             </p>
-          </section>
+            <p className="wb-support-date">Last updated: September 2026</p>
+          </div>
 
-          <section>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>Contact Support</h2>
-            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>Email support is the fastest way to reach us.</p>
-            <ul style={{ listStyle: "disc", paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-              <li style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}><strong style={{ color: "#4b5563" }}>Email:</strong>{" "}<a href="mailto:contact.whatupb@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.whatupb@gmail.com</a></li>
-            </ul>
-            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7, marginTop: 16 }}>We typically respond within 24&ndash;48 hours.</p>
-          </section>
+          {/* Sections */}
+          <div className="wb-support-sections">
 
-          <section>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>Common Questions</h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-              <div>
-                <p style={{ color: "#1a1a2e", fontSize: 14, fontWeight: 600, marginBottom: 4 }}>How do I delete my account?</p>
-                <p style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>Email us at <a href="mailto:contact.whatupb@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.whatupb@gmail.com</a> with the subject &quot;Account Deletion&quot; and we&apos;ll process it within 30 days.</p>
-              </div>
-              <div>
-                <p style={{ color: "#1a1a2e", fontSize: 14, fontWeight: 600, marginBottom: 4 }}>How do I cancel my subscription?</p>
-                <p style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>Go to Settings &gt; Billing to manage your subscription. Cancellation takes effect at the end of your current billing period.</p>
-              </div>
-              <div>
-                <p style={{ color: "#1a1a2e", fontSize: 14, fontWeight: 600, marginBottom: 4 }}>I received a harmful message. What do I do?</p>
-                <p style={{ color: "#6b7280", fontSize: 14, lineHeight: 1.7 }}>Report it by emailing <a href="mailto:contact.whatupb@gmail.com" style={{ color: "#8b5cf6", textDecoration: "underline" }}>contact.whatupb@gmail.com</a>. If you&apos;re in crisis, visit our <Link href="/safety" style={{ color: "#8b5cf6", textDecoration: "underline" }}>Safety Resources</Link> page.</p>
-              </div>
-            </div>
-          </section>
+            <section className="wb-support-section">
+              <h2 className="wb-support-section-title">Intelligence Briefs</h2>
+              <p className="wb-support-body">
+                If you purchased a WhatUPB Intelligence Brief and are having
+                trouble accessing or downloading it, contact us using the email
+                address associated with your purchase. Do not send payment-card
+                information.
+              </p>
+            </section>
 
-          <section>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a2e", marginBottom: 12 }}>Report Abuse</h2>
-            <p style={{ color: "#4b5563", fontSize: 14, lineHeight: 1.7 }}>
-              If you need to report abuse, harassment, or illegal content on the platform, email us with as much context as possible. We take all reports seriously.
-            </p>
-          </section>
-        </div>
+            <section className="wb-support-section">
+              <h2 className="wb-support-section-title">Billing &amp; Payments</h2>
+              <p className="wb-support-body">
+                Payments for WhatUPB Intelligence Briefs are securely processed
+                by Stripe. For questions about a WhatUPB purchase, include the
+                purchase date and email address used at checkout.
+              </p>
+            </section>
 
-        {/* Footer nav */}
-        <div style={{ marginTop: 64, paddingTop: 32, borderTop: "1px solid rgba(0,0,0,0.08)", display: "flex", flexWrap: "wrap", gap: "8px 24px", fontSize: 12 }}>
-          <Link href="/privacy" style={{ color: "#9ca3af", textDecoration: "none" }}>Privacy Policy</Link>
-          <Link href="/terms" style={{ color: "#9ca3af", textDecoration: "none" }}>Terms of Service</Link>
-          <Link href="/content-policy" style={{ color: "#9ca3af", textDecoration: "none" }}>Content Policy</Link>
-          <Link href="/safety" style={{ color: "#9ca3af", textDecoration: "none" }}>Safety</Link>
-          <Link href="/" style={{ color: "#9ca3af", textDecoration: "none" }}>Home</Link>
+            <section className="wb-support-section">
+              <h2 className="wb-support-section-title">WhatUPB Brief Newsletter</h2>
+              <p className="wb-support-body">
+                For help subscribing to or receiving the free WhatUPB Brief
+                newsletter, contact support.
+              </p>
+            </section>
+
+            <section className="wb-support-section">
+              <h2 className="wb-support-section-title">Corrections &amp; Data</h2>
+              <p className="wb-support-body">
+                WhatUPB uses public records and third-party data sources. If you
+                believe published information is inaccurate or requires
+                clarification, send the page URL and a description of the issue.
+              </p>
+            </section>
+
+            <section className="wb-support-section wb-support-section--contact">
+              <h2 className="wb-support-section-title">Contact</h2>
+              <a
+                href="mailto:contact.whatupb@gmail.com"
+                className="wb-support-email"
+              >
+                contact.whatupb@gmail.com
+              </a>
+              <p className="wb-support-body" style={{ marginTop: "12px" }}>
+                We typically respond within 1–2 business days.
+              </p>
+            </section>
+
+            <section className="wb-support-section wb-support-section--security">
+              <h2 className="wb-support-section-title">Security</h2>
+              <p className="wb-support-body">
+                WhatUPB will never ask you to send passwords, private keys, seed
+                phrases, wallet recovery phrases, or full payment-card
+                information by email.
+              </p>
+            </section>
+
+          </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="wb-footer">
+        <div className="wb-footer-top">
+          <div className="wb-footer-brand">
+            <span className="wb-footer-wordmark">WhatUPB</span>
+            <p className="wb-footer-tagline">
+              Government disclosures, crypto policy,
+              <br />
+              and blockchain activity — connected.
+            </p>
+          </div>
+          <div className="wb-footer-links-col">
+            <div className="wb-footer-col-label">Navigate</div>
+            <div className="wb-footer-links-row">
+              <Link href="/capitol">Capitol</Link>
+              <Link href="/policy">Policy</Link>
+              <Link href="/chains">Chains</Link>
+              <Link href="/tokens">Tokens</Link>
+              <Link href="/signals">Signals</Link>
+              <Link href="/intelligence">Intelligence</Link>
+              <Link href="/about">About</Link>
+            </div>
+          </div>
+          <div className="wb-footer-links-col">
+            <div className="wb-footer-col-label">Legal</div>
+            <div className="wb-footer-links-row">
+              <Link href="/privacy">Privacy</Link>
+              <Link href="/terms">Terms</Link>
+              <Link href="/content-policy">Content Policy</Link>
+              <Link href="/support">Support</Link>
+            </div>
+          </div>
+        </div>
+        <div className="wb-footer-bottom">
+          <span>© 2026 WhatUPB. All Rights Reserved.</span>
+          <span className="wb-footer-disc">
+            For informational purposes only. Not financial advice.
+          </span>
+        </div>
+      </footer>
     </div>
   );
 }

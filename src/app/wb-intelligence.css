@@ -1414,3 +1414,110 @@
   .wb-brief-detail-specs { grid-template-columns: 1fr; }
   .wb-home-intel { padding: 16px 20px 48px; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SUPPORT PAGE
+══════════════════════════════════════════════════════════════ */
+.wb-support-wrap {
+  padding-top: 190px;
+  padding-bottom: 80px;
+  padding-left: 32px;
+  padding-right: 32px;
+  min-height: 70vh;
+}
+.wb-support-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.wb-support-header {
+  margin-top: 24px;
+  margin-bottom: 52px;
+}
+.wb-support-title {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-size: clamp(38px, 5vw, 56px);
+  font-weight: 800;
+  letter-spacing: -2px;
+  color: var(--ink);
+  line-height: 1.05;
+  margin: 12px 0 16px;
+}
+.wb-support-lead {
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 1.75;
+  max-width: 600px;
+  margin-bottom: 12px;
+}
+.wb-support-date {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.wb-support-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.wb-support-section {
+  padding: 32px 0;
+  border-bottom: 1px solid var(--faint);
+}
+.wb-support-section:first-child {
+  border-top: 1px solid var(--faint);
+}
+.wb-support-section-title {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+  margin-bottom: 12px;
+}
+.wb-support-body {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.75;
+  margin: 0;
+}
+.wb-support-section--contact .wb-support-section-title {
+  color: var(--lav);
+}
+.wb-support-email {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: -0.4px;
+  transition: color 0.18s;
+}
+.wb-support-email:hover {
+  color: var(--lav);
+}
+.wb-support-section--security {
+  background: rgba(155,142,232,0.05);
+  border: 1px solid rgba(155,142,232,0.14);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-top: 8px;
+  border-bottom: none;
+}
+.wb-support-section--security .wb-support-section-title {
+  font-size: 13px;
+  font-family: var(--font-ibm-plex-mono), monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--lav);
+  margin-bottom: 10px;
+}
+.wb-support-section--security .wb-support-body {
+  font-size: 14px;
+}
+@media (max-width: 640px) {
+  .wb-support-wrap { padding: 160px 20px 60px; }
+  .wb-support-section--security { padding: 20px; }
+}
