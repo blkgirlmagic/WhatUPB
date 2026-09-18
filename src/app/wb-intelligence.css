@@ -1546,3 +1546,135 @@
   .wb-support-wrap { padding: 160px 20px 60px; }
   .wb-support-section--security { padding: 20px; }
 }
+
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE AUDIT FIXES — 2026-09-18
+   Capitol table, missing components, mobile layout
+══════════════════════════════════════════════════════════════ */
+
+/* ── Table: min-width prevents column squishing ─────────────── */
+/* Root fix for Filing/PTR column being compressed to near-zero. */
+/* Without min-width, browsers shrink flexible columns rather   */
+/* than triggering overflow-x:auto scroll on .wb-table-wrap.   */
+.wb-table { min-width: 860px; }
+
+/* ── Filing column ──────────────────────────────────────────── */
+.wb-td-source { white-space: nowrap; }
+.wb-source-link {
+  font-family: var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--lav);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+.wb-source-link:hover { opacity: 0.7; }
+
+/* ── Asset column: ticker symbol and office/district text ────── */
+.wb-td-ticker {
+  color: var(--muted);
+  font-size: 12px;
+  font-family: var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace;
+}
+.wb-td-office {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* ── Missing asset-type badge variants ──────────────────────── */
+.type-bond  { background: rgba(16,185,129,0.1);    color: #065f46; }
+.type-other { background: rgba(107,114,128,0.12);  color: #374151; }
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.wb-empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(155,142,232,0.1);
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+.wb-empty-title {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.wb-empty-sub {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.65;
+  max-width: 420px;
+  margin: 0 auto 24px;
+}
+
+/* ── Pagination ──────────────────────────────────────────────── */
+.wb-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 0 8px;
+}
+.wb-page-btn {
+  font-family: var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lav);
+  text-decoration: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(155,142,232,0.25);
+  background: rgba(255,255,255,0.7);
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.wb-page-btn:hover {
+  background: var(--lav);
+  color: #fff;
+  border-color: var(--lav);
+}
+.wb-page-indicator {
+  font-family: var(--font-ibm-plex-mono), 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+/* ── Signals: signal-section flex container ──────────────────── */
+.wb-signal-section { display: flex; flex-direction: column; }
+
+/* ── About: principle card text content column ───────────────── */
+.wb-principle-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Intelligence/clarity: brief detail column ───────────────── */
+.wb-brief-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Mobile (≤640px): search drops below filter pills ────────── */
+@media (max-width: 640px) {
+  .wb-filter-spacer { display: none; }
+  .wb-search-wrap   { width: 100%; order: 10; }
+  .wb-search        { width: 100%; box-sizing: border-box; }
+  .wb-stat-n        { font-size: 20px; }
+  .wb-stat-item     { padding: 0 12px; }
+  .wb-stat-item:first-child { padding-left: 0; }
+  .wb-stat-bar      { padding: 14px 16px; }
+}
+
+/* ── Very narrow (≤400px): stat bar collapses to 2-col grid ─── */
+@media (max-width: 400px) {
+  .wb-stat-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .wb-stat-div { display: none; }
+  .wb-stat-item { padding: 0; }
+}
