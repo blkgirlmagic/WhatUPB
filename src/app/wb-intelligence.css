@@ -1678,3 +1678,6 @@
   .wb-stat-div { display: none; }
   .wb-stat-item { padding: 0; }
 }
+
+/* ── Wide data-page container variant (Capitol) ─────────────── */
+.wb-content--wide { max-width: 1600px; }

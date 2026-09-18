@@ -123,7 +123,7 @@ export default async function CapitolPage({
       </div>
 
       {/* Main content */}
-      <div className="wb-content">
+      <div className="wb-content wb-content--wide">
 
         {/* Filters — functional via URL search params */}
         <div className="wb-filters">
