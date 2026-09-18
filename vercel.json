@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/ingest-geckoterminal",
       "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/capitol/ingest",
+      "schedule": "0 6 * * *"
     }
   ]
 }

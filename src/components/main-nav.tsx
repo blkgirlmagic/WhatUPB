@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { NewsletterModal } from "./newsletter";
+import TvTicker from "./tv-ticker";
 
 const navLinks = [
   { href: "/capitol", label: "Capitol" },
@@ -14,26 +15,6 @@ const navLinks = [
   { href: "/intelligence", label: "Intelligence" },
   { href: "/about", label: "About" },
 ];
-
-// Single sequence — duplicated below for seamless CSS -50% loop
-const TICKER_SEQUENCE = [
-  { sym: "SPY",      val: "+0.4%",  up: true  },
-  { sym: "S&P 500",  val: "5,612",  up: true  },
-  { sym: "NASDAQ",   val: "+0.6%",  up: true  },
-  { sym: "DXY",      val: "−0.3%",  up: false },
-  { sym: "Gold",     val: "+0.8%",  up: true  },
-  { sym: "10Y Yield",val: "4.38%",  up: false },
-  { sym: "BTC",      val: "+2.1%",  up: true  },
-  { sym: "ETH",      val: "+1.7%",  up: true  },
-  { sym: "SOL",      val: "+3.4%",  up: true  },
-  { sym: "BNB",      val: "+1.2%",  up: true  },
-  { sym: "XRP",      val: "+0.9%",  up: true  },
-  { sym: "DOGE",     val: "+1.5%",  up: true  },
-  { sym: "ADA",      val: "+0.7%",  up: true  },
-];
-
-// Duplicate sequence so CSS translateX(-50%) produces a seamless loop
-const tickerItems = [...TICKER_SEQUENCE, ...TICKER_SEQUENCE];
 
 export default function MainNav() {
   const pathname = usePathname();
@@ -57,18 +38,9 @@ export default function MainNav() {
           </button>
         </div>
 
-        {/* ── Tier 2: Ticker ── */}
+        {/* ── Tier 2: Ticker (TradingView live feed) ── */}
         <div className="wb-ticker-wrap">
-          <div className="wb-ticker-scroll">
-            {tickerItems.map((item, i) => (
-              <span key={i} className="wb-ticker-item">
-                <span className="wb-ticker-sym">{item.sym}</span>
-                <span className={`wb-ticker-val ${item.up ? "up" : "down"}`}>
-                  {item.val}
-                </span>
-              </span>
-            ))}
-          </div>
+          <TvTicker />
         </div>
 
         {/* ── Tier 3: Subnav ── */}
