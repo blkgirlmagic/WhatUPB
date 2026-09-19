@@ -153,19 +153,28 @@ async function fetchFRPage(
   });
 
   const url = `${FR_API_BASE}?${params.toString()}`;
-  const res = await fetch(url, {
-    headers: { Accept: "application/json" },
-    // 20-second timeout via AbortController
-    signal: AbortSignal.timeout(20_000),
-  });
 
-  if (!res.ok) {
-    throw new Error(
-      `FR API error: ${res.status} ${res.statusText} — ${url}`
-    );
+  // AbortController-based timeout — compatible with all Vercel Node.js runtimes.
+  // (AbortSignal.timeout() was added in Node 17.3.0 and is absent in some environments.)
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20_000);
+
+  try {
+    const res = await fetch(url, {
+      headers: { Accept: "application/json" },
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      throw new Error(
+        `FR API error: ${res.status} ${res.statusText} — ${url}`
+      );
+    }
+
+    return res.json() as Promise<FRApiResponse>;
+  } finally {
+    clearTimeout(timer);
   }
-
-  return res.json() as Promise<FRApiResponse>;
 }
 
 // ---------------------------------------------------------------------------
