@@ -12,14 +12,6 @@ import type { PolicyEvent, PolicyEventType, PolicyCategory } from "@/types/polic
 
 const FR_API_BASE = "https://www.federalregister.gov/api/v1/documents.json";
 
-// Agency slugs used in FR API queries
-const FR_AGENCY_SLUGS = [
-  "securities-and-exchange-commission",
-  "commodity-futures-trading-commission",
-  "financial-crimes-enforcement-network",
-  "department-of-the-treasury",
-] as const;
-
 // Search terms covering the crypto / digital-asset regulatory space
 const FR_SEARCH_TERMS = [
   "cryptocurrency",
@@ -149,12 +141,10 @@ function normalizeDocument(doc: FRDocument): PolicyEvent {
 
 /** Fetch one page of FR documents for a given agency slug + search term */
 async function fetchFRPage(
-  agencySlug: string,
   term: string,
   page: number
 ): Promise<FRApiResponse> {
   const params = new URLSearchParams({
-    "conditions[agencies][]": agencySlug,
     "conditions[term]": term,
     fields: FR_FIELDS,
     per_page: "100",
@@ -190,10 +180,11 @@ export interface FRFetchResult {
 
 /**
  * Fetch all relevant documents from the Federal Register for all configured
- * agencies and search terms. Deduplicates by external_id within this batch.
+ * search terms. No agency filter — agency is derived from agency_names in the
+ * response via mapAgencyName(). Deduplicates by external_id within this batch.
  *
- * @param maxPagesPerPair  Cap pages fetched per (agency, term) pair. Default 3
- *                         (≤ 300 docs per pair). Increase for initial backfill.
+ * @param maxPagesPerPair  Cap pages fetched per search term. Default 3
+ *                         (≤ 300 docs per term). Increase for initial backfill.
  */
 export async function fetchFederalRegisterEvents(
   maxPagesPerPair = 3
@@ -202,39 +193,37 @@ export async function fetchFederalRegisterEvents(
   const events: PolicyEvent[] = [];
   let agencyTermPairs = 0;
 
-  for (const agencySlug of FR_AGENCY_SLUGS) {
-    for (const term of FR_SEARCH_TERMS) {
-      agencyTermPairs++;
+  for (const term of FR_SEARCH_TERMS) {
+    agencyTermPairs++;
 
-      for (let page = 1; page <= maxPagesPerPair; page++) {
-        let data: FRApiResponse;
-        try {
-          data = await fetchFRPage(agencySlug, term, page);
-        } catch (err) {
-          console.error(
-            `FR fetch error — agency=${agencySlug} term="${term}" page=${page}:`,
-            err
-          );
-          break; // skip remaining pages for this pair on error
-        }
-
-        for (const doc of data.results) {
-          const externalId = `fr-${doc.document_number}`;
-          if (seen.has(externalId)) continue;
-          seen.add(externalId);
-          events.push(normalizeDocument(doc));
-        }
-
-        // Stop paging if we've reached the last page
-        if (page >= data.total_pages || data.results.length === 0) break;
-
-        // Small polite delay between pages
-        await new Promise((r) => setTimeout(r, 300));
+    for (let page = 1; page <= maxPagesPerPair; page++) {
+      let data: FRApiResponse;
+      try {
+        data = await fetchFRPage(term, page);
+      } catch (err) {
+        console.error(
+          `FR fetch error — term="${term}" page=${page}:`,
+          err
+        );
+        break; // skip remaining pages for this term on error
       }
 
-      // Polite delay between (agency, term) pairs
-      await new Promise((r) => setTimeout(r, 200));
+      for (const doc of data.results) {
+        const externalId = `fr-${doc.document_number}`;
+        if (seen.has(externalId)) continue;
+        seen.add(externalId);
+        events.push(normalizeDocument(doc));
+      }
+
+      // Stop paging if we've reached the last page
+      if (page >= data.total_pages || data.results.length === 0) break;
+
+      // Small polite delay between pages
+      await new Promise((r) => setTimeout(r, 300));
     }
+
+    // Polite delay between terms
+    await new Promise((r) => setTimeout(r, 200));
   }
 
   return { events, totalFetched: events.length, agencyTermPairs };
