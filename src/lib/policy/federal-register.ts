@@ -27,7 +27,8 @@ interface FRDocument {
   abstract: string | null;
   publication_date: string; // "YYYY-MM-DD"
   html_url: string;
-  document_type: string;
+  type?: string;
+  document_type?: string;
   agency_names?: string[];
   agencies?: Array<{ slug: string; name: string }>;
 }
@@ -44,8 +45,8 @@ interface FRApiResponse {
 // ---------------------------------------------------------------------------
 
 /** Map FR document_type → our PolicyEventType */
-function mapEventType(documentType: string): PolicyEventType {
-  const t = documentType.toLowerCase();
+function mapEventType(documentType: string | undefined): PolicyEventType {
+  const t = (documentType ?? "").toLowerCase();
   if (t.includes("proposed rule") || t.includes("final rule") || t === "rule") {
     return "rulemaking";
   }
@@ -113,7 +114,7 @@ function mapCategory(
 function normalizeDocument(doc: FRDocument): PolicyEvent {
   const agencyDisplay = mapAgencyName(doc.agency_names, doc.agencies);
   const category = mapCategory(doc.title, doc.abstract, agencyDisplay);
-  const eventType = mapEventType(doc.document_type);
+  const eventType = mapEventType(doc.type ?? doc.document_type);
 
   return {
     external_id: `fr-${doc.document_number}`,
