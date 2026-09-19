@@ -20,18 +20,6 @@ const FR_SEARCH_TERMS = [
   "decentralized finance",
 ] as const;
 
-// Fields we request from the FR API (minimises payload size)
-const FR_FIELDS = [
-  "document_number",
-  "title",
-  "abstract",
-  "publication_date",
-  "html_url",
-  "document_type",
-  "agency_names",
-  "agencies",
-].join(",");
-
 /** Raw shape returned by the Federal Register documents endpoint */
 interface FRDocument {
   document_number: string;
@@ -146,7 +134,6 @@ async function fetchFRPage(
 ): Promise<FRApiResponse> {
   const params = new URLSearchParams({
     "conditions[term]": term,
-    fields: FR_FIELDS,
     per_page: "100",
     page: String(page),
     order: "newest",
