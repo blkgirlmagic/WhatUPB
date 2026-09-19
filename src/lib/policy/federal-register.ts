@@ -28,7 +28,7 @@ interface FRDocument {
   publication_date: string; // "YYYY-MM-DD"
   html_url: string;
   document_type: string;
-  agency_names: string[];
+  agency_names?: string[];
   agencies?: Array<{ slug: string; name: string }>;
 }
 
@@ -65,13 +65,18 @@ function mapEventType(documentType: string): PolicyEventType {
 }
 
 /** Map agency names → short display name */
-function mapAgencyName(agencyNames: string[]): string {
-  const names = agencyNames.join(" ").toLowerCase();
+function mapAgencyName(
+  agencyNames: string[] | undefined,
+  agencies?: Array<{ slug: string; name: string }>
+): string {
+  // Prefer agency_names (flat string array) when present; fall back to agencies[].name
+  const nameList = agencyNames ?? agencies?.map((a) => a.name) ?? [];
+  const names = nameList.join(" ").toLowerCase();
   if (names.includes("securities and exchange")) return "SEC";
   if (names.includes("commodity futures")) return "CFTC";
   if (names.includes("financial crimes enforcement")) return "FinCEN";
   if (names.includes("treasury")) return "Treasury";
-  return agencyNames[0] ?? "Other";
+  return nameList[0] ?? "Other";
 }
 
 /** Assign category: topic-keyword first, then agency fallback */
@@ -106,7 +111,7 @@ function mapCategory(
 
 /** Normalise a raw FR document into a PolicyEvent row */
 function normalizeDocument(doc: FRDocument): PolicyEvent {
-  const agencyDisplay = mapAgencyName(doc.agency_names);
+  const agencyDisplay = mapAgencyName(doc.agency_names, doc.agencies);
   const category = mapCategory(doc.title, doc.abstract, agencyDisplay);
   const eventType = mapEventType(doc.document_type);
 
