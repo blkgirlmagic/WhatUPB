@@ -18,6 +18,7 @@ const FR_SEARCH_TERMS = [
   "digital asset",
   "stablecoin",
   "decentralized finance",
+  "bitcoin",
 ] as const;
 
 /**
@@ -51,6 +52,7 @@ function isCryptoRelevant(title: string, abstract: string | null): boolean {
     "non-fungible token",
     "distributed ledger",
     "initial coin offering",
+    "commodity-based trust shares",
   ];
 
   for (const phrase of phrases) {
