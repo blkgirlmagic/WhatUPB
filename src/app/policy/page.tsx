@@ -1,6 +1,9 @@
 import MainNav from "@/components/main-nav";
 import { DiagonalLines } from "@/components/diagonal-lines";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase-server";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Policy — WhatUPB | Crypto Regulation Tracker",
@@ -66,46 +69,41 @@ const clarityItems = [
   },
 ];
 
-const policyUpdates = [
-  {
-    date: "Sep 12, 2026",
-    agency: "House Financial Services",
-    headline: "CLARITY Act amendment added strengthening stablecoin reserve requirements",
-    type: "legislation",
-  },
-  {
-    date: "Sep 10, 2026",
-    agency: "SEC",
-    headline: "SEC extends comment period on digital asset exchange registration rules by 30 days",
-    type: "rulemaking",
-  },
-  {
-    date: "Sep 8, 2026",
-    agency: "CFTC",
-    headline: "CFTC Chair testifies on expanded oversight framework for crypto derivatives",
-    type: "testimony",
-  },
-  {
-    date: "Sep 5, 2026",
-    agency: "Treasury",
-    headline: "Treasury issues guidance on crypto tax reporting for digital asset brokers",
-    type: "guidance",
-  },
-  {
-    date: "Sep 3, 2026",
-    agency: "Senate Banking",
-    headline: "Senate Banking Committee schedules hearing on DeFi protocol oversight",
-    type: "hearing",
-  },
-  {
-    date: "Aug 30, 2026",
-    agency: "FinCEN",
-    headline: "FinCEN proposes updated AML rules for non-custodial wallets",
-    type: "rulemaking",
-  },
-];
+type PolicyFeedRow = {
+  agency: string;
+  headline: string;
+  event_type: string;
+  event_date: string;
+  source_url: string | null;
+};
 
-export default function PolicyPage() {
+/** Format ISO date string "YYYY-MM-DD" → "Sep 12, 2026" without timezone shift. */
+function formatEventDate(iso: string): string {
+  const [year, month, day] = iso.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export default async function PolicyPage() {
+  const supabase = await createClient();
+
+  const { data: rows, error } = await supabase
+    .from("policy_events")
+    .select("agency, headline, event_type, event_date, source_url")
+    .order("event_date", { ascending: false })
+    .limit(20);
+
+  if (error) {
+    console.error("[policy] policy_events query failed:", error.message);
+  }
+
+  const policyFeed: PolicyFeedRow[] = (rows ?? []) as PolicyFeedRow[];
+  const newestDate =
+    policyFeed.length > 0 ? formatEventDate(policyFeed[0].event_date) : null;
+
   return (
     <div className="wb-page">
       <div className="bloom" />
@@ -122,9 +120,11 @@ export default function PolicyPage() {
             legislation, and digital asset regulation — tracked as it develops.
           </p>
           <div className="wb-page-meta">
-            <span className="wb-meta-chip">Updated Sep 14, 2026</span>
+            {newestDate && (
+              <span className="wb-meta-chip">Updated {newestDate}</span>
+            )}
             <span className="wb-meta-chip wb-chip-note">
-              Mock data · API connection coming soon
+              CLARITY tracker — static reference
             </span>
           </div>
         </div>
@@ -178,27 +178,49 @@ export default function PolicyPage() {
         <div className="wb-section-divider">
           <h2 className="wb-section-h2">Latest Policy Updates</h2>
         </div>
-        <div className="wb-updates-list">
-          {policyUpdates.map((update, i) => (
-            <div key={i} className="wb-update-item">
-              <div className="wb-update-left">
-                <span className="wb-update-date">{update.date}</span>
-                <span className={`wb-update-type utype-${update.type}`}>
-                  {update.type}
-                </span>
+
+        {policyFeed.length === 0 ? (
+          <p className="wb-disclaimer">
+            No policy updates available yet. Check back after the next ingestion run.
+          </p>
+        ) : (
+          <div className="wb-updates-list">
+            {policyFeed.map((update, i) => (
+              <div key={i} className="wb-update-item">
+                <div className="wb-update-left">
+                  <span className="wb-update-date">
+                    {formatEventDate(update.event_date)}
+                  </span>
+                  <span className={`wb-update-type utype-${update.event_type}`}>
+                    {update.event_type}
+                  </span>
+                </div>
+                <div className="wb-update-right">
+                  <span className="wb-update-agency">{update.agency}</span>
+                  {update.source_url ? (
+                    <a
+                      href={update.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="wb-update-headline"
+                    >
+                      {update.headline}
+                    </a>
+                  ) : (
+                    <p className="wb-update-headline">{update.headline}</p>
+                  )}
+                </div>
               </div>
-              <div className="wb-update-right">
-                <span className="wb-update-agency">{update.agency}</span>
-                <p className="wb-update-headline">{update.headline}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         <p className="wb-disclaimer">
           All policy information is based on publicly available legislative and
-          regulatory sources. For informational purposes only. Mock data shown —
-          live API integration coming soon.
+          regulatory sources. For informational purposes only.
+          {newestDate && (
+            <> Latest Federal Register data as of {newestDate}.</>
+          )}
         </p>
       </div>
 
