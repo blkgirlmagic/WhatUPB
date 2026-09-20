@@ -34,7 +34,7 @@ function isCryptoRelevant(title: string, abstract: string | null): boolean {
   // Long phrases — plain substring matching is safe
   const phrases = [
     "cryptocurrency",
-    "crypto",
+    "cryptocurrencies",
     "digital asset",
     "virtual asset",
     "virtual currency",
@@ -43,6 +43,7 @@ function isCryptoRelevant(title: string, abstract: string | null): boolean {
     "blockchain",
     "tokenization",
     "tokenized",
+    "cryptoasset",
     "digital commodity",
     "bitcoin",
     "ethereum",
@@ -59,7 +60,7 @@ function isCryptoRelevant(title: string, abstract: string | null): boolean {
   // Short abbreviations — word-boundary matching to avoid substring false positives
   // e.g. "defi" must not match "deficit", "nft" must not match "nifty",
   // "cbdc" must not match "cbdca", "ico" must not match "icon" / "falcon"
-  const abbreviations = [/\bdefi\b/, /\bnft\b/, /\bnfts\b/, /\bcbdc\b/, /\bico\b/, /\bicos\b/];
+  const abbreviations = [/\bdefi\b/, /\bnft\b/, /\bnfts\b/, /\bcbdc\b/, /\bico\b/, /\bicos\b/, /\bcrypto\b/];
 
   for (const re of abbreviations) {
     if (re.test(text)) return true;
