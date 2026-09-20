@@ -4,31 +4,20 @@ import MainNav from "@/components/main-nav";
 import { createClient } from "@/lib/supabase-server";
 import { intelligenceReports } from "@/lib/intelligence-reports";
 
-const intelCards = [
-  { label: "ETH Fees", value: "+14%", trend: "up" },
-  { label: "CLARITY Act", value: "Updated", trend: "neutral" },
-  { label: "New Disclosures", value: "3 Today", trend: "neutral" },
-  { label: "SOL DEX Volume", value: "+18%", trend: "up" },
-  { label: "New Token Launches", value: "12 This Week", trend: "neutral" },
-  { label: "BTC Dominance", value: "54.2%", trend: "up" },
-  { label: "SEC Comment Period", value: "Closes in 6d", trend: "down" },
-  { label: "Base Activity", value: "+31%", trend: "up" },
-];
-
 const sectionCards = [
   {
     slug: "/capitol",
     tag: "Capitol",
     headline: "Government Financial Disclosures",
     body: "Stocks, ETFs, options, and crypto transactions reported by Congress and federal officials — tracked and searchable.",
-    stat: "12 new disclosures this week",
+    stat: null,
   },
   {
     slug: "/policy",
     tag: "Policy",
     headline: "CLARITY Act & Crypto Regulation",
     body: "CLARITY Act, SEC rulemaking, CFTC jurisdiction, DeFi legislation and stablecoin frameworks — mapped in real time.",
-    stat: "2 bills updated yesterday",
+    stat: null,
   },
   {
     slug: "/chains",
@@ -42,14 +31,14 @@ const sectionCards = [
     tag: "Tokens",
     headline: "Digital Asset Intelligence",
     body: "Infrastructure, DeFi, AI, DePIN, gaming, and new token launches — with funding, chain, category, and risk context.",
-    stat: "8 launches this week",
+    stat: null,
   },
   {
     slug: "/signals",
     tag: "Signals",
     headline: "Cross-Data Intelligence",
     body: "Where market activity, blockchain data, government disclosures, and policy news intersect — the connections others miss.",
-    stat: "4 signals active",
+    stat: "4 signals",
   },
 ];
 
@@ -91,28 +80,8 @@ export default async function Home() {
               View Capitol Disclosures <span className="wb-arrow">↗</span>
             </Link>
           </div>
-
-          {/* Intelligence cards strip */}
-          <div className="wb-intel-strip">
-            {intelCards.map((card, i) => (
-              <div key={i} className={`wb-intel-card trend-${card.trend}`}>
-                <span className="wb-intel-label">{card.label}</span>
-                <span className="wb-intel-value">{card.value}</span>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
-
-      {/* Today's brief banner */}
-      <div className="wb-today-banner">
-        <span className="wb-today-tag">Today on WhatUPB</span>
-        <span className="wb-today-sep">—</span>
-        <span className="wb-today-text">
-          12 new congressional disclosures · CLARITY Act update · Ethereum fees
-          +14% · 8 new token launches
-        </span>
-      </div>
 
       {/* Section cards */}
       <section className="wb-sections">
@@ -122,10 +91,12 @@ export default async function Home() {
               <div className="wb-section-tag">{card.tag}</div>
               <div className="wb-section-headline">{card.headline}</div>
               <p className="wb-section-body">{card.body}</p>
-              <div className="wb-section-footer">
-                <span className="wb-section-stat">{card.stat}</span>
-                <span className="wb-section-arrow">→</span>
-              </div>
+              {card.stat && (
+                <div className="wb-section-footer">
+                  <span className="wb-section-stat">{card.stat}</span>
+                  <span className="wb-section-arrow">→</span>
+                </div>
+              )}
             </Link>
           ))}
         </div>
