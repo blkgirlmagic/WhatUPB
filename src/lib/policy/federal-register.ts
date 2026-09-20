@@ -20,6 +20,54 @@ const FR_SEARCH_TERMS = [
   "decentralized finance",
 ] as const;
 
+/**
+ * Conservative relevance filter: returns true when a document is genuinely
+ * about crypto / digital-asset subject matter, based on title + abstract only.
+ *
+ * Short abbreviations (DeFi, NFT, ICO, CBDC) use word-boundary matching via
+ * a small regex to avoid false positives from substrings inside other words.
+ * All longer phrases use plain substring matching (case-insensitive).
+ */
+function isCryptoRelevant(title: string, abstract: string | null): boolean {
+  const text = `${title} ${abstract ?? ""}`.toLowerCase();
+
+  // Long phrases — plain substring matching is safe
+  const phrases = [
+    "cryptocurrency",
+    "crypto",
+    "digital asset",
+    "virtual asset",
+    "virtual currency",
+    "stablecoin",
+    "decentralized finance",
+    "blockchain",
+    "tokenization",
+    "tokenized",
+    "digital commodity",
+    "bitcoin",
+    "ethereum",
+    "central bank digital currency",
+    "non-fungible token",
+    "distributed ledger",
+    "initial coin offering",
+  ];
+
+  for (const phrase of phrases) {
+    if (text.includes(phrase)) return true;
+  }
+
+  // Short abbreviations — word-boundary matching to avoid substring false positives
+  // e.g. "defi" must not match "deficit", "nft" must not match "nifty",
+  // "cbdc" must not match "cbdca", "ico" must not match "icon" / "falcon"
+  const abbreviations = [/\bdefi\b/, /\bnft\b/, /\bnfts\b/, /\bcbdc\b/, /\bico\b/, /\bicos\b/];
+
+  for (const re of abbreviations) {
+    if (re.test(text)) return true;
+  }
+
+  return false;
+}
+
 /** Raw shape returned by the Federal Register documents endpoint */
 interface FRDocument {
   document_number: string;
@@ -178,6 +226,7 @@ export interface FRFetchResult {
   events: PolicyEvent[];
   totalFetched: number;
   agencyTermPairs: number;
+  filtered: number;
 }
 
 /**
@@ -194,6 +243,7 @@ export async function fetchFederalRegisterEvents(
   const seen = new Set<string>();
   const events: PolicyEvent[] = [];
   let agencyTermPairs = 0;
+  let filtered = 0;
 
   for (const term of FR_SEARCH_TERMS) {
     agencyTermPairs++;
@@ -214,6 +264,13 @@ export async function fetchFederalRegisterEvents(
         const externalId = `fr-${doc.document_number}`;
         if (seen.has(externalId)) continue;
         seen.add(externalId);
+
+        if (!isCryptoRelevant(doc.title, doc.abstract)) {
+          console.log(`[FR] relevance-filtered: "${doc.document_number}" — ${doc.title.slice(0, 80)}`);
+          filtered++;
+          continue;
+        }
+
         events.push(normalizeDocument(doc));
       }
 
@@ -228,5 +285,8 @@ export async function fetchFederalRegisterEvents(
     await new Promise((r) => setTimeout(r, 200));
   }
 
-  return { events, totalFetched: events.length, agencyTermPairs };
+  console.log(
+    `[FR] relevance filter summary — retained=${events.length} filtered=${filtered} total_fetched=${events.length + filtered}`
+  );
+  return { events, totalFetched: events.length, agencyTermPairs, filtered };
 }
