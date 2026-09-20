@@ -2,6 +2,8 @@ import MainNav from "@/components/main-nav";
 import { DiagonalLines } from "@/components/diagonal-lines";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
+import PolicyFeed from "./policy-feed";
+import type { PolicyFeedRow } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -69,13 +71,7 @@ const clarityItems = [
   },
 ];
 
-type PolicyFeedRow = {
-  agency: string;
-  headline: string;
-  event_type: string;
-  event_date: string;
-  source_url: string | null;
-};
+const PAGE_SIZE = 20;
 
 /** Format ISO date string "YYYY-MM-DD" → "Sep 12, 2026" without timezone shift. */
 function formatEventDate(iso: string): string {
@@ -92,15 +88,17 @@ export default async function PolicyPage() {
 
   const { data: rows, error } = await supabase
     .from("policy_events")
-    .select("agency, headline, event_type, event_date, source_url")
+    .select("external_id, agency, headline, event_type, event_date, source_url")
     .order("event_date", { ascending: false })
-    .limit(20);
+    .order("external_id", { ascending: false })
+    .limit(PAGE_SIZE);
 
   if (error) {
     console.error("[policy] policy_events query failed:", error.message);
   }
 
   const policyFeed: PolicyFeedRow[] = (rows ?? []) as PolicyFeedRow[];
+  const initialHasMore = policyFeed.length === PAGE_SIZE;
   const newestDate =
     policyFeed.length > 0 ? formatEventDate(policyFeed[0].event_date) : null;
 
@@ -179,43 +177,9 @@ export default async function PolicyPage() {
           <h2 className="wb-section-h2">Latest Policy Updates</h2>
         </div>
 
-        {policyFeed.length === 0 ? (
-          <p className="wb-disclaimer">
-            No policy updates available yet. Check back after the next ingestion run.
-          </p>
-        ) : (
-          <div className="wb-updates-list">
-            {policyFeed.map((update, i) => (
-              <div key={i} className="wb-update-item">
-                <div className="wb-update-left">
-                  <span className="wb-update-date">
-                    {formatEventDate(update.event_date)}
-                  </span>
-                  <span className={`wb-update-type utype-${update.event_type}`}>
-                    {update.event_type}
-                  </span>
-                </div>
-                <div className="wb-update-right">
-                  <span className="wb-update-agency">{update.agency}</span>
-                  {update.source_url ? (
-                    <a
-                      href={update.source_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="wb-update-headline"
-                    >
-                      {update.headline}
-                    </a>
-                  ) : (
-                    <p className="wb-update-headline">{update.headline}</p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <PolicyFeed initialRows={policyFeed} initialHasMore={initialHasMore} />
 
-        <p className="wb-disclaimer">
+        <p className="wb-disclaimer" style={{ marginTop: "2rem" }}>
           All policy information is based on publicly available legislative and
           regulatory sources. For informational purposes only.
           {newestDate && (
