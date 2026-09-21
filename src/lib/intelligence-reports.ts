@@ -25,6 +25,30 @@ export interface IntelligenceReport {
 
 export const intelligenceReports: IntelligenceReport[] = [
   {
+    slug: "the-turn",
+    briefNumber: "002",
+    title: "THE TURN",
+    subtitle: "Bitcoin's $85K Breakout, ETF Flows, and What the Data Says About the Cycle.",
+    description:
+      "Is crypto entering a new bull cycle? WhatUPB examines Bitcoin\'s $85K breakout, Ethereum\'s recovery, ETF flows, leverage, and the signals that could confirm—or challenge—the turn.",
+    teaser:
+      "Bitcoin cracked $85K. ETF inflows accelerated. Is this the turn — or a trap? Ten pages of signal, no noise.",
+    publicationDate: "September 2026",
+    pageCount: 10,
+    price: 10.99,
+    coverImage: "/intelligence/brief-002-the-turn.png",
+    stripePaymentLink: "https://buy.stripe.com/7sY3cwdZa9Vbbya1122go01",
+    status: "available",
+    topics: [
+      "Bitcoin",
+      "Ethereum",
+      "ETF Flows",
+      "Bull Cycle",
+      "Market Structure",
+      "On-Chain Data",
+    ],
+  },
+  {
     slug: "clarity",
     briefNumber: "001",
     title: "CLARITY",
