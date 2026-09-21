@@ -37,8 +37,7 @@ export const intelligenceReports: IntelligenceReport[] = [
     pageCount: 10,
     price: 10.99,
     coverImage: "/intelligence/brief-001-clarity.png",
-    // ↓ Replace with your real Stripe Payment Link URL before launch
-    stripePaymentLink: "",
+    stripePaymentLink: "https://buy.stripe.com/4gM4gAaMYaZf9q2cJK2go00",
     status: "available",
     topics: [
       "CLARITY Act",
